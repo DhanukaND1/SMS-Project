@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&family=Roboto:wght@300;400&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+}
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family:'Poppins', sans-serif;;
+}
+.root{
+  padding: 0 10% 0 10%;
+  
+}
+
+@media(max-width:1070px){
+  .root{
+    padding: 0 5% 0 5%; 
+  }
+
+}
+@media (max-width: 910px){
+  .root{
+    padding: 0 3% 0 3%; 
+  }
+
+}
+
