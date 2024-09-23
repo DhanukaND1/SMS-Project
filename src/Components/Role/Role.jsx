@@ -7,7 +7,6 @@ import { useNavigate, Link } from 'react-router-dom';
     const [roles, setRole] = useState('');
     const [error,setError] = useState("");
     const navigate = useNavigate();
-    const roleError = "";
 
     const handleSubmission = (e) => {
       e.preventDefault();
