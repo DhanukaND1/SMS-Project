@@ -31,16 +31,19 @@
 .right li {
   margin-bottom: 10px;
 }
-.uoc{
+.uoc a{
   cursor: pointer;
+  text-decoration: none;
+  color: aliceblue;
+  
+}
+.uoc a:hover{
+  color: aqua;
   text-decoration: underline;
 }
-.uoc:hover{
-  color: aqua;
-}
 
 
-.right a {
+.gotop {
   text-decoration: none;
   color: #00aaff;
   width: 30px;
@@ -48,7 +51,7 @@
   cursor: pointer;
 }
 
-.right a:hover {
+.gotop:hover {
   color: white;
   background-color: brown;
   border-radius: 5px;
@@ -64,7 +67,8 @@
   .footer-container {
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    text-align: left;
+    margin-bottom: -15px;
   }
   
   .left, .right {
@@ -76,6 +80,9 @@
   .foot-strt{
     display: flex;
     justify-content:center;
+  }
+  .list-link{
+    margin-top: 20px;
   }
   .foot-end p{
     display: flex;

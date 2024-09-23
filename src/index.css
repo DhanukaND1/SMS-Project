@@ -17,15 +17,9 @@ html, body {
   
 }
 
-@media(max-width:1070px){
+@media (max-width: 768px){
   .root{
     padding: 0 5% 0 5%; 
-  }
-
-}
-@media (max-width: 910px){
-  .root{
-    padding: 0 3% 0 3%; 
   }
 
 }

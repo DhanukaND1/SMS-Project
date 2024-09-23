@@ -1,6 +1,6 @@
 import React from 'react';
 import './Hero.css';
-import Uni from '../../assets/uni.jpg';
+
 
 const Hero = () => {
   return (
@@ -21,7 +21,6 @@ const Hero = () => {
             connections in various fields. Most importantly, it boosts confidence, 
             empowering students to pursue their aspirations with clarity and determination.
           </p>
-          <img src={Uni} alt="University" />
         </div>
         </section>
 
