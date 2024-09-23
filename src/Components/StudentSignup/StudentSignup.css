@@ -105,7 +105,7 @@
 }
 
 
-@media(max-width:425px){
+@media(max-width:768px){
   .cover h4{
     font-size: 15px;
     padding: 0;
@@ -117,6 +117,10 @@
   }
   .myform label{
     font-size: medium;
+  }
+  .fa-xmark{
+    margin-top: 10px;
+    margin-right: 20px;
   }
 }
 
