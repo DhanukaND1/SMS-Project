@@ -8,6 +8,7 @@ const Login = () => {
       
       <form action="">
         <h2>Login</h2>
+        <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
         <label htmlFor="">Username</label>
         <input type="text" required autoFocus/>
         <label htmlFor="">Password</label>

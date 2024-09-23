@@ -75,6 +75,7 @@ const MentorSignup = () => {
     <div className='container1'>
       <form action="" id='frm' className='myfrm' onSubmit={handleSubmit}>
         <h2>Sign Up</h2>
+        <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
         <label htmlFor="">Mentor Id</label>
         <input type="text" autoFocus required />
         <label htmlFor="">Full Name</label>

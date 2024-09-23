@@ -87,7 +87,7 @@ const StudentSignup = () => {
     <div className='container2'>
       <form className="myform" id="myForm" onSubmit={handleSubmit}>
         <h2>Sign Up</h2>
-
+        <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
         <label htmlFor="sid">Student ID</label>
         <input type="text" id="sid" name="sid" placeholder="2022t01533" required autoFocus />
         <span className="error">{errors.id}</span>
