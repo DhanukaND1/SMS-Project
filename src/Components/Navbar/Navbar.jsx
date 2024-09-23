@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef,useEffect } from 'react';
 import './Navbar.css';
 import logo from '../../assets/sms-img.jpg';
 import { Link as RouterLink } from 'react-router-dom';
@@ -6,6 +6,19 @@ import { Link as ScrollLink } from 'react-scroll';
 
 const Navbar = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
+
+  const menuRef = useRef(null);
+
+  useEffect(()=>{
+    document.addEventListener('click',handleOutsideClick);
+  },[])
+  
+
+  const handleOutsideClick = (e) => {
+    if(!menuRef.current.contains(e.target)){
+      setMobileMenu(false);
+    }
+  };
 
   const toggleMenu = () => {
     setMobileMenu(!mobileMenu);
@@ -20,7 +33,7 @@ const Navbar = () => {
         <h5>FACULTY OF TECHNOLOGY</h5>
       </div>
       <div className="menu-cont">
-        <button className='menu'onClick={toggleMenu}> 
+        <button className='menu'onClick={toggleMenu} ref={menuRef}> 
           <i className="fas fa-bars"></i>
         </button>
         <label>Menu</label>
