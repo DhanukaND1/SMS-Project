@@ -16,7 +16,7 @@
   padding: 8px 50px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: white;
-  border-radius: 5px;
+  position: relative;;
 }
 
 .myfrm h2{

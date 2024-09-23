@@ -10,8 +10,8 @@
   height: 340px;
   background-color: white;
   padding: 10px 28px;
-  border-radius: 5px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
   
 }
 .cont form h2{
@@ -49,6 +49,22 @@
   font-size: 14px;
 }
 
+.fa-xmark{
+  float: right;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  padding: 10px;
+}
+.xbtn{
+  color: black;
+}
+.fa-xmark:hover{
+  background-color: red;
+  padding: 10px;
+  transition: padding 0.3s ease;
+}
 @media(max-width:425px){
   .cont{
     background: aliceblue;
