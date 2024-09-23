@@ -121,6 +121,9 @@
   #hide-menu {
     right: -170px;
   }
+  .menu-label{
+    display: none;
+  }
 }
 
 @media(max-width:768px) {
@@ -140,6 +143,9 @@
     width: 40px;
     border-radius: 50%;
     margin: 5px 6px 5px 0;
+  }
+  .lst{
+    font-size: 18px;
   }
   
 }
