@@ -34,9 +34,9 @@ const Navbar = () => {
       </div>
       <div className="menu-cont">
         <button className='menu'onClick={toggleMenu} ref={menuRef}> 
-          <i className="fas fa-bars"></i>
+          {mobileMenu ? <i className="fa-solid fa-xmark xmark"></i> : <i className="fas fa-bars"></i> }
         </button>
-        <label>Menu</label>
+        <label className= {mobileMenu ? "menu-label" : ""} >Menu</label>
       </div>
       <ul id={mobileMenu ? "" : "hide-menu"} className='mnu'>
         <ScrollLink to="home" smooth={true} duration={500} offset={-200} className='nav'>
