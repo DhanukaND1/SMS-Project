@@ -22,9 +22,10 @@ const Footer = () => {
         <ul>
           <li className='uoc'><a href = "https://cmb.ac.lk/">University Of Colombo</a></li>
           <li className='list-link' >
-            <Link to="home" smooth={true} duration={500} offset={-200} className='gotop'>Go to top</Link>
+            <Link to="home" smooth={true} duration={500} offset={-200} className='gotop'>Go to top<i className='fa-solid fa-angle-up arrow-up'></i></Link>
           </li>
         </ul>
+        
       </div>
       </div>
 
