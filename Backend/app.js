@@ -17,15 +17,17 @@
     sid: String,
     sname: String,
     mail: String,
-    year: Number,
+    year: String,
     dept: String,
     mentor: String,
     user: String,
     rePass: String
   }));
 
+  
   app.post('/api/signup', async (req, res) => {
     const { sid, sname, mail, year, dept, mentor, user, rePass } = req.body;
+    
 
     try {
       const existingUser = await User.findOne({ user });
@@ -37,8 +39,10 @@
       const newUser = new User({ sid, sname, mail, year, dept, mentor, user, rePass:hashedPassword });
       await newUser.save();
       res.json({ success: true, message: 'User registered successfully!' });
+      
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Error registering user.' });
+      console.log('Error during signup:', error);
+      res.status(500).json({ success: false, message: 'Error registering user.', error: error.message});
     }
   });
 
