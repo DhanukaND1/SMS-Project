@@ -11,7 +11,7 @@ const mentor = {
 
 const StudentSignup = () => {
   const [mentorList, setMentorList] = useState([]);
-  const [errors, setErrors] = useState({ id: '', email: '', pass: '', pass1: '' });
+  const [errors, setErrors] = useState({ id: '', email: '', pass: '', rePass: '' });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
 
@@ -48,7 +48,7 @@ const StudentSignup = () => {
 
   const validate = (event) => {
     event.preventDefault();
-    const { sid, mail, pass, pass1 } = formData;
+    const { sid, mail, pass, rePass } = formData;
     const idPattern = /^20\d{2}t\d{5}$/;
     const endmail = 'stu.cmb.ac.lk';
     const mailPattern = new RegExp(`^${sid}@${endmail}$`);
@@ -76,7 +76,7 @@ const StudentSignup = () => {
       passError = 'Password must contain an uppercase, lowercase, a digit, and a special character.';
     }
 
-    if (pass1 !== pass) {
+    if (rePass !== pass) {
       pass1Error = 'Passwords do not match.';
     }
 
@@ -90,7 +90,7 @@ const StudentSignup = () => {
     if (!validate(event)) {
       return;
     }
-
+    console.log('Form Data being sent:', formData);
     try {
       const response = await fetch('http://localhost:5000/api/signup', {
         method: 'POST',
@@ -101,10 +101,22 @@ const StudentSignup = () => {
       const data = await response.json();
       if (data.success) {
         alert('Signup successful!');
+        setFormData({
+          sid: '',
+          sname: '',
+          mail: '',
+          year: '',
+          dept: '',
+          mentor: '',
+          user: '',
+          pass: '',
+          pass1: ''
+        });
       } else {
         alert('Signup failed: ' + data.message);
       }
     } catch (error) {
+      alert('Error occurred while signing up. Please try again later.');
       console.error('Error:', error);
     }
   };
@@ -166,7 +178,7 @@ const StudentSignup = () => {
 
         <label>Confirm Password</label>
         <div className="password-field">
-          <input type={passwordVisible1 ? 'text' : 'password'} id='pass1' name='pass1' value={formData.pass1} onChange={handleChange} required />
+          <input type={passwordVisible1 ? 'text' : 'password'} id='pass1' name='rePass' value={formData.pass1} onChange={handleChange} required />
           <span className="icon" onClick={togglePasswordVisibility1}>
             <i className={`fa-solid ${passwordVisible1 ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
