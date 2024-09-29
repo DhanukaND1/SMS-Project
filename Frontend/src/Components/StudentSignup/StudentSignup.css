@@ -10,7 +10,7 @@
 
 .myform{
   width: 370px;
-  height: 900px;
+  height: 950px;
   display: flex;
   flex-direction: column;
   gap: 10px;
