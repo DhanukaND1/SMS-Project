@@ -89,7 +89,7 @@ const MentorSignup = () => {
           <option value="">ET</option>
           </select>
         <label htmlFor="">Email</label>
-        <input type="text" name="mail" id='mail' required/>
+        <input type="email" name="mail" id='mail' required/>
         <span className="error">{errors.email}</span>
         <label htmlFor="">Contact Number</label>
         <input type="tel" required name='phone'/>
