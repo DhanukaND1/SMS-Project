@@ -24,6 +24,7 @@
   padding-top: 10px;
   display: flex;
   justify-content: center;
+  color: blue;
 }
 .myform label{
   font-size: 15px;
@@ -61,7 +62,7 @@
   cursor: pointer;
   background-color:blue ;
 }
-.myform span{
+.error{
   color: red;
   font-size: 14px;
   min-height: 0.3em;
