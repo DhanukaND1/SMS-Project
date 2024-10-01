@@ -5,6 +5,7 @@ import MentorSignup from './Components/MentorSignup/MentorSignup.jsx'
 import Login from './Components/Login/Login.jsx'
 import Role from './Components/Role/Role.jsx';
 import Home from './Home.jsx';
+import ForgotPassword from './Components/ForgotPassword/ForgotPassword.jsx';
 
 
 
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/Role" element={<Role />} />
         <Route path="/MentorSignup" element={<MentorSignup />} />
         <Route path="/StudentSignup" element={<StudentSignup />} />
+        <Route path='/ForgotPassword' element={<ForgotPassword />} />
       </Routes>
     </Router>
         
