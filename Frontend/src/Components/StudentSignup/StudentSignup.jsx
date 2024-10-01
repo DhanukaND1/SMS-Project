@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './StudentSignup.css';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ const mentor = {
 
 const StudentSignup = () => {
   const [mentorList, setMentorList] = useState([]);
-  const [errors, setErrors] = useState({ id: '', email: '', pass: '', rePass: '' });
+  const [errors, setErrors] = useState({ id: '', email: '', pass: '', rePass: '', user: '' });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
 
@@ -43,6 +43,30 @@ const StudentSignup = () => {
 
     if (e.target.name === 'dept') {
       setMentorList(mentor[e.target.value] || []);
+    }
+  };
+  
+  const checkUserName = async (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({ ...prevData, user: value }));
+
+    if (value) {
+      try {
+        const response = await fetch('http://localhost:5000/api/check-user-student', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user: value }),
+        });
+
+        const data = await response.json();
+        if (!data.success) {
+          setErrors((prevErrors) => ({ ...prevErrors, user: data.message }));
+        } else {
+          setErrors((prevErrors) => ({ ...prevErrors, user: '' }));
+        }
+      } catch (error) {
+        console.error('Error checking username:', error);
+      }
     }
   };
 
@@ -80,9 +104,9 @@ const StudentSignup = () => {
       pass1Error = 'Passwords do not match.';
     }
 
-    setErrors({ id: idError, email: emailError, pass: passError, pass1: pass1Error });
+    setErrors({ id: idError, email: emailError, pass: passError, rePass: pass1Error });
 
-    return !(idError || emailError || passError || pass1Error);
+    return !(idError || emailError || passError || pass1Error || errors.user);
   };
 
   const handleSubmit = async (event) => {
@@ -90,9 +114,36 @@ const StudentSignup = () => {
     if (!validate(event)) {
       return;
     }
+    console.log('Errors state:', errors);
+    if (errors.user) {
+      alert('Please choose a different username.');
+      return;
+    }
+
+    if (formData.user) {
+      try {
+        const response = await fetch('http://localhost:5000/api/check-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user: formData.user }),
+        });
+  
+        const data = await response.json();
+        if (!data.success) {
+          setErrors((prevErrors) => ({ ...prevErrors, user: data.message }));
+          return;
+        } else {
+          setErrors((prevErrors) => ({ ...prevErrors, user: '' }));
+        }
+      } catch (error) {
+        console.error('Error checking username:', error);
+      }
+    }
+  
+
     console.log('Form Data being sent:', formData);
     try {
-      const response = await fetch('http://localhost:5000/api/signup', {
+      const response = await fetch('http://localhost:5000/api/signupStudent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -110,7 +161,7 @@ const StudentSignup = () => {
           mentor: '',
           user: '',
           pass: '',
-          pass1: ''
+          rePass: ''
         });
       } else {
         alert('Signup failed: ' + data.message);
@@ -135,7 +186,7 @@ const StudentSignup = () => {
         <input type="text" id="sname" value={formData.sname} onChange={handleChange} name="sname" placeholder="H.W.S.M Herath" required />
 
         <label htmlFor="mail">Student Mail</label>
-        <input type="text" id="mail" value={formData.mail} onChange={handleChange} name="mail" placeholder="2022t01533@stu.cmb.ac.lk" required />
+        <input type="email" id="mail" value={formData.mail} onChange={handleChange} name="mail" placeholder="2022t01533@stu.cmb.ac.lk" required />
         <span className="error">{errors.email}</span>
 
         <label htmlFor="year">Batch Year</label>
@@ -165,7 +216,8 @@ const StudentSignup = () => {
         </select>
 
         <label>Create Username</label>
-        <input type="text" name="user" value={formData.user} onChange={handleChange} required />
+        <input type="text" name="user" value={formData.user} onInput={checkUserName} onChange={handleChange} required />
+        <span className="error">{errors.user}</span>
 
         <label>Create Password</label>
         <div className="password-field">
@@ -178,14 +230,14 @@ const StudentSignup = () => {
 
         <label>Confirm Password</label>
         <div className="password-field">
-          <input type={passwordVisible1 ? 'text' : 'password'} id='pass1' name='rePass' value={formData.pass1} onChange={handleChange} required />
+          <input type={passwordVisible1 ? 'text' : 'password'} id='rePass' name='rePass' value={formData.rePass} onChange={handleChange} required />
           <span className="icon" onClick={togglePasswordVisibility1}>
             <i className={`fa-solid ${passwordVisible1 ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error'>{errors.pass1}</span>
+        <span className='error'>{errors.rePass}</span>
 
-        <button type="submit">SIGN UP</button>
+        <button type="submit" className="submit-btn">Sign Up</button>
 
         <div className='cover'>
           <h4>Already have an account? <Link to="/Login" className='link'>Login</Link> </h4>
@@ -193,6 +245,6 @@ const StudentSignup = () => {
       </form>
     </div>
   );
-}
+};
 
 export default StudentSignup;
