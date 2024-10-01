@@ -7,7 +7,7 @@
 }
 .cont form{
   width: 270px;
-  height: 340px;
+  height: 360px;
   background-color: white;
   padding: 10px 28px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -17,6 +17,7 @@
 .cont form h2{
   text-align: center;
   margin: 5px 0;
+  color: blue;
 }
 .cont form label{
   display: flex;
