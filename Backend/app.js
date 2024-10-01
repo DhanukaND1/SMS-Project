@@ -13,7 +13,8 @@ const bcrypt = require('bcrypt');
    .then(() => console.log('Connected to MongoDB'))
    .catch((err) => console.error('MongoDB connection error:', err));
 
- const User = mongoose.model('User', new mongoose.Schema({
+//collection for student
+ const Student = mongoose.model('Student', new mongoose.Schema({
    sid: String,
    sname: String,
    mail: String,
@@ -24,19 +25,27 @@ const bcrypt = require('bcrypt');
    rePass: String
  }));
 
- 
- app.post('/api/signup', async (req, res) => {
-   const { sid, sname, mail, year, dept, mentor, user, rePass } = req.body;
-   
+//collection for mentor
+const Mentor = mongoose.model('Mentor', new mongoose.Schema({
+  mid: String,
+  name: String,
+  dept: String,
+  mail: String,
+  phone: String,
+  user: String,
+  pass: String,
+  pass1: String
+}));
 
+ //endpoint for signup student
+ app.post('/api/signupStudent', async (req, res) => {
+   const { sid, sname, mail, year, dept, mentor, user, rePass } = req.body;
+  
    try {
-     const existingUser = await User.findOne({ user });
-       if (existingUser) {
-       return res.status(400).json({ success: false, message: 'Username already exists.' });
-   }
+    
      const hashedPassword = await bcrypt.hash(rePass, 10);
 
-     const newUser = new User({ sid, sname, mail, year, dept, mentor, user, rePass:hashedPassword });
+     const newUser = new Student({ sid, sname, mail, year, dept, mentor, user, rePass:hashedPassword });
      await newUser.save();
      res.json({ success: true, message: 'User registered successfully!' });
      
@@ -46,5 +55,53 @@ const bcrypt = require('bcrypt');
    }
  });
 
- const PORT = 5000;
+//end point for check user student
+ app.post('/api/check-user-student', async (req, res) => {
+  const { user } = req.body;
+
+  try {
+    const existingUser = await Student.findOne({ user });
+    if (existingUser) {
+      return res.status(200).json({ success: false, message: 'Username already taken.' });
+    }
+    return res.status(200).json({ success: true, message: 'Username available.' });
+  } catch (error) {
+    console.log("Error while checking username.", error);
+    res.status(500).json({ success: false, message: "Error while checking username.", error: error.message });
+  }
+});
+
+//end point for check user mentor
+app.post('/api/check-user-mentor', async (req, res) => {
+  const { user } = req.body;
+
+  try {
+    const existingUser = await Mentor.findOne({ user });
+    if (existingUser) {
+      return res.status(200).json({ success: false, message: 'Username already taken.' });
+    }
+    return res.status(200).json({ success: true, message: 'Username available.' });
+  } catch (error) {
+    console.log("Error while checking username.", error);
+    res.status(500).json({ success: false, message: "Error while checking username.", error: error.message });
+  }
+});
+
+//end point for signup mentor
+app.post('/api/signupMentor', async (req, res) => {
+  const { mid, name, dept, mail, phone, user, pass, pass1 } = req.body;
+  try {
+   
+    const hashedPassword = await bcrypt.hash(pass1, 10);
+
+    const newUser = new Mentor({ mid, name, dept, mail, phone, user, pass, pass1:hashedPassword });
+    await newUser.save();
+    res.json({ success: true, message: 'User registered successfully!' });
+    
+  } catch (error) {
+    console.log('Error during signup:', error);
+    res.status(500).json({ success: false, message: 'Error registering user.', error: error.message});
+  }
+});
+ const PORT = 5001;
  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
