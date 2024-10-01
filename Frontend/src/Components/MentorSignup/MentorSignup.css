@@ -1,5 +1,5 @@
 .container1{
-  
+
   display:flex;
   justify-content:center;
   align-items:center;
@@ -23,6 +23,7 @@
   padding-top: 10px;
   display: flex;
   justify-content: center;
+  color: blue;
 }
 .myfrm label{
   font-size: 15px;
@@ -60,11 +61,7 @@
   cursor: pointer;
   background-color:blue ;
 }
-.myfrm span{
-  color: red;
-  font-size: 14px;
-  min-height: 0.3em;
-}
+
 .password-field input {
   padding-right: 70px;
 }
