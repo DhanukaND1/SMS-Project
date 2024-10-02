@@ -3,6 +3,9 @@ import { Link } from 'react-scroll'
 import './Footer.css'
 
 const Footer = () => {
+
+  const currentYear = new Date().getFullYear();
+  
   return (
     
     <footer className="foot root">
@@ -31,7 +34,7 @@ const Footer = () => {
 
       <div className="foot-end">
         <hr />
-        <p>&copy; 2024 Faculty Of Technology,
+        <p>&copy; {currentYear} Faculty Of Technology,
           <span className="frst-br"> University Of Colombo, Sri Lanka.</span>
           <span className="sec-br">All rights reserved.</span>
         </p>
