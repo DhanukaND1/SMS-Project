@@ -27,13 +27,11 @@ const bcrypt = require('bcrypt');
 
 //collection for mentor
 const Mentor = mongoose.model('Mentor', new mongoose.Schema({
-  mid: String,
   name: String,
   dept: String,
   mail: String,
-  phone: String,
+  phone: Number,
   user: String,
-  pass: String,
   pass1: String
 }));
 
@@ -89,12 +87,13 @@ app.post('/api/check-user-mentor', async (req, res) => {
 
 //end point for signup mentor
 app.post('/api/signupMentor', async (req, res) => {
-  const { mid, name, dept, mail, phone, user, pass1 } = req.body;
+  const { name, dept, mail, phone, user, pass1 } = req.body;
+  //  console.log('Request body:', req.body);
   try {
    
     const hashedPassword = await bcrypt.hash(pass1, 10);
 
-    const newUser = new Mentor({ mid, name, dept, mail, phone, user, pass, pass1:hashedPassword });
+    const newUser = new Mentor({ name, dept, mail, phone, user, pass1:hashedPassword });
     await newUser.save();
     res.json({ success: true, message: 'User registered successfully!' });
     
