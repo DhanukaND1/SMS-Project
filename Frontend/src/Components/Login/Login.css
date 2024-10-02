@@ -6,8 +6,8 @@
   background: linear-gradient(to bottom left, #a8edea, #fed6e3);
 }
 .cont form{
-  width: 270px;
-  height: 360px;
+  width: 280px;
+  height: 480px;
   background-color: white;
   padding: 10px 28px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -50,7 +50,25 @@
 .cont form h4{
   font-size: 14px;
 }
-
+.role-wrapper{
+  display: flex;
+  flex-direction: row;
+  padding: 15px;
+}
+.role-wrapper input[type="radio"] {
+  transform: scale(0.6);
+}
+.eye-wrapper{
+  float: right;
+  position: relative;
+}
+.fa-eye, .fa-eye-slash{
+  color: brown;
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  cursor: pointer;
+}
 .fa-xmark{
   float: right;
   position: absolute;
@@ -76,6 +94,13 @@
   top: 75%;
   transform: translateY(-50%);
 }
+.btn-center{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
 @media(max-width:425px){
   .cont{
     background: aliceblue;
