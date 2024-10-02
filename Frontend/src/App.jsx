@@ -6,7 +6,8 @@ import Login from './Components/Login/Login.jsx'
 import Role from './Components/Role/Role.jsx';
 import Home from './Home.jsx';
 import ForgotPassword from './Components/ForgotPassword/ForgotPassword.jsx';
-
+import StudentDashboard from './Components/StudentDashboard/StudentDashboard.jsx';
+import MentorDashboard from './Components/MentorDashboard/MentorDashboard.jsx'
 
 
 const App = () => {
@@ -17,11 +18,13 @@ const App = () => {
       <Router>
       <Routes>
         <Route path='/' element={<Home /> } />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Role" element={<Role />} />
-        <Route path="/MentorSignup" element={<MentorSignup />} />
-        <Route path="/StudentSignup" element={<StudentSignup />} />
-        <Route path='/ForgotPassword' element={<ForgotPassword />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/role" element={<Role />} />
+        <Route path="/mentor-signup" element={<MentorSignup />} />
+        <Route path="/student-signup" element={<StudentSignup />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/student-dashboard' element={<StudentDashboard />} />
+        <Route path='/mentor-dashboard' element={<MentorDashboard />} />
       </Routes>
     </Router>
         
