@@ -9,7 +9,6 @@ const MentorSignup = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
   const [formData, setFormData] = useState({
-    mid: '',
     name: '',
     dept: '',
     mail: '',
@@ -86,7 +85,7 @@ const MentorSignup = () => {
 
     if (value) {
       try {
-        const response = await fetch('http://localhost:5000/api/check-user-mentor', {
+        const response = await fetch('http://localhost:5001/api/check-user-mentor', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user: value }),
@@ -110,7 +109,7 @@ const MentorSignup = () => {
       return;
     }
     try {
-      const response = await fetch('http://localhost:5000/api/signupMentor', {
+      const response = await fetch('http://localhost:5001/api/signupMentor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -120,7 +119,6 @@ const MentorSignup = () => {
       if (data.success) {
         alert('Signup successful!');
         setFormData({
-          mid: '',
           name: '',
           dept: '',
           mail: '',
@@ -143,10 +141,8 @@ const MentorSignup = () => {
       <form action="" id='frm' className='myfrm' onSubmit={handleSubmit}>
         <h2>Sign Up</h2>
         <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
-        <label htmlFor="mid">Mentor Id</label>
-        <input type="text" id='mid' name='mid' value={formData.mid} onChange={handleChange} autoFocus required />
         <label htmlFor="name">Full Name</label>
-        <input type="text" id='name' name='name' value={formData.name} onChange={handleChange} required />
+        <input type="text" id='name' name='name' value={formData.name} onChange={handleChange} autoFocus required />
         <label htmlFor="dept">Department</label>
         <select name="dept" id="dept" value={formData.dept} onChange={handleChange}>
           <option value="" selected disabled>Select Department</option>
