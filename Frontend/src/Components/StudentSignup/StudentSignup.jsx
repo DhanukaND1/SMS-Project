@@ -122,7 +122,7 @@ const StudentSignup = () => {
 
     if (formData.user) {
       try {
-        const response = await fetch('http://localhost:5000/api/check-user', {
+        const response = await fetch('http://localhost:5001/api/check-user', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user: formData.user }),
@@ -143,7 +143,7 @@ const StudentSignup = () => {
     console.log('Form Data being sent:', formData);
 
     try {
-      const response = await fetch('http://localhost:5000/api/signupStudent', {
+      const response = await fetch('http://localhost:5001/api/signupStudent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

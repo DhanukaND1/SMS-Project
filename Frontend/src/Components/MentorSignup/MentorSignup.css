@@ -3,13 +3,13 @@
   display:flex;
   justify-content:center;
   align-items:center;
-  height:180vh;
+  height:160vh;
   background: linear-gradient(to bottom left, #a8edea, #fed6e3);
 }
 
 .myfrm{
   width: 380px;
-  height: 870px;
+  height: 820px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -64,7 +64,9 @@
 
 .password-field input {
   padding-right: 70px;
+  position: relative;
 }
+
 
 @media(max-width:425px){
   .container1{

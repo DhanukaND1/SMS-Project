@@ -50,7 +50,6 @@ const Login = () => {
 
       const data = await response.json();
       if(data.success){
-        alert("Login successful!");
         setFormData({
           role:'',
           user:'',
@@ -59,7 +58,7 @@ const Login = () => {
 
         setError({ role: '', user: '' });
          
-        if(formData.role==="Student"){
+        if(formData.role === "Student"){
           navigate('/student-dashboard');
         }
         else if(formData.role === "Mentor"){

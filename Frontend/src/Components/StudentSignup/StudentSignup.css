@@ -95,8 +95,7 @@
 .password-field .icon {
   position: absolute;
   right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: -8px;
   cursor: pointer;
   color: brown;
 }
