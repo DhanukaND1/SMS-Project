@@ -89,7 +89,7 @@ app.post('/api/check-user-mentor', async (req, res) => {
 
 //end point for signup mentor
 app.post('/api/signupMentor', async (req, res) => {
-  const { mid, name, dept, mail, phone, user, pass, pass1 } = req.body;
+  const { mid, name, dept, mail, phone, user, pass1 } = req.body;
   try {
    
     const hashedPassword = await bcrypt.hash(pass1, 10);
@@ -101,6 +101,53 @@ app.post('/api/signupMentor', async (req, res) => {
   } catch (error) {
     console.log('Error during signup:', error);
     res.status(500).json({ success: false, message: 'Error registering user.', error: error.message});
+  }
+});
+
+//end point for login
+app.post('/api/login', async (req,res) => {
+  const { role, user, pass} = req.body;
+  // console.log('Request body:', req.body);
+
+  try {
+
+    if(role === "Student"){
+        const User = await Student.findOne({ user });
+    
+    if (!User) {
+      return res.status(404).json({ success: false, message: 'Username not found' });
+    }
+
+    const isMatch = await bcrypt.compare(pass, User.rePass);
+
+    if(!isMatch){
+      return res.status(404).json({ success: false, message: 'Password not matched'});
+    }
+    return res.status(200).json({ success: true, message: 'Login successful!'});
+  }
+
+    if(role === "Mentor"){
+        const User = await Mentor.findOne({ user });
+
+        if (!User) {
+          return res.status(404).json({ success: false, message: 'Username not found' });
+        }
+    
+        const isMatch = await bcrypt.compare(pass, User.pass1);
+    
+        if(!isMatch){
+          return res.status(404).json({ success: false, message: 'Password not matched'});
+        }
+    
+        return res.status(200).json({ success: true, message: 'Login successful!'});
+
+        
+    }
+  
+
+  } catch (error) {
+    console.log('Error during login:', error);
+    res.status(500).json({ success: false, message: 'Error login.', error: error.message});
   }
 });
  const PORT = 5001;
