@@ -12,9 +12,9 @@ import { useNavigate, Link } from 'react-router-dom';
       e.preventDefault();
 
       if (roles === 'mentor') {
-        navigate('/MentorSignUp');
+        navigate('/mentor-signUp');
       } else if(roles === 'student') {
-        navigate('/StudentSignUp');
+        navigate('/student-signUp');
       }else{
         setError("Please select a role.");
       }

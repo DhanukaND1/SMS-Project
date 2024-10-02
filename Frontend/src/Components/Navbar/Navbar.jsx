@@ -45,10 +45,10 @@ const Navbar = () => {
         <ScrollLink to="about" smooth={true} duration={500} offset={-120} className='nav'>
           <li className='lst'>About</li>
         </ScrollLink>
-        <RouterLink to='/Role' className='nav'>
+        <RouterLink to='/role' className='nav'>
           <li className='lst' id='sign'>Signup</li>
         </RouterLink>
-        <RouterLink to='/Login' className='nav'>
+        <RouterLink to='/login' className='nav'>
           <li className='lst' id='log'>Login</li>
         </RouterLink>
       </ul>
