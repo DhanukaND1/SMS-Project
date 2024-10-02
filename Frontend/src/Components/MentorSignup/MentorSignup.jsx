@@ -185,7 +185,7 @@ const MentorSignup = () => {
 
         <button>Sign Up</button>
         <div className="cover">
-          <h4>Already have an account? <Link to="/Login" className='link'>Login</Link></h4>
+          <h4>Already have an account? <Link to="/login" className='link'>Login</Link></h4>
         </div>
 
       </form>
