@@ -149,5 +149,13 @@ app.post('/api/login', async (req,res) => {
     res.status(500).json({ success: false, message: 'Error login.', error: error.message});
   }
 });
+
+//end point for send mail
+app.post('/api/forgot-password', (req, res) => {
+  const { email } = req.body;
+  console.log(req.body);
+
+});
+
  const PORT = 5001;
  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
