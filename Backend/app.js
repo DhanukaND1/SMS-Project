@@ -43,9 +43,8 @@ const Mentor = mongoose.model('Mentor', new mongoose.Schema({
 }));
 
 //collection for forgotpass
-const  forgotpass = mongoose.model("Forgotpass",new mongoose.Schema({
+const  Forgotpass = mongoose.model("Forgotpass",new mongoose.Schema({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
   resetToken: String,
   resetTokenExpiration: Date
 }));
@@ -171,6 +170,7 @@ app.post('/api/forgot-password', async (req, res) => {
   console.log(req.body);
   let user;
 
+  try{
   // Check if the email belongs to a Mentor or Student
   user = await Mentor.findOne({ mail }) || await Student.findOne({ mail });
   console.log(user);
@@ -183,43 +183,45 @@ app.post('/api/forgot-password', async (req, res) => {
   const resetTokenExpires = Date.now() + 1800000; // Token expires in 1 hour
 
   // Store the reset token and its expiration in the user's document
-  user.resetPasswordToken = resetToken;
-  user.resetPasswordExpires = resetTokenExpires;
-  await user.save();
+  let forgotPassRecord = await Forgotpass.findOne({ email: user.mail });
+  console.log(forgotPassRecord);
+  if(forgotPassRecord){
+    forgotPassRecord.resetToken = resetToken;
+    forgotPassRecord.resetTokenExpiration = resetTokenExpires;
+  }else{
+    // Create a new Forgotpass document
+      forgotPassRecord = new Forgotpass({
+      email: user.mail,
+      resetToken,
+      resetTokenExpiration: resetTokenExpires
+    });
+  }
+  await forgotPassRecord.save();
 
   // Create the password reset link
   const resetUrl = `http://localhost:5001/reset-password/${resetToken}`;
 
-  // Send email with reset link
-  const transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-          user: 'studentmentoring.noreply@gmail.com',
-          pass: 'Student@123',
-      },
-      tls: {
-        rejectUnauthorized: false // Disable certificate validation
-    }
-  });
-
-  const mailOptions = {
+  const msg = {
       to: user.mail,
       from: 'studentmentoring.noreply@gmail.com',
-      subject: 'Password Reset Request',
-      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
-            `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-            `${resetUrl}\n\n` +
-            `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
-  };
+      subject: `Password Reset Request for ${user.sname || user.name}`,
 
-  transporter.sendMail(mailOptions, (err) => {
-      if (err) {
-        console.error('Error sending email:', err);
+      html:`<p>You are receiving this because you (or someone else) have requested the reset of the password for your account.</p>
+            <p>Please click on the following link, or paste this into your browser to complete the process:</p>
+            <a href="${resetUrl}">${resetUrl}</a>
+            <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>`
+};
+  
+
+  const response = await sendgrid.send(msg);
+  console.log(response); 
+  res.json({ success: true, message: 'Password reset email sent' });
+
+}catch(error){
+        console.error('Error sending email:', error);
         return res.status(500).json({ success: false, message: 'Error sending email' });
-      }
-      res.json({ success: true, message: 'Password reset email sent' });
-  });
-});
+  }
+}); 
 
 // app.post('/api/reset-password', async (req, res) => {
 //   const { token, newPassword } = req.body;
