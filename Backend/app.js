@@ -199,7 +199,7 @@ app.post('/api/forgot-password', async (req, res) => {
   await forgotPassRecord.save();
 
   // Create the password reset link
-  const resetUrl = `http://localhost:5001/reset-password/${resetToken}`;
+  const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
 
   const msg = {
       to: user.mail,
@@ -257,5 +257,5 @@ app.post('/api/forgot-password', async (req, res) => {
 // });
 
 
- const PORT = 5001;
- app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+ const port = process.env.PORT || 5001;
+ app.listen(port, () => console.log(`Server running on port ${port}`));
