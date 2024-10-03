@@ -44,7 +44,6 @@
   margin: 25px 54px;
 }
 .cont form button:hover{
-  cursor: pointer;
   background-color:blue;
 }
 .cont form h4{

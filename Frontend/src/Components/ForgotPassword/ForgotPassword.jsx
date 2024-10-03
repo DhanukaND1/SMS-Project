@@ -43,7 +43,7 @@ const handleSubmit = async (e) => {
       
       <form action="" onSubmit={handleSubmit}>
         <h2>Forgot Password</h2>
-        <Link className='xbtn' to="/Login"><i className="fa-solid fa-xmark"></i></Link>
+        <Link className='xbtn' to="/login"><i className="fa-solid fa-xmark"></i></Link>
 
         <div className="envelope-wrapper">
         <label htmlFor="">Email</label>
