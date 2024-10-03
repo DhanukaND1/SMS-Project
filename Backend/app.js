@@ -2,12 +2,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const sendgrid = require('@sendgrid/mail');
+require('dotenv').config();
 
  const app = express();
 
 // Middleware
  app.use(cors());
  app.use(express.json());
+
+ // Set the SendGrid API key from environment variables
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
  mongoose.connect('mongodb://localhost:27017/signupDB', {})
    .then(() => console.log('Connected to MongoDB'))
@@ -33,6 +40,14 @@ const Mentor = mongoose.model('Mentor', new mongoose.Schema({
   phone: Number,
   user: String,
   pass1: String
+}));
+
+//collection for forgotpass
+const  forgotpass = mongoose.model("Forgotpass",new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  resetToken: String,
+  resetTokenExpiration: Date
 }));
 
  //endpoint for signup student
@@ -150,12 +165,95 @@ app.post('/api/login', async (req,res) => {
   }
 });
 
-//end point for send mail
-app.post('/api/forgot-password', (req, res) => {
-  const { email } = req.body;
+// Forgot password route
+app.post('/api/forgot-password', async (req, res) => {
+  const { mail } = req.body;
   console.log(req.body);
+  let user;
 
+  // Check if the email belongs to a Mentor or Student
+  user = await Mentor.findOne({ mail }) || await Student.findOne({ mail });
+  console.log(user);
+  if (!user) {
+      return res.status(404).json({success:false, message:'User not found'});
+  }
+
+  // Generate a reset token and expiration time
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const resetTokenExpires = Date.now() + 1800000; // Token expires in 1 hour
+
+  // Store the reset token and its expiration in the user's document
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordExpires = resetTokenExpires;
+  await user.save();
+
+  // Create the password reset link
+  const resetUrl = `http://localhost:5001/reset-password/${resetToken}`;
+
+  // Send email with reset link
+  const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+          user: 'studentmentoring.noreply@gmail.com',
+          pass: 'Student@123',
+      },
+      tls: {
+        rejectUnauthorized: false // Disable certificate validation
+    }
+  });
+
+  const mailOptions = {
+      to: user.mail,
+      from: 'studentmentoring.noreply@gmail.com',
+      subject: 'Password Reset Request',
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
+            `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
+            `${resetUrl}\n\n` +
+            `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+  };
+
+  transporter.sendMail(mailOptions, (err) => {
+      if (err) {
+        console.error('Error sending email:', err);
+        return res.status(500).json({ success: false, message: 'Error sending email' });
+      }
+      res.json({ success: true, message: 'Password reset email sent' });
+  });
 });
+
+// app.post('/api/reset-password', async (req, res) => {
+//   const { token, newPassword } = req.body;
+
+//   try {
+//     // Find the reset token in the ForgotPass collection
+//     const resetRecord = await forgotpass.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } });
+    
+//     if (!resetRecord) {
+//       return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+//     }
+
+//     // Find the user by email (from the reset record)
+//     const user = await Student.findOne({ mail: resetRecord.email });
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: 'User not found' });
+//     }
+
+//     // Hash the new password
+//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+//     // Update the user's password
+//     user.rePass = hashedPassword;
+//     await user.save();
+
+//     // Optionally, delete the reset token entry (cleanup)
+//     await ForgotPass.deleteOne({ resetToken: token });
+
+//     res.status(200).json({ success: true, message: 'Password updated successfully!' });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: 'Error resetting password', error });
+//   }
+// });
+
 
  const PORT = 5001;
  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

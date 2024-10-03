@@ -5,29 +5,35 @@ import { Link } from 'react-router-dom'
 const ForgotPassword = () => {
 
 const [mail, setMail] = useState('');
+const [error, setError] = useState('');
 
 const handleChange = (e) => {
    setMail(e.target.value);
+   setError('');
 };
 
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     
-    const response = await fetch('http://localhost/api/forgot-password',{
+    const response = await fetch('http://localhost:5001/api/forgot-password',{
       method: "POST",
       headers:{'Content-Type': 'application/json'},
-      body: JSON.stringify({email:mail}),
+      body: JSON.stringify({mail}),
     });
 
     const data = await response.json();
+    console.log(data.success);
     if(data.success){
       alert("Mail has been sent, please go and check your mailbox");
       setMail("");
+    
+    }else{
+      setError('Email not found, Please enter a valid email.')
     }
   } catch (error) {
     alert('Error occurred while sending mail. Please try again later.');
-    console.error('Error:', error);
+    console.log('Error:', error);
   }
 };
 
@@ -44,7 +50,7 @@ const handleSubmit = async (e) => {
         <i className="fa-solid fa-envelope"></i>
         <input type="email" required autoFocus placeholder='enter your university mail' value={mail} onChange={handleChange}/>
         </div>
-        <span className='error'></span>
+        <span className='error'>{error}</span>
 
         <div className="fpbtn">
         <button className='fpbtn'>Send Mail</button>
