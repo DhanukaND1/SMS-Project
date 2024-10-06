@@ -8,7 +8,7 @@
   left: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
   z-index: 10;
 }
 
@@ -71,7 +71,7 @@
   }
 }
 
-@media(max-width:855px) {
+@media(max-width:1000px) {
   .menu {
     display: block;
     border: none;
@@ -100,12 +100,15 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-color:rgba(0,0,0,0.4);
+    background-color:rgba(0,0,0,0.8);
     width: 170px;
     z-index: -6;
     padding-top: 70px;
     transition: right 0.5s ease-in-out;
     border-radius: 5px;
+  }
+  .xmark{
+    color: white;
   }
   .lst{
     color: white;

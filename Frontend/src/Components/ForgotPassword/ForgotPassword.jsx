@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom'
 const ForgotPassword = () => {
 
 const [mail, setMail] = useState('');
-const [error, setError] = useState('');
+const [errors, setErrors] = useState('');
 
 const handleChange = (e) => {
    setMail(e.target.value);
-   setError('');
+   setErrors('');
 };
 
 const handleSubmit = async (e) => {
@@ -29,7 +29,7 @@ const handleSubmit = async (e) => {
       setMail("");
     
     }else{
-      setError('Email not found, Please enter a valid email.')
+      setErrors('The email you entered was not found. Please make sure to use the email, you provided during the signup process.')
     }
   } catch (error) {
     alert('Error occurred while sending mail. Please try again later.');
@@ -48,12 +48,14 @@ const handleSubmit = async (e) => {
         <div className="envelope-wrapper">
         <label htmlFor="">Email</label>
         <i className="fa-solid fa-envelope"></i>
-        <input type="email" required autoFocus placeholder='enter your university mail' value={mail} onChange={handleChange}/>
+        <input type="email" required autoFocus placeholder='enter your university mail' value={mail} onChange={handleChange} className={errors ? 'error-state' : ''}/>
         </div>
-        <span className='error'>{error}</span>
 
+        <div>
+        <span className='error' style={{height:'4rem'}}>{errors}</span>
+        </div>
         <div className="fpbtn">
-        <button className='fpbtn'>Send Mail</button>
+        <button className='fp-btn'>Send Mail</button>
         </div>
       </form>
     </div>

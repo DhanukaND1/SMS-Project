@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 const Login = () => {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error,setError] = useState({role:'',user:''});
+  const [error,setError] = useState({role:'',user:'',pass:''});
   const [formData,setFormData] = useState({
     role:'',
     user:'',
@@ -26,8 +26,8 @@ const Login = () => {
 
     if (e.target.name === 'role') {
       setError(prevState => ({ ...prevState, role: '' }));
-    } else if (e.target.name === 'user') {
-      setError(prevState => ({ ...prevState, user: '' }));
+    } else if (e.target.name === 'user' || e.target.name === 'pass') {
+      setError(prevState => ({ ...prevState, user: '', pass:'' }));
     }
 
     setError('');
@@ -56,7 +56,7 @@ const Login = () => {
           pass:''
         });
 
-        setError({ role: '', user: '' });
+        setError({ role: '', user: '', pass:'' });
          
         if(formData.role === "Student"){
           navigate('/student-dashboard');
@@ -65,7 +65,16 @@ const Login = () => {
           navigate('/mentor-dashboard');
         }
       }else{
-        setError(prevState => ({ ...prevState, user: data.message }));
+        if(data.message.includes('Username not found')){
+          console.log(data.message)
+          setError(prevState => ({ ...prevState, user: data.message }));
+        }
+        if(data.message.includes('Password not matched')){
+          console.log(data.message)
+          setError(prevState => ({ ...prevState, pass: data.message }));
+        }
+
+        
       }
     } catch (error) {
       alert('Error occurred while loging in. Please try again later.');
@@ -87,13 +96,14 @@ const Login = () => {
           <input type="radio" name='role' value= "Student" onChange={handleCheck} />Student
           <input type="radio" name='role' value= "Mentor" onChange={handleCheck} />Mentor
         </div>
-        <span className='error'>{error.role}</span>
+        <span className='error' style={{height:'1rem'}}>{error.role}</span>
 
         <div className="input-wrapper">
         <label htmlFor="">Username</label>
         <i className="fa-solid fa-user"></i>
-        <input type="text" name='user' value={formData.user} onChange={handleCheck} required autoFocus/>
+        <input type="text" name='user' className={ error.user ? 'error-state': ''}  value={formData.user} onChange={handleCheck} required autoFocus/>
         </div>
+        <span className="error" style={{height:'1rem'}}>{error.user}</span>
 
         <div className="input-wrapper">
         <label htmlFor="">Password</label>
@@ -105,13 +115,13 @@ const Login = () => {
           </span>
         </div>
 
-        <input type={passwordVisible ? 'text' : 'password'} name='pass' value={formData.pass} onChange={handleCheck} required />
+        <input type={passwordVisible ? 'text' : 'password'} name='pass' className={ error.pass ? 'error-state': ''} value={formData.pass} onChange={handleCheck} required />
         </div>
 
-        <span className="error">{error.user}</span>
+        <span className="error" style={{height:'1rem'}}>{error.pass}</span>
 
         <div className="btn-center">
-        <button>Login</button>
+        <button type='submit'>Login</button>
         <h4>Don't Have An Account?<Link to="/role" className='link'>Sign Up</Link></h4>
         <Link to="/forgot-password"><h4>Forgot Password?</h4></Link>
         </div>

@@ -8,6 +8,7 @@ const MentorSignup = () => {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
+  const [errors, setErrors] = useState({ email: '', pass: '', pass1:'', phone:'' });
   const [formData, setFormData] = useState({
     name: '',
     dept: '',
@@ -25,14 +26,11 @@ const MentorSignup = () => {
     setPasswordVisible1(!passwordVisible1);
   };
 
-  const [errors, setErrors] = useState({ email: '', user: '' });
+  
   const validate = (event) => {
 
     event.preventDefault();
-    const mail = event.target.mail.value;
-    const pass = event.target.pass.value;
-    const pass1 = event.target.pass1.value;
-    const phone = event.target.phone.value;
+    const { mail, pass, pass1, phone } = formData;
 
     const hasUppercase = /[A-Z]/.test(pass);
     const hasLowercase = /[a-z]/.test(pass);
@@ -45,7 +43,7 @@ const MentorSignup = () => {
 
     let emailError = '';
     let passError = '';
-    let pass1Error = "";
+    let pass1Error = '';
     let phoneError = '';
 
     if (!mailPattern.test(mail)) {
@@ -77,6 +75,13 @@ const MentorSignup = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    setErrors(prevErrors => ({
+      email: '',  
+      pass: '',   
+      pass1: '', 
+      phone: '',  
+      user: prevErrors.user 
+    }));
   };
 
   const checkUserName = async (e) => {
@@ -140,9 +145,12 @@ const MentorSignup = () => {
     <div className='container1'>
       <form action="" id='frm' className='myfrm' onSubmit={handleSubmit}>
         <h2>Sign Up</h2>
+
         <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
+        
         <label htmlFor="name">Full Name</label>
         <input type="text" id='name' name='name' value={formData.name} onChange={handleChange} autoFocus required />
+        
         <label htmlFor="dept">Department</label>
         <select name="dept" id="dept" value={formData.dept} onChange={handleChange}>
           <option value="" selected disabled>Select Department</option>
@@ -151,35 +159,38 @@ const MentorSignup = () => {
           <option value="AT">AT</option>
           <option value="ET">ET</option>
         </select>
+        
         <label htmlFor="email">Email</label>
-        <input type="email" name="mail" id='mail' value={formData.mail} onChange={handleChange} required />
-        <span className="error">{errors.email}</span>
+        <input type="email" name="mail" id='mail' className={errors.email ? 'error-state':''} value={formData.mail} onChange={handleChange} required />
+        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.email}</span>
+        
         <label htmlFor="phone">Contact Number</label>
-        <input type="tel" required name='phone' id='phone' value={formData.phone} onChange={handleChange} />
-        <span className="error">{errors.phone}</span>
+        <input type="tel" required name='phone' id='phone' className={errors.phone ? 'error-state':''} value={formData.phone} onChange={handleChange} />
+        <span className="error"style={{height:'1rem',marginTop:'-5px'}}>{errors.phone}</span>
 
         <label htmlFor="user">Create Username</label>
-        <input type="text" name='user' id='user' value={formData.user} onChange={handleChange} onInput={checkUserName} required />
-        <span className="error">{errors.user}</span>
+        <input type="text" name='user' id='user' className={errors.user ? 'error-state':''} value={formData.user} onChange={handleChange} onInput={checkUserName} required />
+        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.user}</span>
+        
         <label>Create Password</label>
         <div className="password-field">
-          <input type={passwordVisible ? 'text' : 'password'} id='pass' name='pass' value={formData.pass} onChange={handleChange} required />
+          <input type={passwordVisible ? 'text' : 'password'} id='pass' name='pass' className={errors.pass ? 'error-state':''} value={formData.pass} onChange={handleChange} required />
           <span className="icon" onClick={togglePasswordVisibility}>
             <i className={`fa-solid ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error'>{errors.pass}</span>
+        <span className='error' style={{height:'2rem',marginTop:'-5px'}}>{errors.pass}</span>
 
         <label>Confirm Password</label>
         <div className="password-field">
-          <input type={passwordVisible1 ? 'text' : 'password'} id='pass1' name='pass1' value={formData.pass1} onChange={handleChange} required />
+          <input type={passwordVisible1 ? 'text' : 'password'} id='pass1' className={errors.pass1 ? 'error-state':''} name='pass1' value={formData.pass1} onChange={handleChange} required />
           <span className="icon" onClick={togglePasswordVisibility1}>
             <i className={`fa-solid ${passwordVisible1 ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error'>{errors.pass1}</span>
+        <span className='error' style={{height:'2rem',marginTop:'-5px'}}>{errors.pass1}</span>
 
-        <button>Sign Up</button>
+        <button type='submit' disabled={!!errors.user}>Sign Up</button>
         <div className="cover">
           <h4>Already have an account? <Link to="/login" className='link'>Login</Link></h4>
         </div>
