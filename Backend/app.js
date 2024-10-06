@@ -180,7 +180,7 @@ app.post('/api/forgot-password', async (req, res) => {
 
   // Generate a reset token and expiration time
   const resetToken = crypto.randomBytes(32).toString('hex');
-  const resetTokenExpires = Date.now() + 1800000; // Token expires in 1 hour
+  const resetTokenExpires = Date.now() + 3600000; // Token expires in 1 hour
 
   // Store the reset token and its expiration in the user's document
   let forgotPassRecord = await Forgotpass.findOne({ email: user.mail });
@@ -223,38 +223,54 @@ app.post('/api/forgot-password', async (req, res) => {
   }
 }); 
 
-// app.post('/api/reset-password', async (req, res) => {
-//   const { token, newPassword } = req.body;
+     app.post('/api/reset-password', async (req, res) => {
+      const { token, repass } = req.body;
 
-//   try {
-//     // Find the reset token in the ForgotPass collection
-//     const resetRecord = await forgotpass.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } });
+  try {
+    // Find the reset token in the ForgotPass collection
+    const resetRecord = await Forgotpass.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } });
     
-//     if (!resetRecord) {
-//       return res.status(400).json({ success: false, message: 'Invalid or expired token' });
-//     }
+    if (!resetRecord) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+    }
+    
+    // Find the user by email (from the reset record)
+    const student = await Student.findOne({ mail: resetRecord.email });
+    const mentor = await Mentor.findOne({mail:resetRecord.email});
+    const hashedPassword = await bcrypt.hash(repass, 10);
 
-//     // Find the user by email (from the reset record)
-//     const user = await Student.findOne({ mail: resetRecord.email });
-//     if (!user) {
-//       return res.status(404).json({ success: false, message: 'User not found' });
-//     }
+    if (!student && !mentor) {
+      return res.status(404).json({ success: false, message: 'User not found for the given email.' });
+    }
 
-//     // Hash the new password
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    if(student){
+   
+    // Update the user's password
+    student.rePass = hashedPassword;
+    await student.save();
 
-//     // Update the user's password
-//     user.rePass = hashedPassword;
-//     await user.save();
+    // Optionally, delete the reset token entry (cleanup)
+    await Forgotpass.deleteOne({ resetToken: token });
 
-//     // Optionally, delete the reset token entry (cleanup)
-//     await ForgotPass.deleteOne({ resetToken: token });
+    }
 
-//     res.status(200).json({ success: true, message: 'Password updated successfully!' });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: 'Error resetting password', error });
-//   }
-// });
+    if(mentor){
+
+    // Update the user's password
+    mentor.pass1 = hashedPassword;
+    await mentor.save();
+
+    // Optionally, delete the reset token entry (cleanup)
+    await Forgotpass.deleteOne({ resetToken: token });
+
+    }
+
+    res.status(200).json({ success: true, message: 'Password updated successfully! Now you can close this window and go back to the login page' });
+  }catch (error) {
+    res.status(500).json({ success: false, message: 'Error resetting password', error });
+    console.log(error);
+  }
+});
 
 
  const port = process.env.PORT || 5001;
