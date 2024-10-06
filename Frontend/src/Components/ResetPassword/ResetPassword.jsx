@@ -1,5 +1,5 @@
 import React, { useState}  from 'react'
-import { Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom';
 import './ResetPassword.css'
 
 const ResetPassword = () => {
@@ -9,6 +9,8 @@ const ResetPassword = () => {
   const [error, setError] = useState({pass:'', repass:''});
   const [formData, setFormData] = useState({pass:'', repass:''})
 
+  const {token} = useParams();
+
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
@@ -17,6 +19,7 @@ const ResetPassword = () => {
   };
   const handleChange = (e) => {
     setFormData({ ...formData,[e.target.name]:e.target.value });
+    setError({...error,[e.target.name]:''});
 
   };
   const validation = (event) => {
@@ -45,10 +48,35 @@ const ResetPassword = () => {
 
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (!validation(e)){
       return;
+    }
+    if(formData){
+      try {
+        const response = await fetch('http://localhost:5001/api/reset-password',{
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pass: formData.pass, repass: formData.repass, token }),
+        });
+
+        const data = await response.json();
+        if(data.success){
+          alert(data.message);
+          setFormData({pass:'', repass:''});
+          setError({pass:'', repass:''})
+        }
+        else if(data.message === 'Invalid or expired token'){
+          alert("Your password reset link has expired. Please request a new one.");
+          window.location.href = "/forgot-password";
+        }
+        else{
+          alert(data.message);
+        }
+      } catch (error) {
+        console.log('Error while resetting password.', error);
+      }
     }
   }
 
@@ -71,8 +99,8 @@ const ResetPassword = () => {
           </span>
         </div>
 
-          <input type={passwordVisible ? 'text' : 'password'} name='pass' value={formData.pass} onChange={handleChange} autoFocus required />
-          <span className="error">{error.pass}</span>
+          <input type={passwordVisible ? 'text' : 'password'} name='pass' className={error.pass ? 'error-state' : ''} value={formData.pass} onChange={handleChange} autoFocus required />
+          <span className="error" style={{height:'3rem'}}>{error.pass}</span>
           </div>
 
           <div className='repass-center'>
@@ -88,8 +116,8 @@ const ResetPassword = () => {
           </span>
         </div>
 
-          <input type= {passwordVisible1 ? 'text' : 'password'} name='repass' value={formData.repass} onChange={handleChange} required />
-          <span className="error">{error.repass}</span>
+          <input type= {passwordVisible1 ? 'text' : 'password'} name='repass' className={error.repass ? 'error-state' : ''} value={formData.repass} onChange={handleChange} required />
+          <span className="error" style={{height:'1rem'}}>{error.repass}</span>
         </div>
         </div>
         <div className="repass-btn">
