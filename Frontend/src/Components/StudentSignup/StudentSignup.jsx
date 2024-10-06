@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './StudentSignup.css';
 import { Link } from 'react-router-dom';
 
@@ -40,6 +40,13 @@ const StudentSignup = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    setErrors(prevErrors => ({
+      email: '',  
+      pass: '',   
+      pass1: '', 
+      phone: '',  
+      user: prevErrors.user 
+    }));
 
     if (e.target.name === 'dept') {
       setMentorList(mentor[e.target.value] || []);
@@ -52,7 +59,7 @@ const StudentSignup = () => {
 
     if (value) {
       try {
-        const response = await fetch('http://localhost:5000/api/check-user-student', {
+        const response = await fetch('http://localhost:5001/api/check-user-student', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user: value }),
@@ -73,6 +80,7 @@ const StudentSignup = () => {
   const validate = (event) => {
     event.preventDefault();
     const { sid, mail, pass, rePass } = formData;
+
     const idPattern = /^20\d{2}t\d{5}$/;
     const endmail = 'stu.cmb.ac.lk';
     const mailPattern = new RegExp(`^${sid}@${endmail}$`);
@@ -90,9 +98,15 @@ const StudentSignup = () => {
       idError = 'Please enter a valid ID.';
     }
 
-    if (!mailPattern.test(mail)) {
+    let userid = mail.split("@")[0];
+
+    if(userid != sid){
+      emailError = 'Email does not match with given ID';
+    }
+    else if (!mailPattern.test(mail)) {
       emailError = 'Please enter a valid email.';
     }
+
 
     if (pass.length < 8) {
       passError = 'Password must be at least 8 characters long.';
@@ -114,12 +128,7 @@ const StudentSignup = () => {
     if (!validate(event)) {
       return;
     }
-    console.log('Errors state:', errors);
-    if (errors.user) {
-      alert('Please choose a different username.');
-      return;
-    }
-
+  
     if (formData.user) {
       try {
         const response = await fetch('http://localhost:5001/api/check-user', {
@@ -140,7 +149,7 @@ const StudentSignup = () => {
       }
     }
 
-    console.log('Form Data being sent:', formData);
+    // console.log('Form Data being sent:', formData);
 
     try {
       const response = await fetch('http://localhost:5001/api/signupStudent', {
@@ -179,15 +188,15 @@ const StudentSignup = () => {
         <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
 
         <label htmlFor="sid">Student ID</label>
-        <input type="text" id="sid" value={formData.sid} onChange={handleChange} name="sid" placeholder="2022t01533" required autoFocus />
-        <span className="error">{errors.id}</span>
+        <input type="text" id="sid" className={errors.id ? 'error-state' : ''} value={formData.sid} onChange={handleChange} name="sid" placeholder="2022t01533" required autoFocus />
+        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.id}</span>
 
         <label htmlFor="sname">Full Name</label>
         <input type="text" id="sname" value={formData.sname} onChange={handleChange} name="sname" placeholder="H.W.S.M Herath" required />
 
         <label htmlFor="mail">Student Mail</label>
-        <input type="email" id="mail" value={formData.mail} onChange={handleChange} name="mail" placeholder="2022t01533@stu.cmb.ac.lk" required />
-        <span className="error">{errors.email}</span>
+        <input type="email" id="mail" className={errors.email ? 'error-state' : ''} value={formData.mail} onChange={handleChange} name="mail" placeholder="2022t01533@stu.cmb.ac.lk" required />
+        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.email}</span>
 
         <label htmlFor="year">Batch Year</label>
         <select id="year" name="year" value={formData.year} onChange={handleChange} required>
@@ -216,28 +225,28 @@ const StudentSignup = () => {
         </select>
 
         <label>Create Username</label>
-        <input type="text" name="user" value={formData.user} onInput={checkUserName} onChange={handleChange} required />
-        <span className="error">{errors.user}</span>
+        <input type="text" name="user" className={errors.user ? 'error-state' : ''} value={formData.user} onInput={checkUserName} onChange={handleChange} required />
+        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.user}</span>
 
         <label>Create Password</label>
         <div className="password-field">
-          <input type={passwordVisible ? 'text' : 'password'} id='pass' name='pass' value={formData.pass} onChange={handleChange} required />
+          <input type={passwordVisible ? 'text' : 'password'} className={errors.pass ? 'error-state' : ''} id='pass' name='pass' value={formData.pass} onChange={handleChange} required />
           <span className="icon" onClick={togglePasswordVisibility}>
             <i className={`fa-solid ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error'>{errors.pass}</span>
+        <span className='error' style={{height:'2rem',marginTop:'-5px'}}>{errors.pass}</span>
 
         <label>Confirm Password</label>
         <div className="password-field">
-          <input type={passwordVisible1 ? 'text' : 'password'} id='rePass' name='rePass' value={formData.rePass} onChange={handleChange} required />
+          <input type={passwordVisible1 ? 'text' : 'password'} className={errors.rePass ? 'error-state' : ''} id='rePass' name='rePass' value={formData.rePass} onChange={handleChange} required />
           <span className="icon" onClick={togglePasswordVisibility1}>
             <i className={`fa-solid ${passwordVisible1 ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error'>{errors.rePass}</span>
+        <span className='error' style={{height:'2rem',marginTop:'-5px'}}>{errors.rePass}</span>
 
-        <button type="submit" className="submit-btn">Sign Up</button>
+        <button type="submit" className="submit-btn" disabled={!!errors.user}>Sign Up</button>
 
         <div className='cover'>
           <h4>Already have an account? <Link to="/login" className='link'>Login</Link> </h4>
