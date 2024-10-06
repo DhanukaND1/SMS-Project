@@ -8,6 +8,7 @@ import Home from './Home.jsx';
 import ForgotPassword from './Components/ForgotPassword/ForgotPassword.jsx';
 import StudentDashboard from './Components/StudentDashboard/StudentDashboard.jsx';
 import MentorDashboard from './Components/MentorDashboard/MentorDashboard.jsx'
+import ResetPassword from './Components/ResetPassword/ResetPassword.jsx';
 
 
 const App = () => {
@@ -25,9 +26,9 @@ const App = () => {
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/student-dashboard' element={<StudentDashboard />} />
         <Route path='/mentor-dashboard' element={<MentorDashboard />} />
+        <Route path='/reset-password/:token' element={<ResetPassword />} />
       </Routes>
     </Router>
-        
     </div>
   )
 }
