@@ -3,10 +3,10 @@ import './StudentSignup.css';
 import { Link } from 'react-router-dom';
 
 const mentor = {
-  "IAT": ["Lecturer A1", "Lecturer A2", "Lecturer A3", "Lecturer A4"],
-  "ICT": ["Lecturer B1", "Lecturer B2", "Lecturer B3", "Lecturer B4"],
-  "AT": ["Lecturer C1", "Lecturer C2", "Lecturer C3", "Lecturer C4"],
-  "ET": ["Lecturer D1", "Lecturer D2", "Lecturer D3", "Lecturer D4"],
+  "IAT": ['Dr. Hansika Atapattu', 'Dr. Chathurika De Silva', 'Dr. Lakmini Jayasinghe', 'Dr. Ruwan Kalubowila', 'Dr. Udara Mutugala', 'Dr. Sanjaya Thilakerathne', 'Mr. Gihan Amarasinghe', 'Mr. L.M. Samaratunga', 'Mr. Supun Kariyawasam', 'Mr. U.V.H. Sameera'],
+  "ICT": ['Dr. Rohan Samarasinghe', 'Ms. Chamindi Kavindya Samarasekara', 'Mr. Chathura Mahasen Bandara', 'Mrs. Nethmini Weerawarna'],
+  "AT": ['Dr. Jayani Wewalwela', 'Dr. Aruna Kumara', 'Dr. Priyanga Kariyawasam', 'Dr. K.T. Ariyawansha', 'Mrs. G.W.A.S. Lakmini', 'Ms. Thilini Jayaprada', 'Prof. Kanchana Abeysekera'],
+  "ET": ['Dr. Kosala Sirisena', 'Dr. Madhusha Sudasinghe', 'Dr. N.L. Ukwattage', 'Dr. Poorna Piyathilaka', 'Prof. Chamini Hemachandra', 'Prof. Ranjana Piyadasa', 'Prof. Sansfica Young'],
 };
 
 const StudentSignup = () => {
@@ -201,10 +201,10 @@ const StudentSignup = () => {
         <label htmlFor="year">Batch Year</label>
         <select id="year" name="year" value={formData.year} onChange={handleChange} required>
           <option value="" disabled>Select Batch Year</option>
-          <option value="18/19">18/19</option>
           <option value="19/20">19/20</option>
           <option value="20/21">20/21</option>
           <option value="21/22">21/22</option>
+          <option value="18/19">22/23</option>
         </select>
 
         <label htmlFor="department">Department</label>
