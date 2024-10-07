@@ -66,7 +66,8 @@ function MentorHero() {
       <div className="mentorhero-container">
         <section className="mentor-welcome">
           <p className="mentor-greeting">
-            Welcom Back<br /><span className="mentor-name">Sir {mentorName}</span>
+            Welcome Back<br />
+            <span className="mentor-name">{mentorName}</span>
           </p>
           <button className="messages-button">Check Messages</button>
         </section>
