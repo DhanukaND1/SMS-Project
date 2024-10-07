@@ -41,26 +41,26 @@ app.use(session({
 }));
 
 // Start the server
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
+app.listen(process.env.PORT2 || 3001, () => {
+    console.log(`Server is running on port ${process.env.PORT2}`);
 });
 
 // Mentor Signup
-app.post('/Mentorsignup', async (req, res) => {
-    try {
-        const { id, name, department, email, contactnum, username, password } = req.body;
-        const existingUser = await UserModel.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ error: 'Email already exists' });
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new UserModel({ id, name, department, email, contactnum, username, password: hashedPassword });
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+// app.post('/Mentorsignup', async (req, res) => {
+//     try {
+//         const { id, name, department, email, contactnum, username, password } = req.body;
+//         const existingUser = await UserModel.findOne({ email });
+//         if (existingUser) {
+//             return res.status(400).json({ error: 'Email already exists' });
+//         }
+//         const hashedPassword = await bcrypt.hash(password, 10);
+//         const newUser = new UserModel({ id, name, department, email, contactnum, username, password: hashedPassword });
+//         const savedUser = await newUser.save();
+//         res.status(201).json(savedUser);
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
 
 // Get Mentors
 app.get('/mentors', async (req, res) => {
@@ -76,58 +76,58 @@ app.get('/mentors', async (req, res) => {
 });
 
 // Student Signup
-app.post('/Studentsignup', async (req, res) => {
-    try {
-        const { id, name, email, batchyear, department, mentor, username, password } = req.body;
-        const existingStudent = await StudentModel.findOne({ email });
-        if (existingStudent) {
-            return res.status(400).json({ error: 'Email already exists' });
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newStudent = new StudentModel({ id, name, email, batchyear, department, mentor, username, password: hashedPassword });
-        const savedStudent = await newStudent.save();
-        res.status(201).json(savedStudent);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+// app.post('/Studentsignup', async (req, res) => {
+//     try {
+//         const { id, name, email, batchyear, department, mentor, username, password } = req.body;
+//         const existingStudent = await StudentModel.findOne({ email });
+//         if (existingStudent) {
+//             return res.status(400).json({ error: 'Email already exists' });
+//         }
+//         const hashedPassword = await bcrypt.hash(password, 10);
+//         const newStudent = new StudentModel({ id, name, email, batchyear, department, mentor, username, password: hashedPassword });
+//         const savedStudent = await newStudent.save();
+//         res.status(201).json(savedStudent);
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
 
 // Login Route
-app.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
+// app.post('/login', async (req, res) => {
+//     try {
+//         const { email, password } = req.body;
 
-        //Check if the user is a mentor first
-        const mentor = await UserModel.findOne({ email });
-        if (mentor) {
-            const passwrodMatch = await bcrypt.compare(password, mentor.password);
-            if (passwrodMatch) {
-                req.session.user = { name: mentor.name, email: mentor.email, role: 'mentor' };
-                req.session.save();
-                return res.json({ message: "Success", role: 'mentor' });
-            } else {
-                return res.status(401).json({ error: "Password does not match!" });
-            }
-        }
+//         //Check if the user is a mentor first
+//         const mentor = await UserModel.findOne({ email });
+//         if (mentor) {
+//             const passwrodMatch = await bcrypt.compare(password, mentor.password);
+//             if (passwrodMatch) {
+//                 req.session.user = { name: mentor.name, email: mentor.email, role: 'mentor' };
+//                 req.session.save();
+//                 return res.json({ message: "Success", role: 'mentor' });
+//             } else {
+//                 return res.status(401).json({ error: "Password does not match!" });
+//             }
+//         }
 
-        //If no Mentor, check if the user is a student
-        const student = await StudentModel.findOne({ email });
-        if (student) {
-            const passwrodMatch = await bcrypt.compare(password, student.password);
-            if (passwrodMatch) {
-                req.session.user = { name: student.name, email: student.email, role: 'student' };
-                req.session.save();
-                return res.json({ message: "Success", role: "student" });
-            } else {
-                return res.status(401).json({ error: "Password does not match!" });
-            }
-        }
-        return res.status(401).json({ error: "No user found" });
-    } catch (error) {
-        console.error('Error in /login:', error);  // This will log the error to the console
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+//         //If no Mentor, check if the user is a student
+//         const student = await StudentModel.findOne({ email });
+//         if (student) {
+//             const passwrodMatch = await bcrypt.compare(password, student.password);
+//             if (passwrodMatch) {
+//                 req.session.user = { name: student.name, email: student.email, role: 'student' };
+//                 req.session.save();
+//                 return res.json({ message: "Success", role: "student" });
+//             } else {
+//                 return res.status(401).json({ error: "Password does not match!" });
+//             }
+//         }
+//         return res.status(401).json({ error: "No user found" });
+//     } catch (error) {
+//         console.error('Error in /login:', error);  // This will log the error to the console
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// });
 
 // Get current logged-in user (either mentor or student)
 app.get('/dashboard', (req, res) => {
