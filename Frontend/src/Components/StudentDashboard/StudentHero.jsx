@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Studentdash.css';
+import './StudentDash.css';
 import img1 from '../../assets/1.webp';
 
 
