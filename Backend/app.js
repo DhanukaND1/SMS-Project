@@ -273,5 +273,5 @@ app.post('/api/forgot-password', async (req, res) => {
 });
 
 
- const port = process.env.POR || 5001;
+ const port = process.env.PORT1 || 5001;
  app.listen(port, () => console.log(`Server running on port ${port}`));
