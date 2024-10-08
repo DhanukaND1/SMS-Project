@@ -3,13 +3,13 @@
   display:flex;
   justify-content:center;
   align-items:center;
-  height:160vh;
+  height:150vh;
   background: linear-gradient(to bottom left, #a8edea, #fed6e3);
 }
 
 .myfrm{
   width: 380px;
-  height: 820px;
+  height: 760px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -52,7 +52,7 @@
   background-color:rgb(13, 13, 122) ;
   color: white;
   padding: 5px 0;
-  margin: 0 25px;
+  margin: 10px 25px;
   border-radius: 100px;
   position: relative;
   display: flex;
