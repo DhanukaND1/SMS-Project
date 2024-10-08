@@ -67,7 +67,7 @@ const  Forgotpass = mongoose.model("Forgotpass",new mongoose.Schema({
    }
  });
 
-//end point for check user student
+//end point for check  student mail
  app.post('/api/check-user-student', async (req, res) => {
   const { mail } = req.body;
 
@@ -83,19 +83,19 @@ const  Forgotpass = mongoose.model("Forgotpass",new mongoose.Schema({
   }
 });
 
-//end point for check user mentor
+//end point for check  mentor mail
 app.post('/api/check-user-mentor', async (req, res) => {
-  const { user } = req.body;
+  const { mail } = req.body;
 
   try {
-    const existingUser = await Mentor.findOne({ user });
+    const existingUser = await Mentor.findOne({ mail });
     if (existingUser) {
-      return res.status(200).json({ success: false, message: 'Username already taken.' });
+      return res.status(200).json({ success: false, message: 'Email already registered.' });
     }
-    return res.status(200).json({ success: true, message: 'Username available.' });
+    return res.status(200).json({ success: true, message: 'Email available.' });
   } catch (error) {
-    console.log("Error while checking username.", error);
-    res.status(500).json({ success: false, message: "Error while checking username.", error: error.message });
+    console.log("Error while checking Email.", error);
+    res.status(500).json({ success: false, message: "Error while checking Email.", error: error.message });
   }
 });
 
