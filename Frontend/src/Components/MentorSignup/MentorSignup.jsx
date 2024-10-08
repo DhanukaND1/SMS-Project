@@ -29,7 +29,6 @@ const MentorSignup = () => {
   
   const validate = (event) => {
 
-    event.preventDefault();
     const { mail, pass, pass1, phone } = formData;
 
     const hasUppercase = /[A-Z]/.test(pass);
@@ -39,6 +38,7 @@ const MentorSignup = () => {
     const validphone = /[0-9]{10}/.test(phone);
 
     const endmail = '.cmb.ac.lk';
+
     const mailPattern = new RegExp(`^[a-zA-Z]+@(iat|ict|et|at)${endmail}$`);
 
     let emailError = '';
@@ -52,7 +52,7 @@ const MentorSignup = () => {
     if (pass.length < 8) {
       passError = "Password must be at least 8 characters long.";
     } else if (!hasUppercase || !hasLowercase || !hasDigit || !hasSpecialChar) {
-      passError = "Password must contain an uppercase, lowercase, a digit, and a special character.";
+      passError = "Password must contain an uppercase, lowercase, digit, and  special character.";
     }
     if (pass1 !== pass) {
       pass1Error = "Passwords do not match.";
@@ -63,54 +63,51 @@ const MentorSignup = () => {
 
     setErrors({ email: emailError, pass: passError, pass1: pass1Error, phone: phoneError });
 
-    if (emailError || passError || pass1Error || phoneError || errors.user) {
-      return false;
-    }
-
-    return true;
+    return emailError || passError || pass1Error || phoneError ;
   };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
-    setErrors(prevErrors => ({
-      email: '',  
-      pass: '',   
-      pass1: '', 
-      phone: '',  
-      user: prevErrors.user 
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: ''
     }));
   };
 
-  const checkUserName = async (e) => {
+  const checkMail = async (e) => {
     const { value } = e.target;
-    setFormData((prevData) => ({ ...prevData, user: value }));
+    setFormData((prevData) => ({ ...prevData, mail: value }));
 
     if (value) {
       try {
         const response = await fetch('http://localhost:5001/api/check-user-mentor', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user: value }),
+          body: JSON.stringify({ mail: value }),
         });
 
         const data = await response.json();
         if (!data.success) {
-          setErrors((prevErrors) => ({ ...prevErrors, user: data.message }));
+          setErrors((prevErrors) => ({ ...prevErrors, email: data.message }));
         } else {
-          setErrors((prevErrors) => ({ ...prevErrors, user: '' }));
+          setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
         }
       } catch (error) {
-        console.error('Error checking username:', error);
+        console.error('Error checking email:', error);
       }
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!validate(event)) {
+
+    if (validate(event)) {
       return;
     }
     try {
@@ -161,17 +158,13 @@ const MentorSignup = () => {
         </select>
         
         <label htmlFor="email">Email</label>
-        <input type="email" name="mail" id='mail' className={errors.email ? 'error-state':''} value={formData.mail} onChange={handleChange} required />
+        <input type="email" name="mail" id='mail' className={errors.email ? 'error-state':''} value={formData.mail} onChange={handleChange} onInput={checkMail} required />
         <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.email}</span>
         
         <label htmlFor="phone">Contact Number</label>
         <input type="tel" required name='phone' id='phone' className={errors.phone ? 'error-state':''} value={formData.phone} onChange={handleChange} />
         <span className="error"style={{height:'1rem',marginTop:'-5px'}}>{errors.phone}</span>
 
-        <label htmlFor="user">Create Username</label>
-        <input type="text" name='user' id='user' className={errors.user ? 'error-state':''} value={formData.user} onChange={handleChange} onInput={checkUserName} required />
-        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.user}</span>
-        
         <label>Create Password</label>
         <div className="password-field">
           <input type={passwordVisible ? 'text' : 'password'} id='pass' name='pass' className={errors.pass ? 'error-state':''} value={formData.pass} onChange={handleChange} required />
@@ -188,9 +181,9 @@ const MentorSignup = () => {
             <i className={`fa-solid ${passwordVisible1 ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error' style={{height:'2rem',marginTop:'-5px'}}>{errors.pass1}</span>
+        <span className='error' style={{height:'1rem',marginTop:'-5px'}}>{errors.pass1}</span>
 
-        <button type='submit' disabled={!!errors.user}>Sign Up</button>
+        <button type='submit' disabled = {errors.email === "Email already registered."}>Sign Up</button>
         <div className="cover">
           <h4>Already have an account? <Link to="/login" className='link'>Login</Link></h4>
         </div>
