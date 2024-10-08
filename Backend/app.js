@@ -51,13 +51,13 @@ const  Forgotpass = mongoose.model("Forgotpass",new mongoose.Schema({
 
  //endpoint for signup student
  app.post('/api/signupStudent', async (req, res) => {
-   const { sid, sname, mail, year, dept, mentor, user, rePass } = req.body;
+   const { sid, sname, mail, year, dept, mentor, rePass } = req.body;
   
    try {
     
      const hashedPassword = await bcrypt.hash(rePass, 10);
 
-     const newUser = new Student({ sid, sname, mail, year, dept, mentor, user, rePass:hashedPassword });
+     const newUser = new Student({ sid, sname, mail, year, dept, mentor,  rePass:hashedPassword });
      await newUser.save();
      res.json({ success: true, message: 'User registered successfully!' });
      
@@ -69,17 +69,17 @@ const  Forgotpass = mongoose.model("Forgotpass",new mongoose.Schema({
 
 //end point for check user student
  app.post('/api/check-user-student', async (req, res) => {
-  const { user } = req.body;
+  const { mail } = req.body;
 
   try {
-    const existingUser = await Student.findOne({ user });
+    const existingUser = await Student.findOne({ mail });
     if (existingUser) {
-      return res.status(200).json({ success: false, message: 'Username already taken.' });
+      return res.status(200).json({ success: false, message: 'Email already registered.' });
     }
-    return res.status(200).json({ success: true, message: 'Username available.' });
+    return res.status(200).json({ success: true, message: 'Email available.' });
   } catch (error) {
-    console.log("Error while checking username.", error);
-    res.status(500).json({ success: false, message: "Error while checking username.", error: error.message });
+    console.log("Error while checking email.", error);
+    res.status(500).json({ success: false, message: "Error while checking email.", error: error.message });
   }
 });
 
