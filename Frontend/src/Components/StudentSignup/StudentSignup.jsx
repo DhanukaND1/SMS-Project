@@ -224,7 +224,7 @@ const StudentSignup = () => {
         </div>
         <span className='error' style={{height:'1rem',marginTop:'-5px'}}>{errors.rePass}</span>
 
-        <button type="submit" className="submit-btn" disabled = {!!errors.email === "Email already registered."} >Sign Up</button>
+        <button type="submit" className="submit-btn" disabled = {errors.email === "Email already registered."} >Sign Up</button>
   
 
         <div className='cover'>
