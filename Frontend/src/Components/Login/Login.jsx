@@ -112,11 +112,10 @@ const Login = () => {
         </div>
 
         <span className="error" style={{height:'1rem'}}>{error.pass}</span>
-
+        <Link to="/forgot-password" className='forgot'><h4>Forgot Password?</h4></Link>
         <div className="btn-center">
         <button type='submit'>Login</button>
         <h4>Don't Have An Account?<Link to="/role" className='link'>Sign Up</Link></h4>
-        <Link to="/forgot-password"><h4>Forgot Password?</h4></Link>
         </div>
       </form>
     </div>

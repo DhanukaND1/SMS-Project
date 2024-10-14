@@ -55,7 +55,7 @@
 .role-wrapper{
   display: flex;
   flex-direction: row;
-  padding: 10px;
+  padding-top: 10px;
 }
 .role-wrapper input[type="radio"] {
   transform: scale(0.6);
@@ -102,6 +102,11 @@
   flex-direction: column;
   text-align: center;
 }
+.forgot{
+  text-align: right;
+  margin-top: 5px;
+}
+
 @media(max-width:425px){
   .cont{
     background: aliceblue;
