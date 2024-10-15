@@ -186,7 +186,7 @@ const StudentSignup = () => {
           <option value="19/20">19/20</option>
           <option value="20/21">20/21</option>
           <option value="21/22">21/22</option>
-          <option value="18/19">22/23</option>
+          <option value="22/23">22/23</option>
         </select>
 
         <label htmlFor="department">Department</label>
