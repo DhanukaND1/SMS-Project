@@ -190,7 +190,8 @@ const StudentSignup = () => {
         </select>
 
         <label htmlFor="department">Department</label>
-        <select id="department" name="dept" value={formData.dept} onChange={handleChange} required>
+        <select id="department" 
+         name="dept" value={formData.dept} onChange={handleChange} required >
           <option value="" disabled>Select Department</option>
           <option value="IAT">IAT</option>
           <option value="ICT">ICT</option>
