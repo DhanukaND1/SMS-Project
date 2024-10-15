@@ -13,12 +13,17 @@ const mentor = {
 
 
 const students = [
-  { value: 'S123', label: 'S123' },
-  { value: 'S124', label: 'S124' },
-  { value: 'S125', label: 'S125' },
-  { value: 'S126', label: 'S126' },
-  { value: 'S127', label: 'S127' },
-  // Add more students as needed
+  { value: 'S123', label: '2022t01555' },
+  { value: 'S124', label: '2022t01555' },
+  { value: 'S125', label: '2022t01555' },
+  { value: 'S126', label: '2022t01555' },
+  { value: 'S128', label: '2022t01555' },
+  { value: 'S129', label: '2022t01555' },
+  { value: 'S130', label: '2022t01555' },
+  { value: 'S131', label: '2022t01555' },
+  { value: 'S132', label: '2022t01555' },
+  { value: 'S133', label: '2022t01555' },
+  
 ];
 
 
@@ -37,27 +42,13 @@ function SessionForm() {
     setSelectedStudents(selectedOptions); // Set the selected students
   };
 
-  const formatGroupLabel = (data) => {
-    const count = data.length - 3; // Show only first 3 items
-    return count > 0 ? `${data.slice(0, 3).map(opt => opt.label).join(', ')} + ${count} more` : data.map(opt => opt.label).join(', ');
-  };
-
-
   const handleSubmit = (e) => {
-    e.preventDefault();
-    // You can now submit or process the form data, e.g., sending it to a server
-    console.log({
-      mentorName: e.target.mentor.value,
-      selectedStudents,
-      sessionMode: e.target.mode.value,
-      location: e.target.location ? e.target.location.value : '',
-      platform: e.target.platform ? e.target.platform.value : '',
-    });
+    e.preventDefault(); 
   };
 
   return (
     <div className='session'>
-      <form action={handleSubmit}>
+      <form action='' onSubmit={handleSubmit}>
         <h2>Session Data</h2>
 
         <i className="fa-solid fa-xmark"></i>
@@ -81,7 +72,7 @@ function SessionForm() {
         
         <label htmlFor="year">Batch year: </label>
         <select name="year" id="year" required>
-            <option disabled selected>Select year</option>
+            <option disabled selected>Select Year</option>
             <option value="19/20">19/20</option>
             <option value="20/21">20/21</option>
             <option value="21/22">21/22</option>
@@ -97,12 +88,8 @@ function SessionForm() {
           placeholder="Select Students"
           isSearchable={true}
           closeMenuOnSelect={false}
-          formatOptionLabel={(opt, { context }) => {
-            if (context === 'value') {
-              return formatGroupLabel(selectedStudents); // Only show the first 3 students in the selected label
-            }
-            return opt.label;
-          }}
+          noOptionsMessage={() => "No students available "}
+          className='select-student'
         />
 
 
@@ -111,7 +98,7 @@ function SessionForm() {
 
         <label htmlFor="mode" required>Mode of Session:</label>
         <select name="mode" id="mode">
-            <option value="" disabled selected>select mode</option>
+            <option value="" disabled selected>Select Mode</option>
             <option value="Online">Online</option>
             <option value="Physycal">Physical</option>
         </select>
@@ -119,9 +106,10 @@ function SessionForm() {
         <label htmlFor="additionalnote">Additional Note:</label>
         <textarea name="note" id="note" rows={4} cols={30} ></textarea>
 
+      <div className='session-btn'>
         <button type='submit' className='sub-btn'>submit</button>
         <button type='clear' className='clear-btn'>Clear</button>
-        
+        </div>
 
         
 
