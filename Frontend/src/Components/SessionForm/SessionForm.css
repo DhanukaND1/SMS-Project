@@ -7,8 +7,8 @@
 
 }
 .session form{
-    height: 830px;
-    width: 430px;
+    height: 780px;
+    width: 450px;
     background-color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 10px 40px;
@@ -60,10 +60,10 @@
 @media(max-width:425px){
     .session{
         background: lightblue;
-        height: 122vh;
+        height: 111vh;
     }
     .session form{
-        height: 880px;
+        height: 800px;
     }
        .session button{
         width: 80%;

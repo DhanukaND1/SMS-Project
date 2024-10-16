@@ -1,6 +1,6 @@
 import React from 'react'
 import './SessionForm.css'
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import { useState } from 'react';
 
 
@@ -39,8 +39,26 @@ function SessionForm() {
   };
 
   const handleStudentChange = (selectedOptions) => {
-    setSelectedStudents(selectedOptions); // Set the selected students
+    setSelectedStudents(selectedOptions);  
   };
+
+
+  const MultiValue = ({ index, getValue, ...props }) => {
+    const selectedValues = getValue();
+    if (index === 2) {
+      return (
+        <div style={{ padding: '5px', fontSize:'14px' }}>
+          + {selectedValues.length - 2} more
+        </div>
+      );
+    }
+    if (index > 2) {
+      return null;
+    }
+    return <components.MultiValue {...props} />;
+  };
+
+  console.log(selectedStudents);
 
   const handleSubmit = (e) => {
     e.preventDefault(); 
@@ -90,6 +108,8 @@ function SessionForm() {
           closeMenuOnSelect={false}
           noOptionsMessage={() => "No students available "}
           className='select-student'
+          components={{ MultiValue }}
+    
         />
 
 
