@@ -14,6 +14,9 @@
 .hero-content {
   text-align: left;
 }
+.hero-content h1{
+  margin-bottom: 25px;
+}
 
 .hero-txt {
   display: flex;
@@ -24,10 +27,13 @@
   margin-top: 10px; 
 }
 
-.hero-txt p {
+.fixed-txt {
   font-size: 17px;
   flex: 1;
   text-align: justify;
+}
+.extra-text {
+  display: none;
 }
 
 @media(max-width:768px){
@@ -39,19 +45,14 @@
   .hero img{
     display: none;
   }
-  .hero p{
+  .fixed-txt{
     display: none;
   }
-  .hero h1{
-    margin-top: 10px;
-  }
-  .hero h1::after{
-    content:"Mentoring is a transformative experience that provides personalized guidance,helping individuals navigate academic challenges and make informed career choices. It fosters essential skills in communication, problem-solving, and leadership. Through mentorship, students receive valuable career advice and real-world perspectives, enabling them to set clear goals. Additionally, mentoring creates networking opportunities and boosts confidence, empowering students to pursue their aspirations with clarity and determination.";
-    font-size: 18px;
-    text-align: justify;
+  .extra-text {
     display: block;
-    margin-top: 25px;
-    padding-bottom: 25px;
-    line-height: 1.5;
+    text-align: justify;
+  }
+  .hero h1{
+    margin-top: 80px;
   }
 }
