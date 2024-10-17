@@ -18,7 +18,7 @@
   margin: 5px 10px 5px 0;
 }
 
-.menu {
+.menu, .menu-cont {
   display: none;
 }
 
@@ -56,9 +56,6 @@
   color: black;
 }
 
-.menu-cont {
-  display: none;
-}
 
 @media(max-width:1070px) {
   .txt h3 {

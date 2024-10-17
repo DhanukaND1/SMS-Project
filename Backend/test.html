@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <input type="text" id="txt"><br>
+  <button>submit</button>
+  <script>
+    const price = [10,20,30,40,50];
+    const setPrice = price.map(changePrice);
+    // console.log(setPrice);
+    function changePrice(value,index,array){
+      console.log(value,index);
+    }
+    let x = document.getElementById("txt");
+    x.addEventListener('input',()=> {
+      console.log("Changed");
+      
+    });
+    let mail = '2022t01555@gmail.com';
+      let user = mail.split('@')[1];
+      console.log(user);
+  </script>
+</body>
+</html>
