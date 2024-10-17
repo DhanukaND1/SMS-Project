@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import './Login.css'
 import { Link, useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 const Login = () => {
 
@@ -70,7 +72,7 @@ const Login = () => {
         
       }
     } catch (error) {
-      alert('Error occurred while loging in. Please try again later.');
+      toast.error('Error occurred while loging in. Please try again later.');
       console.error('Error:', error);
     }
   };
@@ -118,6 +120,7 @@ const Login = () => {
         <h4>Don't Have An Account?<Link to="/role" className='link'>Sign Up</Link></h4>
         </div>
       </form>
+      <ToastContainer />
     </div>
   )
 }

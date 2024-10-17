@@ -2,7 +2,8 @@ import React from 'react'
 import './MentorSignup.css'
 import { useState } from 'react'
 import { Link } from 'react-router-dom';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MentorSignup = () => {
 
@@ -119,7 +120,7 @@ const MentorSignup = () => {
 
       const data = await response.json();
       if (data.success) {
-        alert('Signup successful!');
+        toast.success('Signup successful!');
         setFormData({
           name: '',
           dept: '',
@@ -130,10 +131,10 @@ const MentorSignup = () => {
           pass1: ''
         });
       } else {
-        alert('Signup failed: ' + data.message);
+        toast.warn('Signup failed: ' + data.message);
       }
     } catch (error) {
-      alert('Error occurred while signing up. Please try again later.');
+      toast.error('Error occurred while signing up. Please try again later.');
       console.error('Error:', error);
     }
   };
@@ -189,6 +190,7 @@ const MentorSignup = () => {
         </div>
 
       </form>
+      <ToastContainer />
     </div>
   );
 };

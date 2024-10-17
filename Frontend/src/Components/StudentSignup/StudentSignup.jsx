@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import './StudentSignup.css';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const mentor = {
   "IAT": ['Dr. Hansika Atapattu', 'Dr. Chathurika De Silva', 'Dr. Lakmini Jayasinghe', 'Dr. Ruwan Kalubowila', 'Dr. Udara Mutugala', 'Dr. Sanjaya Thilakerathne', 'Mr. Gihan Amarasinghe', 'Mr. L.M. Samaratunga', 'Mr. Supun Kariyawasam', 'Mr. U.V.H. Sameera'],
@@ -143,7 +146,7 @@ const StudentSignup = () => {
 
       const data = await response.json();
       if (data.success) {
-        alert('Signup successful!');
+        toast.success('Signup successful!');
         setFormData({
           sid: '',
           sname: '',
@@ -155,10 +158,10 @@ const StudentSignup = () => {
           rePass: ''
         });
       } else {
-        alert('Signup failed: ' + data.message);
+        toast.warn('Signup failed: ' + data.message);
       }
     } catch (error) {
-      alert('Error occurred while signing up. Please try again later.');
+      toast.error('Error occurred while signing up. Please try again later.');
       console.error('Error:', error);
     }
   };
@@ -232,6 +235,7 @@ const StudentSignup = () => {
           <h4>Already have an account? <Link to="/login" className='link'>Login</Link> </h4>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };
