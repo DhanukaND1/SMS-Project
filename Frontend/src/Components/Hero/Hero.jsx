@@ -9,7 +9,7 @@ const Hero = () => {
         <section id="home">
         <h1>Why Mentoring?</h1>
         <div className="hero-txt">
-          <p>
+          <p className='fixed-txt'>
             Mentoring is a transformative experience that offers personalized
             guidance and support, helping individuals overcome academic challenges
             and make informed career decisions. It fosters skill development, providing
@@ -22,6 +22,15 @@ const Hero = () => {
             empowering students to pursue their aspirations with clarity and determination.
           </p>
         </div>
+
+        <p className="extra-text">
+        Mentoring is a transformative experience that provides personalized guidance,helping
+         individuals navigate academic challenges and make informed career choices. It fosters
+         essential skills in communication, problem-solving, and leadership. Through mentorship,
+         students receive valuable career advice and real-world perspectives, enabling them to
+         set clear goals. Additionally, mentoring creates networking opportunities and boosts
+         confidence, empowering students to pursue their aspirations with clarity and determination.
+          </p>
         </section>
 
       </div>
