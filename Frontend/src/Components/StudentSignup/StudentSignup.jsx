@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import './StudentSignup.css';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const mentor = {
   "IAT": ['Dr. Hansika Atapattu', 'Dr. Chathurika De Silva', 'Dr. Lakmini Jayasinghe', 'Dr. Ruwan Kalubowila', 'Dr. Udara Mutugala', 'Dr. Sanjaya Thilakerathne', 'Mr. Gihan Amarasinghe', 'Mr. L.M. Samaratunga', 'Mr. Supun Kariyawasam', 'Mr. U.V.H. Sameera'],
@@ -11,7 +14,7 @@ const mentor = {
 
 const StudentSignup = () => {
   const [mentorList, setMentorList] = useState([]);
-  const [errors, setErrors] = useState({ id: '', email: '', pass: '', rePass: '', user: '' });
+  const [errors, setErrors] = useState({ id: '', email: '', pass: '', rePass: ''});
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
 
@@ -22,7 +25,6 @@ const StudentSignup = () => {
     year: '',
     dept: '',
     mentor: '',
-    user: '',
     pass: '',
     rePass: ''
   });
@@ -35,50 +37,53 @@ const StudentSignup = () => {
     setPasswordVisible1(!passwordVisible1);
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    setErrors(prevErrors => ({
-      email: '',  
-      pass: '',   
-      pass1: '', 
-      phone: '',  
-      user: prevErrors.user 
-    }));
+  const handleChange =  (e) => {
 
-    if (e.target.name === 'dept') {
-      setMentorList(mentor[e.target.value] || []);
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: ''
+    }));
+  
+    if (name === 'dept') {
+      setMentorList(mentor[value] || []);
     }
   };
   
-  const checkUserName = async (e) => {
+  
+  const checkMail = async (e) => {
     const { value } = e.target;
-    setFormData((prevData) => ({ ...prevData, user: value }));
+    setFormData((prevData) => ({ ...prevData, mail: value }));
+    
 
     if (value) {
       try {
         const response = await fetch('http://localhost:5001/api/check-user-student', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user: value }),
+          body: JSON.stringify({ mail: value }),
         });
 
         const data = await response.json();
-        if (!data.success) {
-          setErrors((prevErrors) => ({ ...prevErrors, user: data.message }));
+        if (!data.success) { 
+          setErrors((prevErrors) => ({ ...prevErrors, email: data.message }));
+          console.log(emailErr)
         } else {
-          setErrors((prevErrors) => ({ ...prevErrors, user: '' }));
+          setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
         }
       } catch (error) {
-        console.error('Error checking username:', error);
+        console.error('Error checking mail:', error);
       }
     }
   };
 
   const validate = (event) => {
-    event.preventDefault();
+
     const { sid, mail, pass, rePass } = formData;
 
     const idPattern = /^20\d{2}t\d{5}$/;
@@ -107,7 +112,6 @@ const StudentSignup = () => {
       emailError = 'Please enter a valid email.';
     }
 
-
     if (pass.length < 8) {
       passError = 'Password must be at least 8 characters long.';
     } else if (!hasUppercase || !hasLowercase || !hasDigit || !hasSpecialChar) {
@@ -120,33 +124,15 @@ const StudentSignup = () => {
 
     setErrors({ id: idError, email: emailError, pass: passError, rePass: pass1Error });
 
-    return !(idError || emailError || passError || pass1Error || errors.user);
+    return idError || emailError || passError || pass1Error
   };
 
   const handleSubmit = async (event) => {
+
     event.preventDefault();
-    if (!validate(event)) {
+
+    if (validate(event)) {
       return;
-    }
-  
-    if (formData.user) {
-      try {
-        const response = await fetch('http://localhost:5001/api/check-user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user: formData.user }),
-        });
-  
-        const data = await response.json();
-        if (!data.success) {
-          setErrors((prevErrors) => ({ ...prevErrors, user: data.message }));
-          return;
-        } else {
-          setErrors((prevErrors) => ({ ...prevErrors, user: '' }));
-        }
-      } catch (error) {
-        console.error('Error checking username:', error);
-      }
     }
 
     // console.log('Form Data being sent:', formData);
@@ -160,7 +146,7 @@ const StudentSignup = () => {
 
       const data = await response.json();
       if (data.success) {
-        alert('Signup successful!');
+        toast.success('Signup successful!');
         setFormData({
           sid: '',
           sname: '',
@@ -168,19 +154,18 @@ const StudentSignup = () => {
           year: '',
           dept: '',
           mentor: '',
-          user: '',
           pass: '',
           rePass: ''
         });
       } else {
-        alert('Signup failed: ' + data.message);
+        toast.warn('Signup failed: ' + data.message);
       }
     } catch (error) {
-      alert('Error occurred while signing up. Please try again later.');
+      toast.error('Error occurred while signing up. Please try again later.');
       console.error('Error:', error);
     }
   };
-
+  
   return (
     <div className='container2'>
       <form className="myform" id="myForm" onSubmit={handleSubmit}>
@@ -195,7 +180,7 @@ const StudentSignup = () => {
         <input type="text" id="sname" value={formData.sname} onChange={handleChange} name="sname" placeholder="H.W.S.M Herath" required />
 
         <label htmlFor="mail">Student Mail</label>
-        <input type="email" id="mail" className={errors.email ? 'error-state' : ''} value={formData.mail} onChange={handleChange} name="mail" placeholder="2022t01533@stu.cmb.ac.lk" required />
+        <input type="email" id="mail" className={errors.email ? 'error-state' : ''} value={formData.mail} onInput={checkMail} onChange={handleChange} name="mail" placeholder="2022t01533@stu.cmb.ac.lk" required />
         <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.email}</span>
 
         <label htmlFor="year">Batch Year</label>
@@ -204,11 +189,12 @@ const StudentSignup = () => {
           <option value="19/20">19/20</option>
           <option value="20/21">20/21</option>
           <option value="21/22">21/22</option>
-          <option value="18/19">22/23</option>
+          <option value="22/23">22/23</option>
         </select>
 
         <label htmlFor="department">Department</label>
-        <select id="department" name="dept" value={formData.dept} onChange={handleChange} required>
+        <select id="department" 
+         name="dept" value={formData.dept} onChange={handleChange} required >
           <option value="" disabled>Select Department</option>
           <option value="IAT">IAT</option>
           <option value="ICT">ICT</option>
@@ -223,10 +209,6 @@ const StudentSignup = () => {
             <option key={mentorName} value={mentorName}>{mentorName}</option>
           ))}
         </select>
-
-        <label>Create Username</label>
-        <input type="text" name="user" className={errors.user ? 'error-state' : ''} value={formData.user} onInput={checkUserName} onChange={handleChange} required />
-        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.user}</span>
 
         <label>Create Password</label>
         <div className="password-field">
@@ -244,14 +226,16 @@ const StudentSignup = () => {
             <i className={`fa-solid ${passwordVisible1 ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error' style={{height:'2rem',marginTop:'-5px'}}>{errors.rePass}</span>
+        <span className='error' style={{height:'1rem',marginTop:'-5px'}}>{errors.rePass}</span>
 
-        <button type="submit" className="submit-btn" disabled={!!errors.user}>Sign Up</button>
+        <button type="submit" className="submit-btn" disabled = {errors.email === "Email already registered."} >Sign Up</button>
+  
 
         <div className='cover'>
           <h4>Already have an account? <Link to="/login" className='link'>Login</Link> </h4>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };

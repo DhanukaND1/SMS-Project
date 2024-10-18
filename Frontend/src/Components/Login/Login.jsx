@@ -1,14 +1,16 @@
 import React, {useState} from 'react'
 import './Login.css'
 import { Link, useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 const Login = () => {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error,setError] = useState({role:'',user:'',pass:''});
+  const [error,setError] = useState({role:'',email:'',pass:''});
   const [formData,setFormData] = useState({
     role:'',
-    user:'',
+    mail:'',
     pass:''
   });
 
@@ -23,13 +25,6 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
-
-    if (e.target.name === 'role') {
-      setError(prevState => ({ ...prevState, role: '' }));
-    } else if (e.target.name === 'user' || e.target.name === 'pass') {
-      setError(prevState => ({ ...prevState, user: '', pass:'' }));
-    }
-
     setError('');
   };
 
@@ -52,11 +47,11 @@ const Login = () => {
       if(data.success){
         setFormData({
           role:'',
-          user:'',
+          mail:'',
           pass:''
         });
 
-        setError({ role: '', user: '', pass:'' });
+        setError({ role: '', mail: '', pass:'' });
          
         if(formData.role === "Student"){
           navigate('/student-dashboard');
@@ -65,9 +60,9 @@ const Login = () => {
           navigate('/mentor-dashboard');
         }
       }else{
-        if(data.message.includes('Username not found')){
+        if(data.message.includes('Email not found')){
           console.log(data.message)
-          setError(prevState => ({ ...prevState, user: data.message }));
+          setError(prevState => ({ ...prevState, email: data.message }));
         }
         if(data.message.includes('Password not matched')){
           console.log(data.message)
@@ -77,7 +72,7 @@ const Login = () => {
         
       }
     } catch (error) {
-      alert('Error occurred while loging in. Please try again later.');
+      toast.error('Error occurred while loging in. Please try again later.');
       console.error('Error:', error);
     }
   };
@@ -99,11 +94,11 @@ const Login = () => {
         <span className='error' style={{height:'1rem'}}>{error.role}</span>
 
         <div className="input-wrapper">
-        <label htmlFor="">Username</label>
+        <label htmlFor="">Email</label>
         <i className="fa-solid fa-user"></i>
-        <input type="text" name='user' className={ error.user ? 'error-state': ''}  value={formData.user} onChange={handleCheck} required autoFocus/>
+        <input type="email" name='mail' className={ error.email ? 'error-state': ''}  value={formData.mail} onChange={handleCheck} required autoFocus/>
         </div>
-        <span className="error" style={{height:'1rem'}}>{error.user}</span>
+        <span className="error" style={{height:'1rem'}}>{error.email}</span>
 
         <div className="input-wrapper">
         <label htmlFor="">Password</label>
@@ -119,13 +114,13 @@ const Login = () => {
         </div>
 
         <span className="error" style={{height:'1rem'}}>{error.pass}</span>
-
+        <Link to="/forgot-password" className='forgot'><h4>Forgot Password?</h4></Link>
         <div className="btn-center">
         <button type='submit'>Login</button>
         <h4>Don't Have An Account?<Link to="/role" className='link'>Sign Up</Link></h4>
-        <Link to="/forgot-password"><h4>Forgot Password?</h4></Link>
         </div>
       </form>
+      <ToastContainer />
     </div>
   )
 }

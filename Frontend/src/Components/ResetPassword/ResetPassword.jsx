@@ -1,6 +1,8 @@
 import React, { useState}  from 'react'
 import { useParams } from 'react-router-dom';
 import './ResetPassword.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ResetPassword = () => {
 
@@ -63,18 +65,19 @@ const ResetPassword = () => {
 
         const data = await response.json();
         if(data.success){
-          alert(data.message);
+          toast.success(data.message);
           setFormData({pass:'', repass:''});
           setError({pass:'', repass:''})
         }
         else if(data.message === 'Invalid or expired token'){
-          alert("Your password reset link has expired. Please request a new one.");
+          toast.warn("Your password reset link has expired. Please request a new one.");
           window.location.href = "/forgot-password";
         }
         else{
-          alert(data.message);
+          toast.warn(data.message);
         }
       } catch (error) {
+        toast.error('Error while resetting password.')
         console.log('Error while resetting password.', error);
       }
     }
@@ -122,9 +125,9 @@ const ResetPassword = () => {
         </div>
         <div className="repass-btn">
         <button>Reset Password</button>
-        </div>
-        
+        </div> 
       </form>
+      <ToastContainer />
     </div>
   )
 }

@@ -1,0 +1,107 @@
+.navbar {
+    width: 100%;
+    background-color:#FFD700;
+    color: black;
+    padding: 4px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    z-index: 10;
+}
+  
+.logoo {
+    width: 70px;
+    border-radius: 50%;
+    margin: 5px 10px 5px 0;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    /* position: fixed; */
+}
+  
+.nav-links a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 1rem;
+}
+  
+.nav-links a:hover {
+    color: black; /* Hover color */
+    transform: scaleX(1); 
+    /* background-color: rgba(0, 0, 0, 0.731); */
+    background-color: aquamarine;
+    padding: 5px 7px;
+    border-radius: 4px;
+}
+
+.menu-lbl{
+    display: none;
+}
+
+@media(max-width:696px){
+    .menu-lbl{
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    .nav-links{
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.8);
+        width: 110px;
+        z-index: -1000; 
+        padding-top: 90px;
+        transition: right 0.5s ease-in-out;
+    
+    }
+
+    .nav-links li{
+        color: white;
+        z-index: -20;
+    }
+
+    .cls{
+        color: white;
+    }
+    .nav-links li a{
+        color: white;
+    }
+    .nav-links li a:hover{
+        color: black;
+    }
+
+    .menu-btn{
+        display: block;
+        border: none;
+        outline: none;
+        background-color: #FFD700;
+        cursor: pointer;
+    }
+
+    .bars{
+        padding: 6px;
+    }
+
+    #height-lst{
+        right: -110px;
+    }
+    
+    .menu-lable{
+        display: none;
+    }
+
+}
+  
+  

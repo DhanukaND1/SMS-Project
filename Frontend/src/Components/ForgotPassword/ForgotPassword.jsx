@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import './ForgotPassword.css'
 import { Link } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ForgotPassword = () => {
 
@@ -25,14 +27,14 @@ const handleSubmit = async (e) => {
     const data = await response.json();
     console.log(data.success);
     if(data.success){
-      alert("Mail has been sent, please go and check your mailbox");
+      toast.success("Mail has been sent, please go and check your mailbox");
       setMail("");
     
     }else{
       setErrors('The email you entered was not found. Please make sure to use the email, you provided during the signup process.')
     }
   } catch (error) {
-    alert('Error occurred while sending mail. Please try again later.');
+    toast.error('Error occurred while sending mail. Please try again later.');
     console.log('Error:', error);
   }
 };
@@ -58,6 +60,7 @@ const handleSubmit = async (e) => {
         <button className='fp-btn'>Send Mail</button>
         </div>
       </form>
+      <ToastContainer />
     </div>
     
     

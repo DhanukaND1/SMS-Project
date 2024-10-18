@@ -15,7 +15,7 @@ const Navbar = () => {
   
 
   const handleOutsideClick = (e) => {
-    if(!menuRef.current.contains(e.target)){
+    if(menuRef.current && !menuRef.current.contains(e.target)){
       setMobileMenu(false);
     }
   };
@@ -32,8 +32,10 @@ const Navbar = () => {
         <h5>UNIVERSITY OF COLOMBO</h5>
         <h5>FACULTY OF TECHNOLOGY</h5>
       </div>
+
+      <div className="menu-container" ref={menuRef}>
       <div className="menu-cont">
-        <button className='menu'onClick={toggleMenu} ref={menuRef}> 
+        <button className='menu'onClick={toggleMenu} > 
           {mobileMenu ? <i className="fa-solid fa-xmark xmark"></i> : <i className="fas fa-bars"></i> }
         </button>
         <label className= {mobileMenu ? "menu-label" : ""} >Menu</label>
@@ -52,6 +54,7 @@ const Navbar = () => {
           <li className='lst' id='log'>Login</li>
         </RouterLink>
       </ul>
+      </div>
     </nav>
   );
 };

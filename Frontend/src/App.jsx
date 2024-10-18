@@ -9,6 +9,9 @@ import ForgotPassword from './Components/ForgotPassword/ForgotPassword.jsx';
 import StudentDash from './Components/StudentDashboard/StudentDash.jsx';
 import MentorDash from './Components/MentorDashboard/MentorDash.jsx'
 import ResetPassword from './Components/ResetPassword/ResetPassword.jsx';
+import SessionForm from './Components/SessionForm/SessionForm.jsx';
+import SessionContent1 from './Components/SessionContent/SessionContent1.jsx';
+
 
 
 const App = () => {
@@ -27,6 +30,8 @@ const App = () => {
         <Route path='/student-dashboard' element={<StudentDash />} />
         <Route path='/mentor-dashboard' element={<MentorDash />} />
         <Route path='/reset-password/:token' element={<ResetPassword />} />
+        <Route path='/session-form' element={<SessionForm />} />
+        <Route path='/session-page' element={<SessionContent1 />} />
         
       </Routes>
     </Router>
