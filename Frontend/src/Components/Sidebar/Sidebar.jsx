@@ -1,0 +1,105 @@
+import React, { useState,useRef,useEffect} from 'react'
+import './Sidebar.css'
+import { Link } from 'react-router-dom'
+
+const Sidebar = () => {
+
+  const [toggleBar, setToggleBar] = useState(false);
+  const sidebarRef = useRef();
+
+  useEffect(()=>{
+    document.addEventListener('click',handleSidebar);
+  },[]);
+
+  const handleSidebar = (e) => {
+    if(sidebarRef.current && !sidebarRef.current.contains(e.target)){
+      setToggleBar(false);
+    }
+  };
+
+  const handleClick = () => {
+    setToggleBar(!toggleBar);
+  }
+
+  return (
+    <nav ref={sidebarRef}>
+
+      <div className="side-logo">
+        <span onClick={handleClick}><i class='bx bx-menu side-menu' ></i></span>
+        <span className="logo-name">SMS</span>
+      </div>
+
+      <div className="side-bar" id={toggleBar ? "" : "hide-sidebar"}>
+
+      <div className="side-logo">
+      <span onClick={handleClick}><i class='bx bx-menu side-menu' ></i></span>
+        <span className="logo-name">SMS</span>
+      </div>
+
+      <div className="sidebar-content">
+        
+        <ul className="side-lists">
+
+          <li className="side-list">
+          <Link to='/'  className="side-links">
+            <i class='bx bxs-dashboard icn' ></i>
+              <span className="side-link">Dashboard</span>
+            </ Link>
+          </li>
+
+          <li className="side-list">
+          <Link to=''  className="side-links">
+            <i class='bx bx-bell icn' ></i>
+              <span className="side-link">Notification</span>
+            </ Link>
+          </li>
+
+          <li className="side-list">
+          <Link to=''  className="side-links">
+            <i class='bx bx-message-rounded icn' ></i>
+              <span className="side-link">Messages</span>
+            </ Link>
+          </li>
+
+          <li className="side-list">
+          <Link to=''  className="side-links">
+            <i class='bx bxs-calendar icn' ></i>
+              <span className="side-link">Calendar</span>
+            </ Link>
+          </li>
+
+          <li className="side-list">
+          <Link to='/session-page'  className="side-links">
+            <i class='bx bxs-report icn' ></i>
+              <span className="side-link">Session Info</span>
+            </ Link>
+          </li>
+
+          <li className="side-list">
+          <Link to='/'  className="side-links">
+            <i class='bx bx-comment-detail icn' ></i>
+              <span className="side-link">Feedback</span>
+            </Link>
+          </li>
+          
+          </ul>
+
+          <div className="bottom-content">
+
+          <ul className="side-lists">
+          <li className="side-list">
+          <Link to='/'  className="side-links">
+            <i class='bx bx-log-out icn' ></i>
+              <span className="side-link">Logout</span>
+            </Link>
+          </li>
+          </ul>
+
+          </div>
+      </div>
+      </div>
+    </nav>
+  )
+}
+
+export default Sidebar

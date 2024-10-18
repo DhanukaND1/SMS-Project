@@ -59,7 +59,7 @@ app.use(session({
 
 // Start the server
 app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
+    console.log(`Server is running on port ${process.env.PORT2}`);
 });
 
 // Mentor Signup
