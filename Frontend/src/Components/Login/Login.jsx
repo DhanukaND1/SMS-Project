@@ -1,128 +1,82 @@
-import React, {useState} from 'react'
-import './Login.css'
-import { Link, useNavigate } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'
+import React, { useState } from 'react';
+import { Paper } from '@mui/material'; // Assuming you're using Material UI for styling
+import './Login.css'; // Custom CSS for additional styling
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
-
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error,setError] = useState({role:'',email:'',pass:''});
-  const [formData,setFormData] = useState({
-    role:'',
-    mail:'',
-    pass:''
-  });
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // State for error messages
+  const [isLoading, setIsLoading] = useState(false); // Loading state for UX
   const navigate = useNavigate();
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
-  };
-
-  const handleCheck = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    setError('');
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    if(!formData.role){
-      setError(prevState => ({ ...prevState, role: 'Please select a role.' }));
-      return;
-    }
-
+    setIsLoading(true); // Start loading state
+    setError(''); // Clear previous errors
     try {
-      const response = await fetch("http://localhost:5001/api/login",{
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const result = await axios.post(
+        'http://localhost:3001/login',
+        { email, password },
+        { withCredentials: true }
+      );
 
-      const data = await response.json();
-      if(data.success){
-        setFormData({
-          role:'',
-          mail:'',
-          pass:''
-        });
-
-        setError({ role: '', mail: '', pass:'' });
-         
-        if(formData.role === "Student"){
-          navigate('/student-dashboard');
+      if (result.data.message === 'Success') {
+        const role = result.data.role;
+        if (role === 'mentor') {
+          navigate("/Mentordash");
+        }else if(role === 'student'){
+          navigate("/Studentdash");
         }
-        else if(formData.role === "Mentor"){
-          navigate('/mentor-dashboard');
-        }
-      }else{
-        if(data.message.includes('Email not found')){
-          console.log(data.message)
-          setError(prevState => ({ ...prevState, email: data.message }));
-        }
-        if(data.message.includes('Password not matched')){
-          console.log(data.message)
-          setError(prevState => ({ ...prevState, pass: data.message }));
-        }
-
-        
+      } else {
+        setError('Login failed: User does not exist' + result.data.error);
       }
-    } catch (error) {
-      toast.error('Error occurred while loging in. Please try again later.');
-      console.error('Error:', error);
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred while logging in. Please try again later.');
+    } finally {
+      setIsLoading(false); // Stop loading state
     }
   };
-
-
 
   return (
     <div className='cont'>
-      
-      <form action="" onSubmit={handleSubmit}>
-        <h2>Login</h2>
-        <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
-        <label htmlFor="">Select your role</label>
+      <Paper elevation={3} className='paper'>
+        <form onSubmit={handleLogin}>
+          <h2>Login</h2>
+          {error && <p className="error">{error}</p>} {/* Display error if exists */}
 
-        <div className='role-wrapper'>
-          <input type="radio" name='role' value= "Student" onChange={handleCheck} />Student
-          <input type="radio" name='role' value= "Mentor" onChange={handleCheck} />Mentor
-        </div>
-        <span className='error' style={{height:'1rem'}}>{error.role}</span>
+          <label htmlFor='email'>Email</label>
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            type='email'
+            id='email'
+            required
+            autoFocus
+          />
 
-        <div className="input-wrapper">
-        <label htmlFor="">Email</label>
-        <i className="fa-solid fa-user"></i>
-        <input type="email" name='mail' className={ error.email ? 'error-state': ''}  value={formData.mail} onChange={handleCheck} required autoFocus/>
-        </div>
-        <span className="error" style={{height:'1rem'}}>{error.email}</span>
+          <label htmlFor='password'>Password</label>
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            type='password'
+            id='password'
+            required
+          />
 
-        <div className="input-wrapper">
-        <label htmlFor="">Password</label>
-        <i className="fa-solid fa-lock"></i>
-        
-        <div className="eye-wrapper">
-        <span className="icon" onClick={togglePasswordVisibility}>
-            <i className={`fa-solid ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-          </span>
-        </div>
+          <button type='submit' disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
 
-        <input type={passwordVisible ? 'text' : 'password'} name='pass' className={ error.pass ? 'error-state': ''} value={formData.pass} onChange={handleCheck} required />
-        </div>
-
-        <span className="error" style={{height:'1rem'}}>{error.pass}</span>
-        <Link to="/forgot-password" className='forgot'><h4>Forgot Password?</h4></Link>
-        <div className="btn-center">
-        <button type='submit'>Login</button>
-        <h4>Don't Have An Account?<Link to="/role" className='link'>Sign Up</Link></h4>
-        </div>
-      </form>
-      <ToastContainer />
+          <h4>
+            Don't Have An Account? <Link to='/Role' className='link'>Sign Up</Link>
+          </h4>
+        </form>
+      </Paper>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
