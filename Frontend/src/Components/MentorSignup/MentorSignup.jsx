@@ -1,24 +1,13 @@
-import React from 'react'
-import './MentorSignup.css'
-import { useState } from 'react'
-import { Link } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from 'react';
+import './MentorSignup.css';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const MentorSignup = () => {
+  const navigate = useNavigate();
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
-  const [errors, setErrors] = useState({ email: '', pass: '', pass1:'', phone:'' });
-  const [formData, setFormData] = useState({
-    name: '',
-    dept: '',
-    mail: '',
-    phone: '',
-    user: '',
-    pass: '',
-    pass1: ''
-  });
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -27,170 +16,131 @@ const MentorSignup = () => {
     setPasswordVisible1(!passwordVisible1);
   };
 
-  
-  const validate = (event) => {
+  const [name, setName] = useState("");
+  const [department, setDepartment] = useState("");
+  const [email, setEmail] = useState("");
+  const [contactnum, setContactnum] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-    const { mail, pass, pass1, phone } = formData;
+  const [errors, setErrors] = useState({ email: '', pass: '', pass1: '', phone: '' });
 
-    const hasUppercase = /[A-Z]/.test(pass);
-    const hasLowercase = /[a-z]/.test(pass);
-    const hasDigit = /[0-9]/.test(pass);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
-    const validphone = /[0-9]{10}/.test(phone);
+  const validate = () => {
+    let isValid = true;
 
-    const endmail = '.cmb.ac.lk';
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasDigit = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const validPhone = /^[0-9]{10}$/.test(contactnum);
 
-    const mailPattern = new RegExp(`^[a-zA-Z]+@(iat|ict|et|at)${endmail}$`);
+    const endMail = '.cmb.ac.lk';
+    const mailPattern = new RegExp(`^[a-zA-Z]+@(iat|ict|et|at)${endMail}$`);
 
     let emailError = '';
     let passError = '';
     let pass1Error = '';
     let phoneError = '';
 
-    if (!mailPattern.test(mail)) {
-      emailError = "Please enter a valid email";
+    if (!mailPattern.test(email)) {
+      emailError = 'Please enter a valid email';
+      isValid = false;
     }
-    if (pass.length < 8) {
-      passError = "Password must be at least 8 characters long.";
+    if (password.length < 8) {
+      passError = 'Password must be at least 8 characters long.';
+      isValid = false;
     } else if (!hasUppercase || !hasLowercase || !hasDigit || !hasSpecialChar) {
-      passError = "Password must contain an uppercase, lowercase, digit, and  special character.";
+      passError = 'Password must contain an uppercase, lowercase, digit, and special character.';
+      isValid = false;
     }
-    if (pass1 !== pass) {
-      pass1Error = "Passwords do not match.";
+    if (confirmPassword !== password) {
+      pass1Error = 'Passwords do not match.';
+      isValid = false;
     }
-    if (!validphone) {
-      phoneError = 'Please enter a valid phone number';
+    if (!validPhone) {
+      phoneError = 'Please enter a valid phone number.';
+      isValid = false;
     }
 
     setErrors({ email: emailError, pass: passError, pass1: pass1Error, phone: phoneError });
 
-    return emailError || passError || pass1Error || phoneError ;
+    return isValid;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: ''
-    }));
-  };
-
-  const checkMail = async (e) => {
-    const { value } = e.target;
-    setFormData((prevData) => ({ ...prevData, mail: value }));
-
-    if (value) {
-      try {
-        const response = await fetch('http://localhost:5001/api/check-user-mentor', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mail: value }),
-        });
-
-        const data = await response.json();
-        if (!data.success) {
-          setErrors((prevErrors) => ({ ...prevErrors, email: data.message }));
-        } else {
-          setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
-        }
-      } catch (error) {
-        console.error('Error checking email:', error);
-      }
-    }
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (validate(event)) {
+  const handleSignup = (e) => {
+    e.preventDefault();
+    if (!validate()) {
       return;
     }
-    try {
-      const response = await fetch('http://localhost:5001/api/signupMentor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
 
-      const data = await response.json();
-      if (data.success) {
-        toast.success('Signup successful!');
-        setFormData({
-          name: '',
-          dept: '',
-          mail: '',
-          phone: '',
-          user: '',
-          pass: '',
-          pass1: ''
-        });
-      } else {
-        toast.warn('Signup failed: ' + data.message);
-      }
-    } catch (error) {
-      toast.error('Error occurred while signing up. Please try again later.');
-      console.error('Error:', error);
-    }
+    axios.post("http://localhost:3001/Mentorsignup", { name, department, email, contactnum, username, password })
+      .then(result => {
+        if (result.status === 201) {
+          console.log("User created successfully");
+          navigate("/Login");
+        }
+      })
+      .catch(err => {
+        if (err.response && err.response.status === 400) {
+          window.alert("Email already exists. Please use a different email");
+        } else {
+          console.error(err);
+        }
+      });
   };
 
   return (
     <div className='container1'>
-      <form action="" id='frm' className='myfrm' onSubmit={handleSubmit}>
+      <form id='frm' className='myfrm' onSubmit={handleSignup}>
         <h2>Sign Up</h2>
+        
+        <label>Full Name</label>
+        <input onChange={(e) => setName(e.target.value)} type="text" required />
 
-        <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
-        
-        <label htmlFor="name">Full Name</label>
-        <input type="text" id='name' name='name' value={formData.name} onChange={handleChange} autoFocus required />
-        
-        <label htmlFor="dept">Department</label>
-        <select name="dept" id="dept" value={formData.dept} onChange={handleChange}>
-          <option value="" selected disabled>Select Department</option>
+        <label>Department</label>
+        <select onChange={(e) => setDepartment(e.target.value)} required>
+          <option value="" disabled selected>Select Department</option>
           <option value="IAT">IAT</option>
           <option value="ICT">ICT</option>
           <option value="AT">AT</option>
           <option value="ET">ET</option>
         </select>
-        
-        <label htmlFor="email">Email</label>
-        <input type="email" name="mail" id='mail' className={errors.email ? 'error-state':''} value={formData.mail} onChange={handleChange} onInput={checkMail} required />
-        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.email}</span>
-        
-        <label htmlFor="phone">Contact Number</label>
-        <input type="tel" required name='phone' id='phone' className={errors.phone ? 'error-state':''} value={formData.phone} onChange={handleChange} />
-        <span className="error"style={{height:'1rem',marginTop:'-5px'}}>{errors.phone}</span>
+
+        <label>Email</label>
+        <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <span className="error">{errors.email}</span>
+
+        <label>Contact Number</label>
+        <input type="tel" value={contactnum} onChange={(e) => setContactnum(e.target.value)} required />
+        <span className="error">{errors.phone}</span>
+
+        <label>Create Username</label>
+        <input onChange={(e) => setUsername(e.target.value)} type="text" required />
 
         <label>Create Password</label>
         <div className="password-field">
-          <input type={passwordVisible ? 'text' : 'password'} id='pass' name='pass' className={errors.pass ? 'error-state':''} value={formData.pass} onChange={handleChange} required />
+          <input type={passwordVisible ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required />
           <span className="icon" onClick={togglePasswordVisibility}>
             <i className={`fa-solid ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error' style={{height:'2rem',marginTop:'-5px'}}>{errors.pass}</span>
+        <span className='error'>{errors.pass}</span>
 
         <label>Confirm Password</label>
         <div className="password-field">
-          <input type={passwordVisible1 ? 'text' : 'password'} id='pass1' className={errors.pass1 ? 'error-state':''} name='pass1' value={formData.pass1} onChange={handleChange} required />
+          <input type={passwordVisible1 ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
           <span className="icon" onClick={togglePasswordVisibility1}>
             <i className={`fa-solid ${passwordVisible1 ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error' style={{height:'1rem',marginTop:'-5px'}}>{errors.pass1}</span>
+        <span className='error'>{errors.pass1}</span>
 
-        <button type='submit' disabled = {errors.email === "Email already registered."}>Sign Up</button>
+        <button type="submit">Sign Up</button>
         <div className="cover">
-          <h4>Already have an account? <Link to="/login" className='link'>Login</Link></h4>
+          <h4>Already have an account? <Link to="/Login" className='link'>Login</Link></h4>
         </div>
-
       </form>
-      <ToastContainer />
     </div>
   );
 };
