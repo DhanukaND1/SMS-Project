@@ -272,6 +272,19 @@ app.post('/api/forgot-password', async (req, res) => {
   }
 });
 
+// Get Mentors to Student Sign up dashboard
+app.get('/api/mentors', async (req, res) => {
+  const department = req.query.department;
+  try {
+    const mentors = department
+      ? await Mentor.find({ dept: department },  'name') // Filter by department if provided
+      : await Mentor.find ({}, 'name'); // Otherwise, return all mentors
+    res.status(200).json(mentors);
+  } catch (error) {
+    res.status(500).json({ error: error.message});
+  }
+});
+
 
  const port = process.env.PORT1 || 5001;
  app.listen(port, () => console.log(`Server running on port ${port}`));

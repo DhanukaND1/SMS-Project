@@ -3,18 +3,11 @@ import './StudentSignup.css';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
-const mentor = {
-  "IAT": ['Dr. Hansika Atapattu', 'Dr. Chathurika De Silva', 'Dr. Lakmini Jayasinghe', 'Dr. Ruwan Kalubowila', 'Dr. Udara Mutugala', 'Dr. Sanjaya Thilakerathne', 'Mr. Gihan Amarasinghe', 'Mr. L.M. Samaratunga', 'Mr. Supun Kariyawasam', 'Mr. U.V.H. Sameera'],
-  "ICT": ['Dr. Rohan Samarasinghe', 'Ms. Chamindi Kavindya Samarasekara', 'Mr. Chathura Mahasen Bandara', 'Mrs. Nethmini Weerawarna'],
-  "AT": ['Dr. Jayani Wewalwela', 'Dr. Aruna Kumara', 'Dr. Priyanga Kariyawasam', 'Dr. K.T. Ariyawansha', 'Mrs. G.W.A.S. Lakmini', 'Ms. Thilini Jayaprada', 'Prof. Kanchana Abeysekera'],
-  "ET": ['Dr. Kosala Sirisena', 'Dr. Madhusha Sudasinghe', 'Dr. N.L. Ukwattage', 'Dr. Poorna Piyathilaka', 'Prof. Chamini Hemachandra', 'Prof. Ranjana Piyadasa', 'Prof. Sansfica Young'],
-};
+import axios from 'axios';
 
 const StudentSignup = () => {
   const [mentorList, setMentorList] = useState([]);
-  const [errors, setErrors] = useState({ id: '', email: '', pass: '', rePass: ''});
+  const [errors, setErrors] = useState({ id: '', email: '', pass: '', rePass: '' });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
 
@@ -37,29 +30,26 @@ const StudentSignup = () => {
     setPasswordVisible1(!passwordVisible1);
   };
 
-  const handleChange =  (e) => {
+  const handleChange = (e) => {
 
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
-  
+
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: ''
     }));
-  
-    if (name === 'dept') {
-      setMentorList(mentor[value] || []);
-    }
+
   };
-  
-  
+
+
   const checkMail = async (e) => {
     const { value } = e.target;
     setFormData((prevData) => ({ ...prevData, mail: value }));
-    
+
 
     if (value) {
       try {
@@ -70,7 +60,7 @@ const StudentSignup = () => {
         });
 
         const data = await response.json();
-        if (!data.success) { 
+        if (!data.success) {
           setErrors((prevErrors) => ({ ...prevErrors, email: data.message }));
           console.log(emailErr)
         } else {
@@ -105,7 +95,7 @@ const StudentSignup = () => {
 
     let userid = mail.split("@")[0];
 
-    if(userid != sid){
+    if (userid != sid) {
       emailError = 'Email does not match with given ID';
     }
     else if (!mailPattern.test(mail)) {
@@ -125,6 +115,23 @@ const StudentSignup = () => {
     setErrors({ id: idError, email: emailError, pass: passError, rePass: pass1Error });
 
     return idError || emailError || passError || pass1Error
+  };
+
+  // Fetch mentors based on the selected department
+  const handleDepartmentChange = async (event) => {
+    const selectedDep = event.target.value;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      dept: selectedDep
+    }));
+
+    try {
+      const response = await axios.get(`http://localhost:5001/api/mentors?department=${selectedDep}`);
+      const data = response.data;
+      setMentorList(data); // Update mentorList with filtered mentors
+    } catch (error) {
+      console.error('Error fetching mentor list:', error);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -165,7 +172,7 @@ const StudentSignup = () => {
       console.error('Error:', error);
     }
   };
-  
+
   return (
     <div className='container2'>
       <form className="myform" id="myForm" onSubmit={handleSubmit}>
@@ -174,14 +181,14 @@ const StudentSignup = () => {
 
         <label htmlFor="sid">Student ID</label>
         <input type="text" id="sid" className={errors.id ? 'error-state' : ''} value={formData.sid} onChange={handleChange} name="sid" placeholder="2022t01533" required autoFocus />
-        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.id}</span>
+        <span className="error" style={{ height: '1rem', marginTop: '-5px' }}>{errors.id}</span>
 
         <label htmlFor="sname">Full Name</label>
         <input type="text" id="sname" value={formData.sname} onChange={handleChange} name="sname" placeholder="H.W.S.M Herath" required />
 
         <label htmlFor="mail">Student Mail</label>
         <input type="email" id="mail" className={errors.email ? 'error-state' : ''} value={formData.mail} onInput={checkMail} onChange={handleChange} name="mail" placeholder="2022t01533@stu.cmb.ac.lk" required />
-        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.email}</span>
+        <span className="error" style={{ height: '1rem', marginTop: '-5px' }}>{errors.email}</span>
 
         <label htmlFor="year">Batch Year</label>
         <select id="year" name="year" value={formData.year} onChange={handleChange} required>
@@ -193,8 +200,8 @@ const StudentSignup = () => {
         </select>
 
         <label htmlFor="department">Department</label>
-        <select id="department" 
-         name="dept" value={formData.dept} onChange={handleChange} required >
+        <select id="department"
+          name="dept" value={formData.dept} onChange={handleDepartmentChange} required >
           <option value="" disabled>Select Department</option>
           <option value="IAT">IAT</option>
           <option value="ICT">ICT</option>
@@ -205,8 +212,8 @@ const StudentSignup = () => {
         <label htmlFor="mentor">Mentor</label>
         <select id="mentor" name="mentor" value={formData.mentor} onChange={handleChange} required>
           <option value="" disabled>Select Mentor</option>
-          {mentorList.map((mentorName) => (
-            <option key={mentorName} value={mentorName}>{mentorName}</option>
+          {mentorList.map((mentor, index) => (
+            <option key={index} value={mentor.name}>{mentor.name}</option>
           ))}
         </select>
 
@@ -217,7 +224,7 @@ const StudentSignup = () => {
             <i className={`fa-solid ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error' style={{height:'2rem',marginTop:'-5px'}}>{errors.pass}</span>
+        <span className='error' style={{ height: '2rem', marginTop: '-5px' }}>{errors.pass}</span>
 
         <label>Confirm Password</label>
         <div className="password-field">
@@ -226,10 +233,10 @@ const StudentSignup = () => {
             <i className={`fa-solid ${passwordVisible1 ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
-        <span className='error' style={{height:'1rem',marginTop:'-5px'}}>{errors.rePass}</span>
+        <span className='error' style={{ height: '1rem', marginTop: '-5px' }}>{errors.rePass}</span>
 
-        <button type="submit" className="submit-btn" disabled = {errors.email === "Email already registered."} >Sign Up</button>
-  
+        <button type="submit" className="submit-btn" disabled={errors.email === "Email already registered."} >Sign Up</button>
+
 
         <div className='cover'>
           <h4>Already have an account? <Link to="/login" className='link'>Login</Link> </h4>
