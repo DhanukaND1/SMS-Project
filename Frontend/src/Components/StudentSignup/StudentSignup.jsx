@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './StudentSignup.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -10,6 +10,8 @@ const StudentSignup = () => {
   const [errors, setErrors] = useState({ id: '', email: '', pass: '', rePass: '' });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     sid: '',
@@ -153,7 +155,8 @@ const StudentSignup = () => {
 
       const data = await response.json();
       if (data.success) {
-        toast.success('Signup successful!');
+        navigate('/login');
+       
         setFormData({
           sid: '',
           sname: '',
