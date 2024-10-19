@@ -118,51 +118,42 @@ app.post('/api/signupMentor', async (req, res) => {
 });
 
 //end point for login
-app.post('/api/login', async (req,res) => {
-  const { role, mail, pass} = req.body;
-  // console.log('Request body:', req.body);
+app.post('/api/login', async (req, res) => {
+  const { role, mail, pass } = req.body;
 
   try {
-
-    if(role === "Student"){
-        const User = await Student.findOne({ mail });
+    let user, mentorName;
     
-    if (!User) {
-      return res.status(500).json({ success: false, message: 'Email not found' });
+    if (role === 'Student') {
+      user = await Student.findOne({ mail });
+      if (!user) {
+        return res.status(500).json({ success: false, message: 'Email not found' });
+      }
+      const isMatch = await bcrypt.compare(pass, user.rePass);
+      if (!isMatch) {
+        return res.status(500).json({ success: false, message: 'Password not matched' });
+      }
+      mentorName = await Mentor.findOne({ name: user.mentor }); // Assuming mentor's name is stored in `user.mentor`
+      return res.status(200).json({ success: true, role: 'Student', mentorName: mentorName.name });
     }
 
-    const isMatch = await bcrypt.compare(pass, User.rePass);
-
-    if(!isMatch){
-      return res.status(500).json({ success: false, message: 'Password not matched'});
+    if (role === 'Mentor') {
+      user = await Mentor.findOne({ mail });
+      if (!user) {
+        return res.status(500).json({ success: false, message: 'Email not found' });
+      }
+      const isMatch = await bcrypt.compare(pass, user.pass1);
+      if (!isMatch) {
+        return res.status(500).json({ success: false, message: 'Password not matched' });
+      }
+      return res.status(200).json({ success: true, role: 'Mentor', name: user.name });
     }
-    return res.status(200).json({ success: true, message: 'Login successful!'});
-  }
-
-    if(role === "Mentor"){
-        const User = await Mentor.findOne({ mail });
-
-        if (!User) {
-          return res.status(404).json({ success: false, message: 'Email not found' });
-        }
-    
-        const isMatch = await bcrypt.compare(pass, User.pass1);
-    
-        if(!isMatch){
-          return res.status(500).json({ success: false, message: 'Password not matched'});
-        }
-    
-        return res.status(200).json({ success: true, message: 'Login successful!'});
-
-        
-    }
-  
 
   } catch (error) {
-    console.log('Error during login:', error);
-    res.status(500).json({ success: false, message: 'Error login.', error: error.message});
+    res.status(500).json({ success: false, message: 'Error during login', error: error.message });
   }
 });
+
 
 // Forgot password route
 app.post('/api/forgot-password', async (req, res) => {

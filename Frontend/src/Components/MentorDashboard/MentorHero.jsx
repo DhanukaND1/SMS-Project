@@ -3,40 +3,20 @@ import axios from 'axios'
 import Modal from './Modal.jsx';
 import './Mentor.css'
 import img1 from '../../assets/1.webp';
+import { useLocation } from 'react-router-dom';
 
 function MentorHero() {
-  const [mentorName, setMentorName] = useState(''); // State to store the mentor's name
+  const location = useLocation();
+  const mentorName = location.state?.name ; // Fetch mentor's name from state
   const [students, setStudents] = useState([]); // Store students list
-  const [selectedBatch, setSelectedBatch] = useState(''); // Store selected batch year
-  const [isModalOpen, setIsModalopen] = useState(false);
-
-  // Fetch mentor's name on component mount
+  
+  // Debug: check the location state being passed
   useEffect(() => {
-    const fetchMentorName = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/dashboard', {
-          withCredentials: true // Include cookies (for session)
-        });
-        setMentorName(response.data.name); // Set the mentor's name
-      } catch (error) {
-        console.log('Error fetching mentor name:', error);
-      }
-    };
-
-    fetchMentorName(); // Call the function to fetch the name
-  }, []);
+    console.log("Location state:", location.state);
+  }, [location.state]);
 
   //Function to fetch students based on selected batch year
-  const fetchStudents = async (batchyear) => {
-    try {
-      const response = await axios.get(`http://localhost:3001/students?mentorName=${mentorName}&batchyear=${batchyear}`);
-      setStudents(response.data); // Store the fetched students
-      setSelectedBatch(batchyear); // Update the selected batch year
-      setIsModalopen(true);
-    } catch (error) {
-      console.log('Error fetching students:', error);
-    }
-  };
+  
 
   //Function to close the modal
   const closeModal = () => {
@@ -86,20 +66,7 @@ function MentorHero() {
           </div>
         </section>
 
-        {/* Modal to display student list */}
-        <Modal isOpen={isModalOpen} onClose={closeModal} title={`Students from ${selectedBatch} Batch`}>
-          <ul>
-            {students.length > 0 ? (
-              students.map((student, index) => (
-                <li key={index}>
-                  {student.name} ({student.id})
-                </li>
-              ))
-            ) : (
-              <li>No students found for this batch.</li>
-            )}
-          </ul>
-        </Modal>
+        
 
         {/* Recommendations */}
         <section className='recommendations'>
