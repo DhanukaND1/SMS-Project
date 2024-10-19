@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css'
 const Login = () => {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error,setError] = useState({role:'',email:'',pass:''});
+  const [error,setError] = useState({email:'',pass:''});
   const [formData,setFormData] = useState({
     role:'',
     mail:'',
@@ -21,20 +21,34 @@ const Login = () => {
   };
 
   const handleCheck = (e) => {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
+      
     });
-    setError('');
+    setError({});
+
+        if(name === 'mail'){
+
+          const start = value.indexOf('@')+1;
+          const end = value.indexOf('.');
+          const domain = value.substring(start, end);
+          console.log(domain);
+        
+        if (['at', 'ict', 'iat', 'et'].includes(domain)) {
+          setFormData(prev => ({ ...prev, role: 'Mentor'}));
+        }else {
+          setFormData(prev => ({ ...prev, role: 'Student'}));
+      }
+        }
+        
+    
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if(!formData.role){
-      setError(prevState => ({ ...prevState, role: 'Please select a role.' }));
-      return;
-    }
 
     try {
       const response = await fetch("http://localhost:5001/api/login",{
@@ -45,20 +59,23 @@ const Login = () => {
 
       const data = await response.json();
       if(data.success){
+
+        if(formData.role == 'Student'){
+          navigate('/student-dashboard');
+        }
+
+        else if(formData.role == 'Mentor'){
+          navigate('/mentor-dashboard');
+        }
+        
         setFormData({
           role:'',
           mail:'',
           pass:''
         });
 
-        setError({ role: '', mail: '', pass:'' });
-         
-        if(formData.role === "Student"){
-          navigate('/student-dashboard');
-        }
-        else if(formData.role === "Mentor"){
-          navigate('/mentor-dashboard');
-        }
+        setError({ mail: '', pass:'' });
+  
       }else{
         if(data.message.includes('Email not found')){
           console.log(data.message)
@@ -68,8 +85,6 @@ const Login = () => {
           console.log(data.message)
           setError(prevState => ({ ...prevState, pass: data.message }));
         }
-
-        
       }
     } catch (error) {
       toast.error('Error occurred while loging in. Please try again later.');
@@ -85,13 +100,6 @@ const Login = () => {
       <form action="" onSubmit={handleSubmit}>
         <h2>Login</h2>
         <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
-        <label htmlFor="">Select your role</label>
-
-        <div className='role-wrapper'>
-          <input type="radio" name='role' value= "Student" onChange={handleCheck} />Student
-          <input type="radio" name='role' value= "Mentor" onChange={handleCheck} />Mentor
-        </div>
-        <span className='error' style={{height:'1rem'}}>{error.role}</span>
 
         <div className="input-wrapper">
         <label htmlFor="">Email</label>
