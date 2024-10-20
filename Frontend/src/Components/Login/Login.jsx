@@ -65,7 +65,7 @@ const Login = () => {
         }
 
         else if(formData.role == 'Mentor'){
-          navigate('/mentor-dashboard');
+          navigate('/mentor-dashboard', { state: { name: data.mentor } });
         }
         
         setFormData({
