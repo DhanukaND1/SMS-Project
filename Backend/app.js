@@ -141,6 +141,7 @@ app.post('/api/login', async (req,res) => {
 
     if(role === "Mentor"){
         const User = await Mentor.findOne({ mail });
+        const mentor = User.name;
 
         if (!User) {
           return res.status(404).json({ success: false, message: 'Email not found' });
@@ -152,7 +153,7 @@ app.post('/api/login', async (req,res) => {
           return res.status(500).json({ success: false, message: 'Password not matched'});
         }
     
-        return res.status(200).json({ success: true, message: 'Login successful!'});
+        return res.status(200).json({ success: true, message: 'Login successful!', mentor: mentor});
 
         
     }
@@ -282,6 +283,23 @@ app.get('/api/mentors', async (req, res) => {
     res.status(200).json(mentors);
   } catch (error) {
     res.status(500).json({ error: error.message});
+  }
+});
+
+// Get Student by Mentor and Batch Year
+app.get('/api/students', async (req, res) => {
+  const { mentorName, batchyear } = req.query;
+  console.log('Mentor:', mentorName, 'Batch Year:', batchyear);  // Log to confirm the values
+
+  try {
+      const students = await Student.find({ mentor: mentorName, year: batchyear });
+      console.log(students);
+      if (students.length === 0) {
+          return res.status(404).json({ message: 'No student found for this mentor and batch year.' });
+      }
+      res.status(200).json(students);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
   }
 });
 
