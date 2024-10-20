@@ -61,7 +61,7 @@ const Login = () => {
       if(data.success){
 
         if(formData.role == 'Student'){
-          navigate('/student-dashboard');
+          navigate('/student-dashboard',{  state: {name: data.sname}});
         }
 
         else if(formData.role == 'Mentor'){

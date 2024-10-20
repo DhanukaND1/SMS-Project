@@ -213,6 +213,7 @@ function MentorHero() {
             )}
           </ul>
         </Modal>
+        
 
         {/* Recommendations */}
         <section className='recommendations'>
