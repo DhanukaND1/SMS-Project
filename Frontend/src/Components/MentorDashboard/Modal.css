@@ -13,10 +13,11 @@
   .modal-box {
     background-color: white;
     padding: 20px;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     width: 400px;
     max-width: 90%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
   }
   
   .modal-header {
@@ -26,10 +27,13 @@
   }
   
   .close-button {
-    background: none;
+    background-color: white;
     border: none;
-    font-size: 1.5rem;
     cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px;
   }
   
   .modal-content {
