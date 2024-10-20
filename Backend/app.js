@@ -122,10 +122,9 @@ app.post('/api/login', async (req, res) => {
   const { role, mail, pass } = req.body;
 
   try {
-    let user, mentorName;
-    
+  
     if (role === 'Student') {
-      user = await Student.findOne({ mail });
+      const user = await Student.findOne({ mail });
       if (!user) {
         return res.status(500).json({ success: false, message: 'Email not found' });
       }
@@ -133,38 +132,22 @@ app.post('/api/login', async (req, res) => {
       if (!isMatch) {
         return res.status(500).json({ success: false, message: 'Password not matched' });
       }
-      mentorName = await Mentor.findOne({ name: user.mentor }); // Assuming mentor's name is stored in `user.mentor`
-      return res.status(200).json({ success: true, role: 'Student', mentorName: mentorName.name });
+      return res.status(200).json({ success: true, role: 'Student', message: 'Login successful!' });
     }
-  }
 
-    if(role === "Mentor"){
-        const User = await Mentor.findOne({ mail });
-        const mentor = User.name;
-
-        if (!User) {
-          return res.status(404).json({ success: false, message: 'Email not found' });
-        }
-    
-        const isMatch = await bcrypt.compare(pass, User.pass1);
-    
-        if(!isMatch){
-          return res.status(500).json({ success: false, message: 'Password not matched'});
-        }
-    
-        return res.status(200).json({ success: true, message: 'Login successful!', mentor: mentor});
-
-        
     if (role === 'Mentor') {
-      user = await Mentor.findOne({ mail });
-      if (!user) {
-        return res.status(500).json({ success: false, message: 'Email not found' });
+      const User = await Mentor.findOne({ mail });
+      if (!User) {
+        return res.status(404).json({ success: false, message: 'Email not found' });
       }
-      const isMatch = await bcrypt.compare(pass, user.pass1);
+
+      const isMatch = await bcrypt.compare(pass, User.pass1);
       if (!isMatch) {
         return res.status(500).json({ success: false, message: 'Password not matched' });
       }
-      return res.status(200).json({ success: true, role: 'Mentor', name: user.name });
+
+      const mentor = User.name;
+      return res.status(200).json({ success: true, message: 'Login successful!', mentor: mentor, role:'Mentor' });
     }
 
   } catch (error) {
@@ -297,11 +280,11 @@ app.get('/api/mentors', async (req, res) => {
 // Get Student by Mentor and Batch Year
 app.get('/api/students', async (req, res) => {
   const { mentorName, batchyear } = req.query;
-  console.log('Mentor:', mentorName, 'Batch Year:', batchyear);  // Log to confirm the values
+  // console.log('Mentor:', mentorName, 'Batch Year:', batchyear);  // Log to confirm the values
 
   try {
       const students = await Student.find({ mentor: mentorName, year: batchyear });
-      console.log(students);
+      // console.log(students);
       if (students.length === 0) {
           return res.status(404).json({ message: 'No student found for this mentor and batch year.' });
       }
