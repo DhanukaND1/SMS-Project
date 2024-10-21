@@ -23,31 +23,13 @@ function StudentHero() {
 
     return (
         <div className='dashboard-container'>
-            {/* Sidebar */}
-            <aside className='sidebar'>
-                <div className='sidebar-header'>
-                    <img src={img1} alt='pro' className='profile-pic' />
-                    <h2>{studentName}</h2>
-                    <span>Student</span>
-                </div>
-                <nav className='nav-menu'>
-                    <ul>
-                        <li><a href='#'>Dashboard</a></li>
-                        <li><a href="#">Messages</a><span className="notification">4</span></li>
-                        <li><a href="#">Calendar</a></li>
-                        <li><a href="#">Info Sessions</a></li>
-                    </ul>
-                </nav>
-            </aside>
-
-            {/* Main content */}
-            <div className='main-content'>
-                {/* Welcome Message */}
-                <section className='welcome-section'>
-                    <h1>Welcome Back,<span className='highlight'>{studentName}</span></h1>
-                    <p>Manage all the things from a single dashboard. See latest info sessions, recent conversations, and update your recommendations.</p>
-                    {/* Display student's mentor name */}
-                    <h3>Your Mentor : {mentorName}</h3>
+            <div className="studenthero-container">
+                <section className="student-welcome home">
+                    <p className="student-greeting">
+                        Welcome Back<br />
+                        <span className="student-name">{studentName}</span>
+                    </p>
+                    <button className="messages-button">Check Messages</button>
                 </section>
 
                 {/* Ongoing Info Sessions */}
