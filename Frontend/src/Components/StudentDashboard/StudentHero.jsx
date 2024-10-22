@@ -31,15 +31,17 @@ function StudentHero() {
     // Fetch Resources
     const fetchResources = async (type, batchyear) => {
         try {
+            console.log('Fetching resources with batchYear:', batchyear, 'and type:', type);
             const response = await axios.get('http://localhost:5001/api/resourcesdash', {
-                params: { batchyear: batchyear, type: type },
+                params: { batchyear: batchyear, type: type }, // Ensure single values
                 withCredentials: true,
             });
+            console.log('Resources fetched:', response.data);
             setResources(response.data);
             setResourceType(type);
             setShowModal(true);
         } catch (error) {
-            console.log('Error fetching resources: ', error.response?.data || error.message);
+            console.error('Error fetching resources:', error.response?.data || error.message);
         }
     };
 

@@ -308,7 +308,7 @@ app.get('/api/dashboard', async (req, res) => {
           return res.json({
             name: student.sname,
             mail: student.mail,
-            batchyear: student.batchyear,
+            batchyear: student.year,
             role: 'student',
             mentor: student.mentor // Send the mentor's name in the response
           });
@@ -391,7 +391,42 @@ app.post('/api/uploadResource', upload.single('file'), async (req, res) => {
   }
 });
 
+// Route to get resources by batch year and file type
+app.get('/api/resourcesdash', async (req, res) => {
+  const { batchyear, type } = req.query;
 
+  console.log('Received batch:', batchyear, 'and type:', type);
+
+  // Check if batchyear and type are arrays and get the first element if they are
+  const actualBatchYear = Array.isArray(batchyear) ? batchyear[0] : batchyear;
+  const actualType = Array.isArray(type) ? type[0] : type;
+
+  const typeFilter = {
+      pdf: /\.(pdf|jpeg|png)$/,
+      video: /\.(mp4|mkv|webm)$/,
+      audio: /\.(mp3|wav|mpeg)$/,
+  };
+
+  // Check if parameters are provided
+  if (!actualBatchYear || !actualType) {
+      return res.status(400).json({ message: 'Batch year and resource type are required.' });
+  }
+
+  try {
+      const resources = await Resource.find({
+          batchyear: actualBatchYear,
+          fileUrl: { $regex: typeFilter[actualType], $options: 'i' }
+      });
+
+      if (resources.length === 0) {
+          return res.status(404).json({ message: 'No resources found' });
+      }
+      res.status(200).json(resources);
+  } catch (error) {
+      console.error('Error fetching resources from DB:', error);
+      res.status(500).json({ error: 'Failed to fetch resources' });
+  }
+});
 
 const port = process.env.PORT1 || 5001;
 app.listen(port, () => console.log(`Server running on port ${port}`));
