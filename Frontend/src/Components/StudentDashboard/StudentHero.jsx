@@ -7,19 +7,41 @@ import img1 from '../../assets/1.webp';
 function StudentHero() {
     const [studentName, setStudentName] = useState('');
     const [mentorName, setMentorName] = useState('');
+    const [batchyear, setBatchYear] = useState('');
+    const [resources, setResources] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [resourceType, setResourceType] = useState('');
 
+    // Fetch Student Name
     useEffect(() => {
         const fetchStudentName = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/dashboard', { withCredentials: true });
+                const response = await axios.get('http://localhost:5001/api/dashboard', { withCredentials: true });
                 setStudentName(response.data.name);
                 setMentorName(response.data.mentor);
+                setBatchYear(response.data.batchyear);
+                console.log('Batch Year fetched:', response.data.batchyear); // Log the batch year
             } catch (error) {
                 console.log('Error fetching student name:', error);
             }
         };
         fetchStudentName();
     }, []);
+
+    // Fetch Resources
+    const fetchResources = async (type, batchyear) => {
+        try {
+            const response = await axios.get('http://localhost:5001/api/resourcesdash', {
+                params: { batchyear: batchyear, type: type },
+                withCredentials: true,
+            });
+            setResources(response.data);
+            setResourceType(type);
+            setShowModal(true);
+        } catch (error) {
+            console.log('Error fetching resources: ', error.response?.data || error.message);
+        }
+    };
 
     return (
         <div className='dashboard-container'>
@@ -31,6 +53,7 @@ function StudentHero() {
                     </p>
                     <button className="messages-button">Check Messages</button>
                 </section>
+                <h3>Mentor Name : {mentorName}</h3>
 
                 {/* Ongoing Info Sessions */}
                 <section className='info-sessions'>
@@ -58,17 +81,40 @@ function StudentHero() {
                 <section className='recommendations'>
                     <h2>Your Recommendations</h2>
                     <div className='recommendation-list'>
-                        <div className='recommendation-item'>
-                            <p>Books</p>
+                        <div className='recommendation-item' onClick={() => { fetchResources('pdf', batchyear) }}>
+                            <p>PDFs</p>
                         </div>
-                        <div className="recommendation-item">
+                        <div className="recommendation-item" onClick={() => { fetchResources('video', batchyear) }}>
                             <p>Videos</p>
                         </div>
-                        <div className="recommendation-item">
-                            <p>Courses</p>
+                        <div className="recommendation-item" onClick={() => { fetchResources('audio', batchyear) }}>
+                            <p>Audios</p>
                         </div>
                     </div>
                 </section>
+
+                {/* Modal for displaying resources */}
+                {showModal && (
+                    <div className='modal'>
+                        <div className='modal-content'>
+                            <h2>{resourceType.toUpperCase()} Resources</h2>
+                            {resources.length > 0 ? (
+                                <ul>
+                                    {resources.map((resource) => (
+                                        <li key={resource._id}>
+                                            <a href={`http://localhost:5001${resource.fileUrl}`} target='_blank' rel='nooper noreferrer'>
+                                                {resource.description || resource.fileUrl}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>No {resourceType} Resources found for batch {batchyear}.</p>
+                            )}
+                            <button onClick={() => setShowModal(false)}>Close</button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

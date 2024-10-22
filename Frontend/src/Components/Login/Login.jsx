@@ -3,128 +3,77 @@ import './Login.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
+import axios from 'axios'
 
 const Login = () => {
-
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error,setError] = useState({email:'',pass:''});
-  const [formData,setFormData] = useState({
-    role:'',
-    mail:'',
-    pass:''
-  });
-
+  const [mail, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // State for error messages
+  const [isLoading, setIsLoading] = useState(false); // Loading state for UX
   const navigate = useNavigate();
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
-  };
-
-  const handleCheck = (e) => {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-      
-    });
-    setError({});
-
-        if(name === 'mail'){
-
-          const start = value.indexOf('@')+1;
-          const end = value.indexOf('.');
-          const domain = value.substring(start, end);
-          console.log(domain);
-        
-        if (['at', 'ict', 'iat', 'et'].includes(domain)) {
-          setFormData(prev => ({ ...prev, role: 'Mentor'}));
-        }else {
-          setFormData(prev => ({ ...prev, role: 'Student'}));
-      }
-        }
-        
-    
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true); // Start loading state
+    setError(''); // Clear previous errors
     try {
-      const response = await fetch("http://localhost:5001/api/login",{
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const result = await axios.post(
+        'http://localhost:5001/api/login',
+        { mail, password },
+        { withCredentials: true }
+      );
 
-      const data = await response.json();
-      if(data.success){
-
-        if(formData.role == 'Student'){
-          navigate('/student-dashboard',{  state: {name: data.sname}});
+      if (result.data.message === 'Success') {
+        const role = result.data.role;
+        if (role === 'mentor') {
+          navigate("/mentor-dashboard");
+        }else if(role === 'student'){
+          navigate("/student-dashboard");
         }
-
-        else if(formData.role == 'Mentor'){
-          navigate('/mentor-dashboard', { state: { name: data.mentor } });
-        }
-        
-        setFormData({
-          role:'',
-          mail:'',
-          pass:''
-        });
-
-        setError({ mail: '', pass:'' });
-  
-      }else{
-        if(data.message.includes('Email not found')){
-          console.log(data.message)
-          setError(prevState => ({ ...prevState, email: data.message }));
-        }
-        if(data.message.includes('Password not matched')){
-          console.log(data.message)
-          setError(prevState => ({ ...prevState, pass: data.message }));
-        }
+      } else {
+        setError('Login failed: User does not exist' + result.data.error);
       }
-    } catch (error) {
-      toast.error('Error occurred while loging in. Please try again later.');
-      console.error('Error:', error);
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred while logging in. Please try again later.');
+    } finally {
+      setIsLoading(false); // Stop loading state
     }
   };
-
 
 
   return (
     <div className='cont'>
       
-      <form action="" onSubmit={handleSubmit}>
+      <form action="" onSubmit={handleLogin}>
         <h2>Login</h2>
         <Link className='xbtn' to="/"><i className="fa-solid fa-xmark"></i></Link>
 
-        <div className="input-wrapper">
-        <label htmlFor="">Email</label>
-        <i className="fa-solid fa-user"></i>
-        <input type="email" name='mail' className={ error.email ? 'error-state': ''}  value={formData.mail} onChange={handleCheck} required autoFocus/>
-        </div>
-        <span className="error" style={{height:'1rem'}}>{error.email}</span>
-
-        <div className="input-wrapper">
-        <label htmlFor="">Password</label>
-        <i className="fa-solid fa-lock"></i>
-        
-        <div className="eye-wrapper">
-        <span className="icon" onClick={togglePasswordVisibility}>
-            <i className={`fa-solid ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-          </span>
-        </div>
-
-        <input type={passwordVisible ? 'text' : 'password'} name='pass' className={ error.pass ? 'error-state': ''} value={formData.pass} onChange={handleCheck} required />
-        </div>
+        <label htmlFor='email'>Email</label>
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            value={mail}
+            type='email'
+            id='email'
+            required
+            autoFocus
+          />
+          
+          <label htmlFor='password'>Password</label>
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            type='password'
+            id='password'
+            required
+          />
 
         <span className="error" style={{height:'1rem'}}>{error.pass}</span>
         <Link to="/forgot-password" className='forgot'><h4>Forgot Password?</h4></Link>
         <div className="btn-center">
-        <button type='submit'>Login</button>
+        <button type='submit' disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
         <h4>Don't Have An Account?<Link to="/role" className='link'>Sign Up</Link></h4>
         </div>
       </form>

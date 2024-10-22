@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from './Modal.jsx';
 import './Mentor.css';
-import { useLocation } from 'react-router-dom';
 
 function MentorHero() {
-  const location = useLocation();
-  const mentorName = location.state?.name; // Fetch mentor's name from state
+  const [mentorName, setMentorName] = useState('');
   const [students, setStudents] = useState([]); // Store students list
   const [selectedBatch, setSelectedBatch] = useState(''); // Store selected batch year
   const [isModalOpen, setIsModalOpen] = useState(false); // For student list modal
@@ -15,6 +13,21 @@ function MentorHero() {
   const [allowedFileTypes, setAllowedFileTypes] = useState(''); // Store allowed file types for validation
   const [resourceForm, setResourceForm] = useState({ batchyear: '', file: null, description: '' }); // Update batch to batchyear
   const [isSuccessPopupVisible, setIsSuccessPopupVisible] = useState(false); // Success popup state
+
+  useEffect(() => {
+    const fetchMentorName = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/dashboard', {
+          withCredentials: true // Include cookies (for session)
+        });
+        setMentorName(response.data.name); // Set the mentor's name
+      } catch (error) {
+        console.log('Error fetching mentor name:', error);
+      }
+    };
+
+    fetchMentorName(); // Call the function to fetch the name
+  }, []);
 
   // Function to fetch students based on selected batch year
   const fetchStudents = async (batchyear) => {
