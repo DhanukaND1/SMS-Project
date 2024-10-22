@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const sendgrid = require('@sendgrid/mail');
+const multer = require('multer');
+const path = require('path');
 require('dotenv').config();
 
  const app = express();
@@ -41,6 +43,14 @@ const Mentor = mongoose.model('Mentor', new mongoose.Schema({
   user: String,
   pass1: String
 }));
+
+// Collection for Resources
+const Resource = mongoose.model('Resource', new mongoose.Schema({
+  batchyear: { type:String, required:true },
+  description: { type:String, required:true },
+  fileUrl: { type:String, required:true },
+  uploadedAt: { type:Date, default:Date.now },
+}))
 
 //collection for forgotpass
 const  Forgotpass = mongoose.model("Forgotpass",new mongoose.Schema({
@@ -293,6 +303,42 @@ app.get('/api/students', async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 });
+
+// Set storage for uploaded files
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+// Initialize multer
+const upload = multer({ storage });
+
+// Route to serve satatic files from the 'uploads' folder
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Route to handle resource uploads
+app.post('/api/uploadResource', upload.single('file'), async (req, res) => {
+  const { batchyear, description } = req.body;
+  const fileUrl = req.file ? `/api/uploads/${req.file.filename}` : null;
+
+  try {
+    const newResource = new Resource({
+      batchyear,
+      description,
+      fileUrl
+    });
+
+    await newResource.save();
+    res.status(201).json({ message: 'Resource uploaded successfully', resource: newResource });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to upload resource' });
+  }
+});
+
 
 
  const port = process.env.PORT1 || 5001;
