@@ -12,6 +12,7 @@ const multer = require('multer');
 const path = require('path');
 
 
+
 // Load environment variables
 dotenv.config();
 const app = express();
@@ -146,39 +147,39 @@ app.listen(process.env.PORT, () => {
 //     }
 // });
 
-// Get current logged-in user (either mentor or student)
-app.get('/dashboard', async (req, res) => {
-    if (req.session.user) {
-        const { name, email, role } = req.session.user;
+// // Get current logged-in user (either mentor or student)
+// app.get('/dashboard', async (req, res) => {
+//     if (req.session.user) {
+//         const { name, email, role } = req.session.user;
 
-        if (role === 'mentor') {
-            // Return mentor-specific response
-            return res.json({ name, email, role: 'mentor' });
-        } else if (role === 'student') {
-            try {
-                // Fetch student data including the mentor's name
-                const student = await StudentModel.findOne({ email });
-                if (student) {
-                    return res.json({
-                        name: student.name,
-                        email: student.email,
-                        batchyear: student.batchyear,
-                        role: 'student',
-                        mentor: student.mentor // Send the mentor's name in the response
-                    });
-                } else {
-                    return res.status(404).json({ error: "Student not found" });
-                }
-            } catch (error) {
-                return res.status(500).json({ error: "Internal server error" });
-            }
-        } else {
-            return res.status(400).json({ error: "Invalid role" });
-        }
-    } else {
-        return res.status(401).json({ error: "No user logged in" });
-    }
-});
+//         if (role === 'mentor') {
+//             // Return mentor-specific response
+//             return res.json({ name, email, role: 'mentor' });
+//         } else if (role === 'student') {
+//             try {
+//                 // Fetch student data including the mentor's name
+//                 const student = await StudentModel.findOne({ email });
+//                 if (student) {
+//                     return res.json({
+//                         name: student.name,
+//                         email: student.email,
+//                         batchyear: student.batchyear,
+//                         role: 'student',
+//                         mentor: student.mentor // Send the mentor's name in the response
+//                     });
+//                 } else {
+//                     return res.status(404).json({ error: "Student not found" });
+//                 }
+//             } catch (error) {
+//                 return res.status(500).json({ error: "Internal server error" });
+//             }
+//         } else {
+//             return res.status(400).json({ error: "Invalid role" });
+//         }
+//     } else {
+//         return res.status(401).json({ error: "No user logged in" });
+//     }
+// });
 
 //Get Student by Mentor and Batch Year
 // app.get('/students', async (req, res) => {
