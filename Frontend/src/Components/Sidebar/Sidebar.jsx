@@ -1,11 +1,46 @@
-import React, { useState,useRef,useEffect} from 'react'
-import './Sidebar.css'
-import { Link } from 'react-router-dom'
+import React, { useState,useRef,useEffect} from 'react';
+import './Sidebar.css';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Sidebar = () => {
 
   const [toggleBar, setToggleBar] = useState(false);
+  const [role, setRole] = useState('');
   const sidebarRef = useRef();
+
+  useEffect(() => {
+    const fetchRole = async () => {
+        try {
+            const response = await axios.get('http://localhost:5001/api/dashboard', { withCredentials: true });
+            setRole(response.data.role);
+        } catch (error) {
+          console.error('Error fetching role:', error.response ? error.response.data : error.message);
+        }
+    };
+    fetchRole();
+}, []);
+
+const handleLogout = async () => {
+  try {
+    await fetch('http://localhost:5001/api/logout', {
+      method: 'POST',
+      credentials: 'include', // Ensure cookies are sent with the request
+    });
+    // Redirect or update the state as needed
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
+ 
+  let dashboardPath = '';
+  console.log(role);
+  if(role === 'Mentor'){
+    dashboardPath = '/mentor-dashboard'
+  }else if(role === 'Student'){
+    dashboardPath = '/student-dashboard'
+  }
+ 
 
   useEffect(()=>{
     document.addEventListener('click',handleSidebar);
@@ -41,28 +76,29 @@ const Sidebar = () => {
         <ul className="side-lists">
 
           <li className="side-list">
-          <Link to='/'  className="side-links">
+          
+          <Link to={dashboardPath}  className="side-links">
             <i class='bx bxs-dashboard icn' ></i>
               <span className="side-link">Dashboard</span>
             </ Link>
           </li>
 
           <li className="side-list">
-          <Link to=''  className="side-links">
+          <Link to='/'  className="side-links">
             <i class='bx bx-bell icn' ></i>
               <span className="side-link">Notification</span>
             </ Link>
           </li>
 
           <li className="side-list">
-          <Link to=''  className="side-links">
+          <Link to='/'  className="side-links">
             <i class='bx bx-message-rounded icn' ></i>
               <span className="side-link">Messages</span>
             </ Link>
           </li>
 
           <li className="side-list">
-          <Link to=''  className="side-links">
+          <Link to='/'  className="side-links">
             <i class='bx bxs-calendar icn' ></i>
               <span className="side-link">Calendar</span>
             </ Link>
@@ -88,7 +124,7 @@ const Sidebar = () => {
 
           <ul className="side-lists">
           <li className="side-list">
-          <Link to='/'  className="side-links">
+          <Link to='/'  className="side-links" onClick={handleLogout}>
             <i class='bx bx-log-out icn' ></i>
               <span className="side-link">Logout</span>
             </Link>
