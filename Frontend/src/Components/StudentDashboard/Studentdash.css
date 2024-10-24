@@ -94,6 +94,11 @@
     color: #1e90ff;
 }
 
+.messages-button:hover{
+    background-color: #0f45bb;
+    transform: scale(1.05);
+}
+
 .info-sessions,
 .recommendations {
     margin-bottom: 30px;
@@ -128,6 +133,11 @@
     cursor: pointer;
 }
 
+.attend-button:hover {
+    background-color: #0f45bb;
+    transform: scale(1.05);
+}
+
 .recommendation-list {
     display: flex;
     gap: 20px;
@@ -139,6 +149,12 @@
     width: 150px;
     text-align: center;
     border-radius: 10px;
+    cursor: pointer;
+}
+
+.recommendation-item:hover{
+    background-color: #7c7c7c;
+    transform: scale(1.05);
 }
 
 /* Resources Modal CSS */
