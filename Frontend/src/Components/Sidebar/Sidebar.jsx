@@ -27,7 +27,7 @@ const handleLogout = async () => {
       method: 'POST',
       credentials: 'include', // Ensure cookies are sent with the request
     });
-    // Redirect or update the state as needed
+    
   } catch (error) {
     console.error('Logout failed:', error);
   }
@@ -98,7 +98,7 @@ const handleLogout = async () => {
           </li>
 
           <li className="side-list">
-          <Link to='/'  className="side-links">
+          <Link to='/calendar'  className="side-links">
             <i class='bx bxs-calendar icn' ></i>
               <span className="side-link">Calendar</span>
             </ Link>
