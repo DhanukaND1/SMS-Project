@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const sendgrid = require('@sendgrid/mail');
 const multer = require('multer');
 const path = require('path');
@@ -14,10 +13,31 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
+ 
+
+ // CORS configuration with FRONTEND_URL from .env
 app.use(cors({
-  origin: 'http://localhost:5173', // Use environment variable
+  origin: process.env.FRONTEND_URL, // Use environment variable
   credentials: true, // Allow credentials (cookies, session)
 }));
+
+app.use(session({
+  secret: process.env.SESSION_SECRET, // Use environment variable
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({
+      mongoUrl: 'mongodb://localhost:27017/signupDB',
+      ttl: 14 * 24 * 60 * 60 // Session expiration time (14 days in seconds)
+  }),
+  cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      httpOnly: true, // Ensure the cookie is only accessible by the server
+      secure: false, // Set to true if using HTTPS
+      sameSite: 'lax' // Helps prevent CSRF attacks
+  }
+}));
+
+// Parse JSON bodies before handling routes
 app.use(express.json());
 
 // Set the SendGrid API key from environment variables
@@ -28,18 +48,9 @@ mongoose.connect('mongodb://localhost:27017/signupDB', {})
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET, // Use environment variable
-  resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/signupDB' }),
-  cookie: {
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-      httpOnly: true, // Ensure the cookie is only accessible by the server
-      secure: false, // Set to true if using HTTPS
-      sameSite: 'lax' // Helps prevent CSRF attacks
-  }
-}));
+
+
+ 
 
 //collection for student
 const Student = mongoose.model('Student', new mongoose.Schema({
@@ -146,42 +157,100 @@ app.post('/api/signupMentor', async (req, res) => {
   }
 });
 
-//end point for login
 // Login Route
 app.post('/api/login', async (req, res) => {
-  try {
-      const { mail, password } = req.body;
 
-      //Check if the user is a mentor first
-      const mentor = await Mentor.findOne({ mail });
-      if (mentor) {
-          const passwrodMatch = await bcrypt.compare(password, mentor.pass1);
-          if (passwrodMatch) {
-              req.session.user = { name: mentor.name, mail: mentor.mail, role: 'mentor' };
-              req.session.save();
-              return res.json({ message: "Success", role: 'mentor' });
-          } else {
-              return res.status(401).json({ error: "Password does not match!" });
-          }
+    const { mail, password, role } = req.body;
+    console.log(req.body);
+    try {
+      if (role === 'Student') {
+        const student = await Student.findOne({ mail });
+        if (!student) {
+          console.log('Email not found');
+          return res.status(404).json({ success: false, message: 'Email not found' });
+          
+        }
+        const isMatch = await bcrypt.compare(password, student.rePass);
+        if (!isMatch) {
+          console.log('Password not matched');
+          return res.status(500).json({ success: false, message: 'Password not matched' });
+        }
+
+        req.session.user = { name: student.sname, email: student.mail, role: 'Student' };
+        console.log('Session User:', req.session.user);
+        return res.status(200).json({ success: true, role: 'Student', message: 'Login successful!' });
       }
 
-      //If no Mentor, check if the user is a student
-      const student = await Student.findOne({ mail });
-      if (student) {
-          const passwrodMatch = await bcrypt.compare(password, student.rePass);
-          if (passwrodMatch) {
-              req.session.user = { name: student.sname, mail: student.mail, role: 'student' };
-              req.session.save();
-              return res.json({ message: "Success", role: "student" });
-          } else {
-              return res.status(401).json({ error: "Password does not match!" });
-          }
+      if (role === 'Mentor') {
+        const mentor = await Mentor.findOne({ mail });
+        if (!mentor) {
+          console.log('Email not found');
+          return res.status(404).json({ success: false, message: 'Email not found' });
+        }
+
+        const isMatch = await bcrypt.compare(password, mentor.pass1);
+        if (!isMatch) {
+          console.log('Password not matched');
+          return res.status(500).json({ success: false, message: 'Password not matched' });
+        }
+
+        req.session.user = { name: mentor.name, email: mentor.mail, role: 'Mentor' };
+        return res.status(200).json({ success: true, message: 'Login successful!', role: 'Mentor' });
       }
-      return res.status(401).json({ error: "No user found" });
-  } catch (error) {
-      console.error('Error in /login:', error);  // This will log the error to the console
+    } catch (error) {
+      console.error('Error in login:', error.response.data); // This will log the error to the console
       res.status(500).json({ error: 'Internal server error' });
+    }
+  
+});
+
+
+// Get current logged-in user (either mentor or student)
+app.get('/api/dashboard', async (req, res) => {
+
+  if (req.session.user) {
+      const { name, email, role } = req.session.user;
+      if (role === 'Mentor') {
+
+          // Return mentor-specific response
+          
+          return res.json({ name, email, role: 'Mentor' });
+
+      } else if (role === 'Student') {
+          try {
+              // Fetch student data including the mentor's name
+              const student = await Student.findOne({ mail:email });
+              if (student) {
+                  return res.json({
+                      name: student.sname,
+                      email: student.mail,
+                      batchyear: student.year,
+                      role: 'Student',
+                      mentor: student.mentor // Send the mentor's name in the response
+                  });
+              } else {
+                  return res.status(404).json({ error: "Student not found" });
+              }
+          } catch (error) {
+              return res.status(500).json({ error: "Internal server error" });
+          }
+      } else {
+          return res.status(400).json({ error: "Invalid role" });
+      }
+  } else {
+      return res.status(401).json({ error: "No user logged in" });
   }
+});
+
+//logout route
+app.post('/api/logout',async (req,res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ message: 'Could not log out.' });
+    }
+    res.clearCookie('connect.sid'); // Clear the session cookie
+    res.status(200).json({ message: 'Logged out successfully.' });
+  });
 });
 
 // Forgot password route
@@ -428,5 +497,6 @@ app.get('/api/resourcesdash', async (req, res) => {
   }
 });
 
+// Start the server
 const port = process.env.PORT1 || 5001;
 app.listen(port, () => console.log(`Server running on port ${port}`));
