@@ -8,6 +8,7 @@ const ForgotPassword = () => {
 
 const [mail, setMail] = useState('');
 const [errors, setErrors] = useState('');
+const [isLoading, setIsLoading] = useState(false);
 
 const handleChange = (e) => {
    setMail(e.target.value);
@@ -16,6 +17,7 @@ const handleChange = (e) => {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
+  setIsLoading(true);
   try {
     
     const response = await fetch('http://localhost:5001/api/forgot-password',{
@@ -36,6 +38,8 @@ const handleSubmit = async (e) => {
   } catch (error) {
     toast.error('Error occurred while sending mail. Please try again later.');
     console.log('Error:', error);
+  } finally {
+    setIsLoading(false); 
   }
 };
 
@@ -57,7 +61,7 @@ const handleSubmit = async (e) => {
         <span className='error' style={{height:'4rem'}}>{errors}</span>
         </div>
         <div className="fpbtn">
-        <button className='fp-btn'>Send Mail</button>
+        <button className='fp-btn' id={isLoading ? 'loading' : ''} disabled={isLoading} >{isLoading ? "Sending..." : "Send Mail"}</button>
         </div>
       </form>
       <ToastContainer />
