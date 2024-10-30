@@ -30,7 +30,7 @@ app.use(session({
       ttl: 14 * 24 * 60 * 60 // Session expiration time (14 days in seconds)
   }),
   cookie: {
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      maxAge: 1 * 60 * 60 * 1000, // 1 hour
       httpOnly: true, // Ensure the cookie is only accessible by the server
       secure: false, // Set to true if using HTTPS
       sameSite: 'lax' // Helps prevent CSRF attacks
