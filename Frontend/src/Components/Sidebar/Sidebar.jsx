@@ -7,6 +7,7 @@ const Sidebar = () => {
 
   const [toggleBar, setToggleBar] = useState(false);
   const [role, setRole] = useState('');
+  const [name, setName] = useState('');
   const sidebarRef = useRef();
 
   useEffect(() => {
@@ -14,6 +15,7 @@ const Sidebar = () => {
         try {
             const response = await axios.get('http://localhost:5001/api/dashboard', { withCredentials: true });
             setRole(response.data.role);
+            setName(response.data.name);
         } catch (error) {
           console.error('Error fetching role:', error.response ? error.response.data : error.message);
         }
@@ -133,6 +135,12 @@ const handleLogout = async () => {
 
           </div>
       </div>
+      </div>
+
+      <div className="sidecont">
+        <ul>
+          <li>{name}</li>
+        </ul>
       </div>
     </nav>
   )
