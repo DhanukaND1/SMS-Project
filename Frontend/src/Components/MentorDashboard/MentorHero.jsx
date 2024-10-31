@@ -5,66 +5,57 @@ import './Mentor.css';
 
 function MentorHero() {
   const [mentorName, setMentorName] = useState('');
-  const [students, setStudents] = useState([]); // Store students list
-  const [selectedBatch, setSelectedBatch] = useState(''); // Store selected batch year
-  const [isModalOpen, setIsModalOpen] = useState(false); // For student list modal
-  const [resourceModalOpen, setResourceModalOpen] = useState(false); // For upload modal
-  const [uploadType, setUploadType] = useState(''); // Store the type of file being uploaded (PDFs, Videos, Audios)
-  const [allowedFileTypes, setAllowedFileTypes] = useState(''); // Store allowed file types for validation
-  const [resourceForm, setResourceForm] = useState({ batchyear: '', file: null, description: '' }); // Update batch to batchyear
-  const [isSuccessPopupVisible, setIsSuccessPopupVisible] = useState(false); // Success popup state
+  const [students, setStudents] = useState([]);
+  const [selectedBatch, setSelectedBatch] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [resourceModalOpen, setResourceModalOpen] = useState(false);
+  const [uploadType, setUploadType] = useState('');
+  const [allowedFileTypes, setAllowedFileTypes] = useState('');
+  const [resourceForm, setResourceForm] = useState({ batchyear: '', file: null, description: '' });
+  const [isSuccessPopupVisible, setIsSuccessPopupVisible] = useState(false);
 
   useEffect(() => {
     const fetchMentorName = async () => {
       try {
         const response = await axios.get('http://localhost:5001/api/dashboard', {
-          withCredentials: true // Include cookies (for session)
+          withCredentials: true,
         });
-        setMentorName(response.data.name); // Set the mentor's name
+        setMentorName(response.data.name);
       } catch (error) {
         console.log('Error fetching mentor name:', error);
       }
     };
 
-    fetchMentorName(); // Call the function to fetch the name
+    fetchMentorName();
   }, []);
 
-  // Function to fetch students based on selected batch year
   const fetchStudents = async (batchyear) => {
-    console.log('Batch year selected:', batchyear);
     try {
-      // Trim the batchyear before sending the request
-      const response = await axios.get(`http://localhost:5001/api/students?mentorName=${mentorName}&batchyear=${batchyear}`);
-      setStudents(response.data); // Store the fetched students
-      setSelectedBatch(batchyear); // Update the selected batch year
+      const response = await axios.get(
+        `http://localhost:5001/api/students?mentorName=${mentorName}&batchyear=${batchyear}`
+      );
+      setStudents(response.data);
+      setSelectedBatch(batchyear);
       setIsModalOpen(true);
     } catch (error) {
       console.log('Error fetching students:', error);
     }
   };
 
-  // Function to close the modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const closeModal = () => setIsModalOpen(false);
 
-  // Function to hadle file and resource form changes (batch -> batchyear)
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-
-    // Valide file type
-    if(!allowedFileTypes.includes(selectedFile.type)) {
+    if (!allowedFileTypes.includes(selectedFile.type)) {
       alert(`Invalid file type! Please upload ${uploadType} files only.`);
       return;
     }
-
     setResourceForm({
       ...resourceForm,
       file: selectedFile,
     });
   };
 
-  // Handle input change for description and batch year
   const handleInputChange = (e) => {
     setResourceForm({
       ...resourceForm,
@@ -72,7 +63,6 @@ function MentorHero() {
     });
   };
 
-  // Function to open the resource upload modal based on the clicked resource type
   const openResourceModal = (type) => {
     let fileTypes;
     switch (type) {
@@ -88,30 +78,19 @@ function MentorHero() {
       default:
         fileTypes = [];
     }
-
     setUploadType(type);
     setAllowedFileTypes(fileTypes);
     setResourceModalOpen(true);
   };
 
-  // Function to close the resource upload midal
-  const closeResourceModal = () => {
-    setResourceModalOpen(false);
-  };
+  const closeResourceModal = () => setResourceModalOpen(false);
 
-  // Function to submit resource upload (batch -> batchyear)
   const uploadResource = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('batchyear', resourceForm.batchyear); // Updated field
+    formData.append('batchyear', resourceForm.batchyear);
     formData.append('description', resourceForm.description);
     formData.append('file', resourceForm.file);
-
-    console.log('Form data being sent:', {
-      batchyear: resourceForm.batchyear,
-      description: resourceForm.description,
-      file: resourceForm.file,
-    });
 
     try {
       const response = await axios.post('http://localhost:5001/api/uploadResource', formData, {
@@ -119,7 +98,6 @@ function MentorHero() {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('Resource uploaded successfully:', response.data);
       setIsSuccessPopupVisible(true);
       closeResourceModal();
 
@@ -156,12 +134,11 @@ function MentorHero() {
           </div>
         </section>
 
-        {/* Modal to display student list */}
         <Modal isOpen={isModalOpen} onClose={closeModal} title={`Students from ${selectedBatch} Batch`}>
-          <ul>
+          <ul className='modal-ul'>
             {Array.isArray(students) && students.length > 0 ? (
               students.map((student, index) => (
-                <li key={index}>
+                <li key={index} className='modal-li'>
                   {student.sname} ({student.sid})
                 </li>
               ))
@@ -170,9 +147,7 @@ function MentorHero() {
             )}
           </ul>
         </Modal>
-        
 
-        {/* Recommendations */}
         <section className='recommendations'>
           <h2>Your Recommendations</h2>
           <div className='recommendation-list'>
@@ -194,13 +169,18 @@ function MentorHero() {
           </div>
         )}
 
-        {/* Upload Resource Modal */}
         {resourceModalOpen && (
-          <Modal isOpen={resourceModalOpen} onClose={closeResourceModal} title={`Upload ${uploadType}`}>
-            <form onSubmit={uploadResource}>
+          <Modal isOpen={resourceModalOpen} onClose={closeResourceModal}>
+            <form className="upload-form-container" onSubmit={uploadResource}>
+              <h3>Upload {uploadType}</h3>
               <div>
                 <label>Select Batch Year:</label>
-                <select name='batchyear' value={resourceForm.batchyear} onChange={handleInputChange}>
+                <select
+                  className="upload-select"
+                  name="batchyear"
+                  value={resourceForm.batchyear}
+                  onChange={handleInputChange}
+                >
                   <option value="">Select Batch</option>
                   <option value="19/20">19/20</option>
                   <option value="20/21">20/21</option>
@@ -210,13 +190,22 @@ function MentorHero() {
               </div>
               <div>
                 <label>File Description:</label>
-                <input type='text' name='description' value={resourceForm.description} onChange={handleInputChange} />
+                <input
+                  type="text"
+                  name="description"
+                  value={resourceForm.description}
+                  onChange={handleInputChange}
+                />
               </div>
               <div>
                 <label>Upload {uploadType} File:</label>
-                <input type='file' name='file' onChange={handleFileChange} />
+                <input
+                  type="file"
+                  name="file"
+                  onChange={handleFileChange}
+                />
               </div>
-              <button type='submit'>Upload</button>
+              <button type="submit">Upload</button>
             </form>
           </Modal>
         )}

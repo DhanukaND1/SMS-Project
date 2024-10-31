@@ -148,6 +148,12 @@
     background-color: #005bb5;
   }
 
+.modal-li {
+  text-align: left; 
+  padding: 8px 12px; 
+  border-bottom: 1px solid #ddd; 
+}
+
 .recommendations {
     margin-top: 20px;
     justify-content: space-between;
@@ -161,4 +167,93 @@
 
 .recommendation-list {
     justify-content: space-around;
+}
+
+.upload-form-container {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+.upload-form-container h3 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.upload-form-container label {
+  font-size: 16px;
+  color: #666;
+  margin-top: 10px;
+  display: block;
+  font-weight: 500;
+}
+
+.upload-form-container select,
+.upload-form-container input[type="text"],
+.upload-form-container input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.upload-form-container select:focus,
+.upload-form-container input[type="text"]:focus,
+.upload-form-container input[type="file"]:focus {
+  outline: none;
+  border-color: #1e90ff;
+  box-shadow: 0 0 5px rgba(30, 144, 255, 0.4);
+}
+
+.upload-form-container button {
+  background-color: #1e90ff;
+  color: white;
+  padding: 12px;
+  margin-top: 15px;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-form-container button:hover {
+  background-color: #005bb5;
+}
+
+.upload-form-container button:active {
+  background-color: #004080;
+}
+
+.success-popup {
+  background-color: #dff0d8;
+  color: #3c763d;
+  padding: 10px;
+  border: 1px solid #d6e9c6;
+  border-radius: 5px;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.error-popup {
+  background-color: #f2dede;
+  color: #a94442;
+  padding: 10px;
+  border: 1px solid #ebccd1;
+  border-radius: 5px;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 16px;
 }
