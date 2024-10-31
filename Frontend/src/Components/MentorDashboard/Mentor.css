@@ -158,7 +158,7 @@
     margin-top: 20px;
     justify-content: space-between;
     align-items: center;
-    background-color: #ffffff;
+    background-color: #e5ddff;
     border: 1px solid #ececec;
     padding: 20px 20px;
     border-radius: 8px;
@@ -167,6 +167,7 @@
 
 .recommendation-list {
     justify-content: space-around;
+    margin-bottom: 20px;
 }
 
 .upload-form-container {

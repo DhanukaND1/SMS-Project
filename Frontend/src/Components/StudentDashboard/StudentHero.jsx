@@ -52,10 +52,14 @@ function StudentHero() {
                     <p className="student-greeting">
                         Welcome Back<br />
                         <span className="student-name">{studentName}</span>
+                        <br />
+                        <h4>Mentor Name : <span className='yourmentor-name'>{mentorName}</span></h4>
+                        
                     </p>
                     <button className="messages-button">Check Messages</button>
                 </section>
-                <h3>Mentor Name : {mentorName}</h3>
+
+                <hr />
 
                 {/* Ongoing Info Sessions */}
                 <section className='info-sessions'>
@@ -78,6 +82,7 @@ function StudentHero() {
                         </div>
                     </div>
                 </section>
+                <hr />
 
                 {/* Recommendations */}
                 <section className='recommendations'>
