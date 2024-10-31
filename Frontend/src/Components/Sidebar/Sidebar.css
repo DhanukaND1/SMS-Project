@@ -5,9 +5,21 @@ nav{
   height: 60px;
   display: flex;
   align-items: center;
-  z-index: 999;
+  justify-content: space-around;
+  z-index: 99;
   background-color: white;
   box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+nav .sidecont {
+  margin-left: auto;
+  padding-right: 25px;
+}
+nav .sidecont ul{
+  margin-top: 10px;
+}
+nav .sidecont ul li{
+  list-style: none;
 }
 nav .side-logo{
   margin: 0 24px;
