@@ -45,7 +45,8 @@
   opacity: 0.2;
 }
 .rbc-day-bg:hover{
-  background-color:#99d8e7 ;
+  background-color:#99d8e7;
+  cursor: pointer;
 }
 /* Day view header styling */
 .rbc-time-header {
@@ -58,6 +59,69 @@
   color: #2c3e50;
 }
 
+.date-agenda {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.agenda-content {
+  background: white;
+  padding: 25px;
+  width: 335px;
+  height: 410px;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.agenda-content h3{
+  text-align: center;
+  margin-top: 15px;
+  font-size: 25px;
+  color: blue;
+}
+
+.agenda-content form{
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+}
+
+.agenda-content form label{
+  width: 100%;
+  margin: 10px 0;
+}
+
+.agenda-content form input{
+  border: none;
+  outline: none;
+  border-bottom: 2px solid silver;
+  border-radius: 2px; 
+}
+
+.agenda-content form textarea{
+  outline: none;
+}
+
+.agenda-content form button{
+  margin: 30px 50px;
+  border: none;
+  background-color:rgb(13, 13, 122) ;
+  color: white;
+  border-radius: 20px;
+  padding: 7px 35px;
+}
+
+.agenda-content form button:hover{
+  background-color:blue;
+}
 
 @media (max-width: 768px) {
   .rbc-calendar {
