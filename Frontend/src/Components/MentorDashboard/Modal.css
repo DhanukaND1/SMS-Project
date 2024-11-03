@@ -1,42 +1,124 @@
+/* MentorHero and dashboard styles */
+.dashboard-container {
+  padding: 0px;
+}
+
+.mentorhero-container {
+  text-align: center;
+}
+
+.mentor-greeting {
+  font-size: 24px;
+}
+
+.mentor-name {
+  font-weight: bold;
+}
+
+.messages-button {
+  margin-top: 10px;
+}
+
+.student-list .batches {
+  display: flex;
+  text-align: right;
+  margin-top: 20px;
+}
+
+.batch {
+  text-align: center;
+}
+
+.student-button, .modal-button {
+  background-color: #1e90ff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.recommendations {
+  margin-top: 30px;
+}
+
+.recommendation-list {
+  display: flex;
+  justify-content: space-around;
+}
+
+.recommendation-item {
+  cursor: pointer;
+}
+
+.success-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #4caf50;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  animation: fadeInOut 3s ease;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; }
+  10%, 90% { opacity: 1; }
+}
+
+/* Modal CSS */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal-box {
-    background-color: white;
-    padding: 20px;
-    /* border-radius: 8px; */
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-  }
-  
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .close-button {
-    background-color: white;
-    border: none;
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 5px;
-  }
-  
-  .modal-content {
-    margin-top: 20px;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-container {
+  background-color: #ffffff;
+  width: 90%;
+  max-width: 500px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modal-header {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  border: none;
+  padding: 10px;
+  border-top-right-radius: 8px;
+  background-color:white;
+  transition: color 0.3s ease;
+}
+
+.modal-close-button:hover{
+  color: white;
+  background-color: red;
+}
+
+.modal-body {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
