@@ -89,6 +89,17 @@ const Forgotpass = mongoose.model("Forgotpass", new mongoose.Schema({
   resetTokenExpiration: Date
 }));
 
+//collection for calendar events
+const Event = mongoose.model('Event',new mongoose.Schema({
+  id: String,
+  title: String,
+  start: Date, 
+  end: Date,
+  allDay: { type: Boolean, default: false },
+  name: String,
+  role: String,
+}));
+
 //endpoint for signup student
 app.post('/api/signupStudent', async (req, res) => {
   const { sid, sname, mail, year, dept, mentor, rePass } = req.body;
@@ -496,6 +507,27 @@ app.get('/api/resourcesdash', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch resources' });
   }
 });
+
+//calendar event route
+app.post('/api/events', async (req, res) => {
+  const { id, title, start, end, role, name } = req.body;
+  
+ try {
+    const event = new Event({ id, title, start, end, role, name });
+    await event.save();
+
+  } catch (error) {
+    res.status(500).json({ error: 'Error saving event' });
+  }
+});
+
+app.get('/api/get-events', async (req,res) => {
+  const {role, name} = req.query;
+console.log(req.query);
+  const allEvents = await Event.find({role, name});
+  console.log(allEvents);
+  res.status(201).json(allEvents);
+})
 
 // Start the server
 const port = process.env.PORT1 || 5001;
