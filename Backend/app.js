@@ -515,19 +515,61 @@ app.post('/api/events', async (req, res) => {
  try {
     const event = new Event({ id, title, start, end, role, name });
     await event.save();
-
+    res.status(200).json({message: 'Event added successfully!'});
   } catch (error) {
-    res.status(500).json({ error: 'Error saving event' });
+    res.status(500).json({ message: 'Error adding event' });
   }
 });
 
 app.get('/api/get-events', async (req,res) => {
   const {role, name} = req.query;
-console.log(req.query);
+
   const allEvents = await Event.find({role, name});
-  console.log(allEvents);
   res.status(201).json(allEvents);
-})
+});
+
+
+// PUT route to update an event by ID
+app.put('/api/events/:id', async (req, res) => {
+  
+  const { id } = req.params;
+  const { title, start, end } = req.body;
+
+  try {
+
+    const updatedEvent = await Event.findByIdAndUpdate(
+      id,
+      { title, start, end },
+      { new: true } 
+    );
+
+    if (!updatedEvent) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.json({ message: 'Event updated successfully', event: updatedEvent });
+  } catch (error) {
+    console.error('Error updating event:', error);
+    res.status(500).json({ message: 'Error updating event' });
+  }
+});
+
+// DELETE route to remove an event by ID
+app.delete('/api/events/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const deletedEvent = await Event.findByIdAndDelete(id);
+
+    if (!deletedEvent) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    res.json({ message: 'Event deleted successfully', event: deletedEvent });
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    res.status(500).json({ message: 'Error deleting event' });
+  }
+});
 
 // Start the server
 const port = process.env.PORT1 || 5001;
