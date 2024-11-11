@@ -17,17 +17,16 @@
 
 /* Headers styling */
 .rbc-header {
-  font-weight: bold;
-  font-size: 1.2rem;
   color: #34495e;
-  border-bottom: 2px solid #dcdfe4;
-  padding: 10px;
-  background-color: #ecf0f1;
 }
 
+.rbc-toolbar-label{
+  font-size: 20px;
+  font-weight: bold;
+}
 /* Custom events styling */
 .rbc-event {
-  background-color: #3498db;
+  background-color: #469ad2;
   border: none;
   padding: 5px;
   border-radius: 4px;
@@ -36,18 +35,20 @@
 }
 
 .rbc-event:hover {
-  background-color: #2980b9;
+  background-color: #0c578a;
 }
 
 /* Current day highlight */
 .rbc-day-bg.rbc-today {
-  background-color: #e74c3c !important;
-  opacity: 0.2;
+  background: red !important;
+  opacity: 0.5;
 }
-.rbc-day-bg:hover{
-  background-color:#99d8e7;
+.rbc-row-bg .rbc-day-bg:not(.rbc-off-range-bg):hover{
+  background-color:blue;
   cursor: pointer;
+  opacity: 0.4;
 }
+
 /* Day view header styling */
 .rbc-time-header {
   background-color: #ecf0f1;
@@ -61,7 +62,6 @@
 
 .rbc-agenda-event-cell{
   cursor: pointer;
-  
 }
 
 .rbc-agenda-event-cell:hover{
@@ -93,7 +93,7 @@
 .agenda-content h3{
   text-align: center;
   margin-top: 15px;
-  font-size: 25px;
+  font-size: 23px;
   color: blue;
 }
 
@@ -128,7 +128,7 @@
   padding: 7px 35px;
 }
 
-.save-btn , .cal-btn:hover{
+.save-btn:hover , .cal-btn:hover{
   background-color:blue;
 }
 
@@ -149,5 +149,6 @@
 @media (max-width: 768px) {
   .rbc-calendar {
     height: 100vh;
+    width: 100%;
   }
 }

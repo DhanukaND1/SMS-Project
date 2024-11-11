@@ -21,6 +21,7 @@ const Calendar = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [role, setRole] = useState('');
   const [name, setName] = useState('');
+  const [currentViewDate, setCurrentViewDate] = useState(new Date());
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -45,8 +46,8 @@ const Calendar = () => {
       });
       setEvents(response.data.map(event => ({
         ...event,
-        start: new Date(event.start),
-        end: new Date(event.end),
+        start:  moment.utc(event.start).local().toDate(),
+        end:  moment.utc(event.end).local().toDate(),
         allDay: false,
       })));
     } catch (error) {
@@ -59,11 +60,21 @@ const Calendar = () => {
   }, [role, name]);
 
   const handleDayClick = (slotInfo) => {
+
+     // Get the currently viewed month's start and end dates
+  const currentMonthStart = moment(currentViewDate).startOf('month');
+  const currentMonthEnd = moment(currentViewDate).endOf('month');
+
+  // Check if the selected date falls within the current month
+  const isOffRange = moment(slotInfo.start).isBetween(currentMonthStart, currentMonthEnd, 'day', '[]');
+
+  if (isOffRange) {
     const formattedDate = moment(slotInfo.start).format("YYYY-MM-DDTHH:mm");
     setSelectedDate(formattedDate);
     setAddFormData({ ...addFormData, start: formattedDate, end: formattedDate });
     setShowAddForm(true);
-  };
+  }
+};
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
@@ -116,8 +127,8 @@ const Calendar = () => {
     const newEvent = {
       id: uuidv4(),
       title: addFormData.eventTitle,
-      start: new Date(addFormData.start),
-      end: new Date(addFormData.end),
+      start: new Date(addFormData.start).toISOString(),
+      end: new Date(addFormData.end).toISOString(),
       allDay: false,
       role,
       name,
@@ -207,6 +218,7 @@ const Calendar = () => {
             onSelectSlot={handleDayClick}
             views={{ month: true, agenda: true }}
             onSelectEvent={handleSelectEvent}
+            onNavigate={(date) => setCurrentViewDate(date)}
           />
         </div>
       </section>
