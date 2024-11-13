@@ -229,3 +229,41 @@ h4 {
     border-radius: 5px;
     cursor: pointer;
 }
+
+/* session timeout */
+
+.session-expired-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:rgba(0, 0, 0, 0.5);
+    z-index: 1005;
+}
+
+.session-expired-message{
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.session-expired-message h1{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.warning{
+    margin-right: 10px;
+    color: red;
+}
+
+@media(max-width:408px){
+    .session-expired-message{
+        border-radius: 0;
+    }
+}

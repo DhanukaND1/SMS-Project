@@ -5,10 +5,26 @@ import Session from '../../assets/Session.jpg'
 import Footer from '../Footer/Footer'
 import ReadMore from '../ReadMore/ReadMore'
 import Sidebar from '../Sidebar/Sidebar'
+import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx'
+import  {Link} from 'react-router-dom'
 
 
 function SessionContent1() {
  
+  const sessionExpired = useSessionTimeout();
+
+  if (sessionExpired) {
+    return (
+      <div className="session-expired-overlay">
+        <div className="session-expired-message">
+          <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
+          <p>Your session has expired. Please log in again.</p>
+          <Link to="/login" className='link'>Login</Link>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className='app'>
 

@@ -9,6 +9,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx'
+import  {Link} from 'react-router-dom'
 
 const Calendar = () => {
   const localizer = momentLocalizer(moment);
@@ -22,6 +24,8 @@ const Calendar = () => {
   const [role, setRole] = useState('');
   const [name, setName] = useState('');
   const [currentViewDate, setCurrentViewDate] = useState(new Date());
+
+  const sessionExpired = useSessionTimeout();
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -203,6 +207,19 @@ const Calendar = () => {
       setEditFormData({ id:'', eventTitle: '', start: '', end: '' });
     }
   };
+
+
+  if (sessionExpired) {
+    return (
+      <div className="session-expired-overlay">
+        <div className="session-expired-message">
+          <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
+          <p>Your session has expired. Please log in again.</p>
+          <Link to="/login" className='link'>Login</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
