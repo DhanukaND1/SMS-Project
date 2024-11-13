@@ -27,7 +27,7 @@ app.use(session({
   saveUninitialized: true,
   store: MongoStore.create({
       mongoUrl: 'mongodb://localhost:27017/signupDB',
-      ttl: 14 * 24 * 60 * 60 // Session expiration time (14 days in seconds)
+      ttl: 1 * 24 * 60 * 60 // Session expiration time (1 days in seconds)
   }),
   cookie: {
       maxAge: 1 * 60 * 60 * 1000, // 1 hour
@@ -250,6 +250,15 @@ app.get('/api/dashboard', async (req, res) => {
       }
   } else {
       return res.status(401).json({ error: "No user logged in" });
+  }
+});
+
+//check session route
+app.get('/api/check-session', (req, res) => {
+  if (req.session.user) {
+    res.status(200).json({ isActive: true });
+  } else {
+    res.status(200).json({ isActive: false, message: 'Session expired' });
   }
 });
 
