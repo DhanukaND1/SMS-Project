@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import './SessionContent1.css'
 import Navigation from '../SessionNavigation/Navigation'
 import Session from '../../assets/Session.jpg'
@@ -11,7 +11,11 @@ import  {Link} from 'react-router-dom'
 
 function SessionContent1() {
  
-  const sessionExpired = useSessionTimeout();
+  const {sessionExpired, checkSession} = useSessionTimeout();
+
+  useEffect(() => {
+    checkSession(); // Trigger session check on component mount
+  }, []);
 
   if (sessionExpired) {
     return (

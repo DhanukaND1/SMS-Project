@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import Studenthero from './StudentHero'
 import Sidebar from '../Sidebar/Sidebar.jsx'
 import Footer from '../Footer/Footer.jsx'
@@ -6,7 +6,11 @@ import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx'
 import  {Link} from 'react-router-dom'
 
 function StudentDash() {
-  const sessionExpired = useSessionTimeout();
+  const {sessionExpired, checkSession} = useSessionTimeout();
+
+  useEffect(() => {
+    checkSession(); // Trigger session check on component mount
+  }, []);
 
   if (sessionExpired) {
     return (

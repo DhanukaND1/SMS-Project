@@ -25,7 +25,7 @@ const Calendar = () => {
   const [name, setName] = useState('');
   const [currentViewDate, setCurrentViewDate] = useState(new Date());
 
-  const sessionExpired = useSessionTimeout();
+  const {sessionExpired, checkSession} = useSessionTimeout();
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -208,6 +208,9 @@ const Calendar = () => {
     }
   };
 
+  useEffect(() => {
+    checkSession(); // Trigger session check on component mount
+  }, []);
 
   if (sessionExpired) {
     return (
