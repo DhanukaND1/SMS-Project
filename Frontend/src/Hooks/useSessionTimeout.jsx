@@ -5,7 +5,7 @@ const useSessionTimeout = () => {
 
   const [sessionExpired, setSessionExpired] = useState(false);
 
-  useEffect(() => {
+  
     const checkSession = async () => {
       try {
         const response = await axios.get('http://localhost:5001/api/check-session', { withCredentials: true });
@@ -20,13 +20,18 @@ const useSessionTimeout = () => {
       }
     };
 
-    // Check session every 15 seconds
-    const interval = setInterval(checkSession, 15000);
+    useEffect(() => {
+    // Check session every 5 minute
+    const interval = setInterval(checkSession, 5 * 60 * 1000);
     console.log(sessionExpired);
     return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
 
-  return sessionExpired; // Return sessionExpired state so that the component can render the UI
+  // const triggerSessionCheck = () => {
+  //   checkSession(); // Manually trigger session check
+  // };
+
+  return {sessionExpired, checkSession}; // Return sessionExpired state so that the component can render the UI
 };
 
 export default useSessionTimeout;
