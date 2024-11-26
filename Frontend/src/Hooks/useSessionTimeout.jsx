@@ -13,6 +13,9 @@ const useSessionTimeout = () => {
           setSessionExpired(true);  // Session expired, set state to true
           await axios.post('http://localhost:5001/api/logout', {}, { withCredentials: true });
         }
+        else{
+          setSessionExpired(false);
+        }
       } catch (error) {
         console.error('Session check failed:', error);
         setSessionExpired(true);  // Session expired, handle errors by marking it as expired
