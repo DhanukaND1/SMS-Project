@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import MentorNav from './MentorNav'
 import MentorHero from './MentorHero'
 import Footer from '../Footer/Footer'
@@ -9,7 +9,11 @@ import  {Link} from 'react-router-dom'
 
 function MentorDash() {
 
-    const sessionExpired = useSessionTimeout();
+    const {sessionExpired,checkSession} = useSessionTimeout();
+
+    useEffect(() => {
+      checkSession(); // Trigger session check on component mount
+    }, []);
 
   if (sessionExpired) {
     return (
