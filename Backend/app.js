@@ -61,7 +61,8 @@ const Student = mongoose.model('Student', new mongoose.Schema({
   dept: String,
   mentor: String,
   user: String,
-  rePass: String
+  rePass: String,
+  image: String
 }));
 
 //collection for mentor
@@ -71,7 +72,8 @@ const Mentor = mongoose.model('Mentor', new mongoose.Schema({
   mail: String,
   phone: Number,
   user: String,
-  pass1: String
+  pass1: String,
+  image: String
 }));
 
 // Collection for Resources
@@ -224,8 +226,17 @@ app.get('/api/dashboard', async (req, res) => {
       if (role === 'Mentor') {
 
           // Return mentor-specific response
+          const mentor = await Mentor.findOne({mail:email});
+          if(mentor){
+            return res.json({ 
+              name: mentor.name,
+              email: mentor.mail,
+              role: 'Mentor',
+              dept: mentor.dept,
+              phone: mentor.phone 
+            });
+          }
           
-          return res.json({ name, email, role: 'Mentor' });
 
       } else if (role === 'Student') {
           try {
@@ -234,10 +245,12 @@ app.get('/api/dashboard', async (req, res) => {
               if (student) {
                   return res.json({
                       name: student.sname,
+                      sid: student.sid,
                       email: student.mail,
                       batchyear: student.year,
                       role: 'Student',
-                      mentor: student.mentor // Send the mentor's name in the response
+                      mentor: student.mentor, // Send the mentor's name in the response
+                      dept: student.dept
                   });
               } else {
                   return res.status(404).json({ error: "Student not found" });
@@ -381,39 +394,39 @@ app.post('/api/reset-password', async (req, res) => {
   }
 });
 
-// Get current logged-in user (either mentor or student)
-app.get('/api/dashboard', async (req, res) => {
-  if (req.session.user) {
-    const { name, mail, role } = req.session.user;
+// // Get current logged-in user (either mentor or student)
+// app.get('/api/dashboard', async (req, res) => {
+//   if (req.session.user) {
+//     const { name, mail, role } = req.session.user;
 
-    if (role === 'mentor') {
-      // Return mentor-specific response
-      return res.json({ name, mail, role: 'mentor' });
-    } else if (role === 'student') {
-      try {
-        // Fetch student data including the mentor's name
-        const student = await Student.findOne({ mail });
-        if (student) {
-          return res.json({
-            name: student.sname,
-            mail: student.mail,
-            batchyear: student.year,
-            role: 'student',
-            mentor: student.mentor // Send the mentor's name in the response
-          });
-        } else {
-          return res.status(404).json({ error: "Student not found" });
-        }
-      } catch (error) {
-        return res.status(500).json({ error: "Internal server error" });
-      }
-    } else {
-      return res.status(400).json({ error: "Invalid role" });
-    }
-  } else {
-    return res.status(401).json({ error: "No user logged in" });
-  }
-});
+//     if (role === 'mentor') {
+//       // Return mentor-specific response
+//       return res.json({ name, mail, role: 'mentor' });
+//     } else if (role === 'student') {
+//       try {
+//         // Fetch student data including the mentor's name
+//         const student = await Student.findOne({ mail });
+//         if (student) {
+//           return res.json({
+//             name: student.sname,
+//             mail: student.mail,
+//             batchyear: student.year,
+//             role: 'student',
+//             mentor: student.mentor // Send the mentor's name in the response
+//           });
+//         } else {
+//           return res.status(404).json({ error: "Student not found" });
+//         }
+//       } catch (error) {
+//         return res.status(500).json({ error: "Internal server error" });
+//       }
+//     } else {
+//       return res.status(400).json({ error: "Invalid role" });
+//     }
+//   } else {
+//     return res.status(401).json({ error: "No user logged in" });
+//   }
+// });
 
 // Get Mentors to Student Sign up dashboard
 app.get('/api/mentors', async (req, res) => {
@@ -479,6 +492,87 @@ app.post('/api/uploadResource', upload.single('file'), async (req, res) => {
     res.status(500).json({ error: 'Failed to upload resource' });
   }
 });
+
+// Route for updating the profile image of the student
+app.post('/api/update-student-image', upload.single('image'), async (req, res) => {
+  const { mail } = req.body; // Get the user's email from the request body
+  const imageUrl = req.file ? `/api/uploads/${req.file.filename}` : null;  // Get file URL
+
+  try {
+    const student = await Student.findOne({ mail });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    // Update student's image URL
+    student.image = imageUrl;  // Store the image URL in the database
+    await student.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile image updated successfully!',
+    });
+  } catch (error) {
+    console.error('Error updating profile image:', error);
+    res.status(500).json({ success: false, message: 'Error updating profile image', error: error.message });
+  }
+});
+
+// Route for updating the profile image of the mentor
+app.post('/api/update-mentor-image', upload.single('image'), async (req, res) => {
+  const { mail } = req.body; 
+  const imageUrl = req.file ? `/api/uploads/${req.file.filename}` : null;  // Get file URL
+
+  try {
+    const mentor = await Mentor.findOne({ mail });
+    if (!mentor) {
+      return res.status(404).json({ success: false, message: 'Mentor not found' });
+    }
+
+    // Update mentor's image URL
+    mentor.image = imageUrl;  // Store the image URL in the database
+    await mentor.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile image updated successfully!',
+    });
+  } catch (error) {
+    console.error('Error updating profile image:', error);
+    res.status(500).json({ success: false, message: 'Error updating profile image', error: error.message });
+  }
+});
+
+//Route to get image
+app.get('/api/image', async(req,res) => {
+
+  const {email,role} = req.query;
+
+  if(role === "Student"){
+    try{
+      const student = await Student.findOne({mail:email});
+      if(!student){
+        return res.status(404).json({success:false, message:'Student not found'});
+      }
+      return res.status(200).json({success:true, image:student.image})
+    }catch{
+
+    }
+  }
+
+  if(role === "Mentor"){
+    try{
+      const mentor = await Mentor.findOne({ mail:email });
+      if(!mentor){
+        return res.status(404).json({success:false, message:'Mentor not found'});
+      }
+      return res.status(200).json({success:true, image:mentor.image})
+      
+    }catch{
+
+    }
+  }
+})
 
 // Route to get resources by batch year and file type
 app.get('/api/resourcesdash', async (req, res) => {
