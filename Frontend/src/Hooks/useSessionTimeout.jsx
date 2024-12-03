@@ -22,17 +22,11 @@ const useSessionTimeout = () => {
         await axios.post('http://localhost:5001/api/logout', {}, { withCredentials: true });
       }
     };
-
     useEffect(() => {
-    // Check session every 5 minute
-    const interval = setInterval(checkSession, 5 * 60 * 1000);
-    console.log(sessionExpired);
+    // Check session every 1 minute
+    const interval = setInterval(checkSession,  1 * 60 * 1000);
     return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
-
-  // const triggerSessionCheck = () => {
-  //   checkSession(); // Manually trigger session check
-  // };
 
   return {sessionExpired, checkSession}; // Return sessionExpired state so that the component can render the UI
 };
