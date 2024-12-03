@@ -2,12 +2,15 @@ import React, { useState,useRef,useEffect} from 'react';
 import './Sidebar.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import profilePic from '../../assets/profilepic.png';
 
 const Sidebar = () => {
 
   const [toggleBar, setToggleBar] = useState(false);
   const [role, setRole] = useState('');
   const [name, setName] = useState('');
+  const [mail, setMail] = useState('');
+  const [selectedImage, setSelectedImage] = useState('');
   const sidebarRef = useRef();
 
   useEffect(() => {
@@ -16,12 +19,40 @@ const Sidebar = () => {
             const response = await axios.get('http://localhost:5001/api/dashboard', { withCredentials: true });
             setRole(response.data.role);
             setName(response.data.name);
+            setMail(response.data.email);
         } catch (error) {
           console.error('Error fetching role:', error.response ? error.response.data : error.message);
         }
     };
     fetchRole();
 }, []);
+
+useEffect(() => {
+  const fetchImage = async () => {  
+    if (mail && role){
+
+      try{
+      const response = await axios.get('http://localhost:5001/api/image', {
+          params: {
+            email: mail,
+            role: role
+          }
+        })
+        if (response.data.success) {
+    
+          const imageUrl = `http://localhost:5001${response.data.image}`;
+          setSelectedImage(imageUrl);
+        } else {
+          console.error('User not found');
+          setSelectedImage(profilePic);
+        }
+      } catch (error) {
+        console.error('Error fetching image:', error);  
+      }
+    }
+  };
+  fetchImage();
+  }, [mail, role]);
 
 const handleLogout = async () => {
   try {
@@ -86,6 +117,13 @@ const handleLogout = async () => {
           </li>
 
           <li className="side-list">
+          <Link to='/profile'  className="side-links">
+            <i class='bx bxs-user icn' ></i>
+              <span className="side-link">Profile</span>
+            </ Link>
+          </li>
+
+          <li className="side-list">
           <Link to='/'  className="side-links">
             <i class='bx bx-bell icn' ></i>
               <span className="side-link">Notification</span>
@@ -105,6 +143,16 @@ const handleLogout = async () => {
               <span className="side-link">Calendar</span>
             </ Link>
           </li>
+
+          {dashboardPath === '/mentor-dashboard' &&(
+
+            <li className="side-list">
+            <Link to='/session-form'  className="side-links">
+            <i class='bx bxs-edit icn'></i>
+              <span className="side-link">Session Form</span>
+            </ Link>
+          </li>
+          )}
 
           <li className="side-list">
           <Link to='/session-page'  className="side-links">
@@ -140,6 +188,7 @@ const handleLogout = async () => {
       <div className="sidecont">
         <ul>
           <li>{name}</li>
+          <li><img src= {selectedImage || profilePic} alt="Placeholder" /></li>
         </ul>
       </div>
     </nav>
