@@ -12,7 +12,9 @@ import ResetPassword from './Components/ResetPassword/ResetPassword.jsx';
 import SessionForm from './Components/SessionForm/SessionForm.jsx';
 import SessionContent1 from './Components/SessionContent/SessionContent1.jsx';
 import Calendar from './Components/Calendar/Calendar.jsx';
-
+import Profile from './Components/Profile/Profile.jsx';
+import StudentEditProfile from './Components/EditProfile/StudentEditProfile.jsx';
+import MentorEditProfile from './Components/EditProfile/MentorEditProfile.jsx';
 
 
 
@@ -35,6 +37,9 @@ const App = () => {
         <Route path='/session-form' element={<SessionForm />} />
         <Route path='/session-page' element={<SessionContent1 />} />
         <Route path='/calendar' element={<Calendar />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/edit-student-profile' element={<StudentEditProfile />} />
+        <Route path='/edit-mentor-profile' element={<MentorEditProfile />} />
         
       </Routes>
     </Router>
