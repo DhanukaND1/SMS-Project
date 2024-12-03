@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const sendgrid = require('@sendgrid/mail');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 require('dotenv').config();
@@ -496,12 +497,22 @@ app.post('/api/uploadResource', upload.single('file'), async (req, res) => {
 // Route for updating the profile image of the student
 app.post('/api/update-student-image', upload.single('image'), async (req, res) => {
   const { mail } = req.body; // Get the user's email from the request body
-  const imageUrl = req.file ? `/api/uploads/${req.file.filename}` : null;  // Get file URL
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;  // Get file URL
 
   try {
     const student = await Student.findOne({ mail });
     if (!student) {
       return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+    if (student.image) {
+      const oldImagePath = path.join(__dirname, student.image); 
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          console.error(`Error deleting old image: ${err.message}`);
+        } else {
+          console.log(`Old image ${student.image} deleted successfully.`);
+        }
+      });
     }
 
     // Update student's image URL
@@ -521,12 +532,23 @@ app.post('/api/update-student-image', upload.single('image'), async (req, res) =
 // Route for updating the profile image of the mentor
 app.post('/api/update-mentor-image', upload.single('image'), async (req, res) => {
   const { mail } = req.body; 
-  const imageUrl = req.file ? `/api/uploads/${req.file.filename}` : null;  // Get file URL
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;  // Get file URL
 
   try {
     const mentor = await Mentor.findOne({ mail });
     if (!mentor) {
       return res.status(404).json({ success: false, message: 'Mentor not found' });
+    }
+
+    if (mentor.image) {
+      const oldImagePath = path.join(__dirname, mentor.image); 
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          console.error(`Error deleting old image: ${err.message}`);
+        } else {
+          console.log(`Old image ${mentor.image} deleted successfully.`);
+        }
+      });
     }
 
     // Update mentor's image URL
@@ -572,7 +594,42 @@ app.get('/api/image', async(req,res) => {
 
     }
   }
-})
+});
+
+//route to check if the image exists
+app.get('/api/check-image', (req, res) => {
+  const imagePath = path.join(__dirname, 'uploads', req.query.image);
+
+  fs.access(imagePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      return res.status(404).json({ success: false, message: 'Image not found' });
+    }
+    res.status(200).json({ success: true });
+  });
+});
+
+//route to remove profile picture
+app.delete('/api/delete-image', (req, res) => {
+  const { image } = req.body; // Get the image filename or path from the request body
+
+  if (!image) {
+    return res.status(400).json({ success: false, message: 'No image specified' });
+  }
+
+  const imagePath = path.join(__dirname, 'uploads', image); // Assuming your images are stored in the 'uploads' directory
+
+  // Check if file exists
+  if (fs.existsSync(imagePath)) {
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        return res.status(500).json({ success: false, message: 'Error deleting image' });
+      }
+      return res.status(200).json({ success: true, message: 'Image deleted successfully' });
+    });
+  } else {
+    return res.status(404).json({ success: false, message: 'Image not found' });
+  }
+});
 
 // Route to get resources by batch year and file type
 app.get('/api/resourcesdash', async (req, res) => {
