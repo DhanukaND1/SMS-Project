@@ -29,28 +29,32 @@ const Sidebar = () => {
 
 useEffect(() => {
   const fetchImage = async () => {  
-    if (mail && role){
-
-      try{
-      const response = await axios.get('http://localhost:5001/api/image', {
-          params: {
-            email: mail,
-            role: role
-          }
-        })
+    if (mail && role) {
+      try {
+        const response = await axios.get('http://localhost:5001/api/image', {
+          params: { email: mail, role: role }
+        });
+  
         if (response.data.success) {
-    
-          const imageUrl = `http://localhost:5001${response.data.image}`;
-          setSelectedImage(imageUrl);
+          const imagePath = response.data.image; 
+          const imageCheckResponse = await axios.get('http://localhost:5001/api/check-image', {
+            params: { image: imagePath.replace('/uploads/', '') }
+          });
+  
+          if (imageCheckResponse.data.success) {
+            setSelectedImage(`http://localhost:5001/api${imagePath}`);
+          } else {
+            setSelectedImage(null); // Fallback to default image
+          }
         } else {
-          console.error('User not found');
-          setSelectedImage(profilePic);
+          setSelectedImage(null); // Fallback to default image
         }
       } catch (error) {
-        console.error('Error fetching image:', error);  
+        console.error('Error fetching image:', error);
+        setSelectedImage(null); // Fallback to default image
       }
     }
-  };
+  };  
   fetchImage();
   }, [mail, role]);
 
@@ -71,6 +75,8 @@ const handleLogout = async () => {
   if(role === 'Mentor'){
     dashboardPath = '/mentor-dashboard'
   }else if(role === 'Student'){
+    dashboardPath = '/student-dashboard'
+  }else{
     dashboardPath = '/student-dashboard'
   }
  

@@ -18,22 +18,6 @@ const Profile = () => {
   const [click, setClick] = useState(false);
   const {sessionExpired, checkSession} = useSessionTimeout();
 
-  useEffect(() => {
-    checkSession(); // Trigger session check on component mount
-  }, []);
-
-  if (sessionExpired) {
-    return (
-      <div className="session-expired-overlay">
-        <div className="session-expired-message">
-          <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
-          <p>Your session has expired. Please log in again.</p>
-          <Link to="/login" className='link'>Login</Link>
-        </div>
-      </div>
-    );
-  }
-
 useEffect(() => {
   window.scrollTo(0, 0);
   const fetchRole = async () => {
@@ -55,28 +39,32 @@ useEffect(() => {
 
 useEffect(() => {
   const fetchImage = async () => {  
-    if (mail && role){
-
-      try{
-      const response = await axios.get('http://localhost:5001/api/image', {
-          params: {
-            email: mail,
-            role: role
-          }
-        })
+    if (mail && role) {
+      try {
+        const response = await axios.get('http://localhost:5001/api/image', {
+          params: { email: mail, role: role }
+        });
+  
         if (response.data.success) {
-    
-          const imageUrl = `http://localhost:5001${response.data.image}`;
-          setSelectedImage(imageUrl);
+          const imagePath = response.data.image; 
+          const imageCheckResponse = await axios.get('http://localhost:5001/api/check-image', {
+            params: { image: imagePath.replace('/uploads/', '') }
+          });
+  
+          if (imageCheckResponse.data.success) {
+            setSelectedImage(`http://localhost:5001/api${imagePath}`);
+          } else {
+            setSelectedImage(null); // Fallback to default image
+          }
         } else {
-          console.error('User not found');
-          setSelectedImage(profilePic);
+          setSelectedImage(null); // Fallback to default image
         }
       } catch (error) {
-        console.error('Error fetching image:', error);  
+        console.error('Error fetching image:', error);
+        setSelectedImage(null); // Fallback to default image
       }
     }
-  };
+  };  
   fetchImage();
   }, [mail, role]);
 
@@ -84,6 +72,21 @@ useEffect(() => {
     setClick(!click);
   };
 
+  useEffect(() => {
+    checkSession(); // Trigger session check on component mount
+  }, []);
+
+  if (sessionExpired) {
+    return (
+      <div className="session-expired-overlay">
+        <div className="session-expired-message">
+          <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
+          <p>Your session has expired. Please log in again.</p>
+          <Link to="/login" className='link'>Login</Link>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div>
@@ -163,7 +166,7 @@ useEffect(() => {
   
         {click && (
           <div className='lg-cont' onClick={handleClick}>
-            <img src={selectedImage || profilePic} alt="Profile Picture" className='lg-profile' />
+            <img src={selectedImage || profilePic} alt="Profile Picture" className={`${selectedImage ? 'custom-image' : 'default-image'}`} />
 
           </div>
         )}

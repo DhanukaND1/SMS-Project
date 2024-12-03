@@ -23,8 +23,10 @@
   width: 200px;
   height: 200px;
   border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.5);
   margin-bottom: 30px;
   object-fit: cover;
+  object-position: center;
 }
 
 .edit-image span{
@@ -58,7 +60,7 @@ margin-right: 0px;
   width: 50%;
   background-color: aliceblue;
   padding: 4px;
-  z-index: 1000;
+  z-index: 100;
 }
 
 .edit-image ul li:hover{

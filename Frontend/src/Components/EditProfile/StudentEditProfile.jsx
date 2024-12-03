@@ -15,27 +15,11 @@ const StudentEditProfile = () => {
   const [role, setRole] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [mail, setMail] = useState('');
-  const [selectedImage, setSelectedImage] = useState(profilePic);
+  const [selectedImage, setSelectedImage] = useState('');
   const menuRef = useRef(null);
   const [mentorList, setMentorList] = useState([]);
   const fileInputRef = useRef(null);
   const {sessionExpired, checkSession} = useSessionTimeout();
-
-  useEffect(() => {
-    checkSession(); // Trigger session check on component mount
-  }, []);
-
-  if (sessionExpired) {
-    return (
-      <div className="session-expired-overlay">
-        <div className="session-expired-message">
-          <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
-          <p>Your session has expired. Please log in again.</p>
-          <Link to="/login" className='link'>Login</Link>
-        </div>
-      </div>
-    );
-  }
 
   // Fetch the role and student data
   useEffect(() => {
@@ -69,40 +53,56 @@ const StudentEditProfile = () => {
 
   useEffect(() => {
     const fetchImage = async () => {  
-      if (mail && role){
-  
-        try{
-        const response = await axios.get('http://localhost:5001/api/image', {
-            params: {
-              email: mail,
-              role: role
-            }
-          })
+      if (mail && role) {
+        try {
+          const response = await axios.get('http://localhost:5001/api/image', {
+            params: { email: mail, role: role }
+          });
+    
           if (response.data.success) {
-      
-            const imageUrl = `http://localhost:5001${response.data.image}`;
-            setSelectedImage(imageUrl);
+            const imagePath = response.data.image; 
+            const imageCheckResponse = await axios.get('http://localhost:5001/api/check-image', {
+              params: { image: imagePath.replace('/uploads/', '') }
+            });
+    
+            if (imageCheckResponse.data.success) {
+              setSelectedImage(`http://localhost:5001/api${imagePath}`);
+            } else {
+              setSelectedImage(null); // Fallback to default image
+            }
           } else {
-            console.error('Student not found');
+            setSelectedImage(null); // Fallback to default image
           }
         } catch (error) {
-          console.error('Error fetching image:', error);  
+          console.error('Error fetching image:', error);
+          setSelectedImage(null); // Fallback to default image
         }
       }
-    };
+    };  
     fetchImage();
     }, [mail, role]);
 
-  const handleClick = () => {
+  const handleClick = (event) => {
+    event.stopPropagation();
     setIsOpen(!isOpen);
   };
 
   // Close the menu when clicking outside of it
   const handleClickOutside = (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
-      handleClick();
+      setIsOpen(false);
     }
   };
+
+  useEffect(() => {
+
+    document.addEventListener('click', handleClickOutside);
+
+    // Clean up event listener on component unmount
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
@@ -150,23 +150,58 @@ const StudentEditProfile = () => {
     }
   };
 
+  const handleRemove = async () => {
+    try {
+      const imageName = selectedImage.split('/').pop();
+      const response = await axios.delete('http://localhost:5001/api/delete-image', {
+        data: { image: imageName } // Pass the image path or ID that you want to delete
+      });
+
+      if (response.data.success) {
+        setSelectedImage(null); // Clear the image state if deletion is successful
+        toast.success('Image removed successfully');
+      } else {
+        toast.warn('Failed to remove the image');
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      toast.error('Error removing the image');
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
   };
 
+  useEffect(() => {
+    checkSession(); // Trigger session check on component mount
+  }, []);
+
+  if (sessionExpired) {
+    return (
+      <div className="session-expired-overlay">
+        <div className="session-expired-message">
+          <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
+          <p>Your session has expired. Please log in again.</p>
+          <Link to="/login" className='link'>Login</Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div onClick={handleClickOutside}>
+    <div>
       <Sidebar />
       <div className="upload-prof root">
         <section id="home">
           <form action="" className="form" onSubmit={handleSubmit}>
-            <div className="edit-image">
+            <div className="edit-image" >
             <img src={selectedImage || profilePic } alt="" />
               <span onClick={handleClick} >Edit<i className="bx bxs-pencil"></i></span>
             
                 <ul className={isOpen?'show':'hide'} ref={menuRef}>
                   <li className="add-pic-li" onClick={handleFileInputClick}>Add Picture</li>
-                  <li>Remove Picture</li>
+                  <li onClick={handleRemove}>Remove Picture</li>
                 </ul>
                 <input
                 type="file"

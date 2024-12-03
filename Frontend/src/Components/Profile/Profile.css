@@ -8,10 +8,12 @@ margin-bottom: 30px;
 }
 
 .prof-head img{
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   object-fit: cover;
+  object-position: center;
   border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.5);
   cursor: pointer;
 }
 
@@ -68,29 +70,35 @@ margin-bottom: 30px;
   height: 100vh;
   justify-content: center;
   align-items: center;
-  z-index: 1001;
+  z-index: 300;
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
 }
 
-.lg-profile{
-  width: 600px;
-  height: 400px;
-  object-fit: cover;
+.custom-image{
+  width: 400px;
+  object-fit: contain;
+}
+
+.default-image{
+  object-fit: contain;
+  background-color: white;
+  width: 350px;
+  height: 350px;
 }
 
 @media(max-width: 700px){
-  .lg-profile{
+  .custom-image,.default-image{
     width:400px;
     height: 400px;
-    object-fit: cover;
+    object-fit: contain;
   }
 }
 
 @media(max-width: 480px){
-  .lg-profile{
+  .custom-image,.default-image{
     width:250px;
     height: 250px;
-    object-fit: cover;
+    object-fit: contain;
   }
 }

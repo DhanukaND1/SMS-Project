@@ -15,27 +15,11 @@ const MentorEditProfile = () => {
   const [mentorData, setMentorData] = useState({name: '',email: '',role: '',dept: '',phone: '' });
   const [role, setRole] = useState('');
   const [mail, setMail] = useState('');
-  const [selectedImage, setSelectedImage] = useState(profilePic);
+  const [selectedImage, setSelectedImage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
   const {sessionExpired, checkSession} = useSessionTimeout();
-
-  useEffect(() => {
-    checkSession(); // Trigger session check on component mount
-  }, []);
-
-  if (sessionExpired) {
-    return (
-      <div className="session-expired-overlay">
-        <div className="session-expired-message">
-          <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
-          <p>Your session has expired. Please log in again.</p>
-          <Link to="/login" className='link'>Login</Link>
-        </div>
-      </div>
-    );
-  }
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -54,44 +38,58 @@ const MentorEditProfile = () => {
   }, []);
 
   useEffect(() => {
-  const fetchImage = async () => {  
-    if (mail && role){
-
-      try{
-      const response = await axios.get('http://localhost:5001/api/image', {
-          params: {
-            email: mail,
-            role: role
-          }
-        })
-        if (response.data.success) {
+    const fetchImage = async () => {  
+      if (mail && role) {
+        try {
+          const response = await axios.get('http://localhost:5001/api/image', {
+            params: { email: mail, role: role }
+          });
     
-          const imageUrl = `http://localhost:5001${response.data.image}`;
-          setSelectedImage(imageUrl);
-        } else {
-          console.error('Mentor not found');
-          setSelectedImage(profilePic);
+          if (response.data.success) {
+            const imagePath = response.data.image; 
+            const imageCheckResponse = await axios.get('http://localhost:5001/api/check-image', {
+              params: { image: imagePath.replace('/uploads/', '') }
+            });
+    
+            if (imageCheckResponse.data.success) {
+              setSelectedImage(`http://localhost:5001/api${imagePath}`);
+            } else {
+              setSelectedImage(null); // Fallback to default image
+            }
+          } else {
+            setSelectedImage(null); // Fallback to default image
+          }
+        } catch (error) {
+          console.error('Error fetching image:', error);
+          setSelectedImage(null); // Fallback to default image
         }
-      } catch (error) {
-        console.error('Error fetching image:', error);
-        console.error('Error fetching image:', error.message);
-        
       }
-    }
-  };
-  fetchImage();
-  }, [mail, role]);
+    };  
+    fetchImage();
+    }, [mail, role]);
 
 
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleClickOutside = (event) => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setIsOpen(false);
-    }
-  };
+    const handleClick = (event) => {
+      event.stopPropagation();
+      setIsOpen(!isOpen);
+    };
+  
+    // Close the menu when clicking outside of it
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+  
+    useEffect(() => {
+  
+      document.addEventListener('click', handleClickOutside);
+  
+      // Clean up event listener on component unmount
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }, [isOpen]);
 
   const handleChange = (e) => {
 
@@ -137,6 +135,22 @@ const MentorEditProfile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  }
+
+  useEffect(() => {
+    checkSession(); // Trigger session check on component mount
+  }, []);
+
+  if (sessionExpired) {
+    return (
+      <div className="session-expired-overlay">
+        <div className="session-expired-message">
+          <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
+          <p>Your session has expired. Please log in again.</p>
+          <Link to="/login" className='link'>Login</Link>
+        </div>
+      </div>
+    );
   }
 
   return (
