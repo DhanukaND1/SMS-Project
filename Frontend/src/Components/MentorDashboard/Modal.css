@@ -1,24 +1,4 @@
 /* MentorHero and dashboard styles */
-.dashboard-container {
-  padding: 0px;
-}
-
-.mentorhero-container {
-  text-align: center;
-}
-
-.mentor-greeting {
-  font-size: 24px;
-}
-
-.mentor-name {
-  font-weight: bold;
-}
-
-.messages-button {
-  margin-top: 10px;
-}
-
 .student-list .batches {
   display: flex;
   text-align: right;
@@ -35,19 +15,6 @@
   padding: 10px;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
-}
-
-.recommendations {
-  margin-top: 30px;
-}
-
-.recommendation-list {
-  display: flex;
-  justify-content: space-around;
-}
-
-.recommendation-item {
   cursor: pointer;
 }
 
