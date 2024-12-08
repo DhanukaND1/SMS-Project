@@ -12,6 +12,7 @@ import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx';
 
 const StudentEditProfile = () => {
   const [studentData, setStudentData] = useState({ name: '', sid: '', email: '', batchyear: '', role: '', mentor: '', dept: '' });
+  const [errors, setErrors] = useState({ id: '', email: ''});
   const [role, setRole] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [mail, setMail] = useState('');
@@ -21,8 +22,18 @@ const StudentEditProfile = () => {
   const fileInputRef = useRef(null);
   const {sessionExpired, checkSession} = useSessionTimeout();
 
+  const fetchMentors = async (department) => {
+    try {
+      const response = await axios.get(`http://localhost:5001/api/mentors?department=${department}`);
+      setMentorList(response.data); // Update mentorList
+    } catch (error) {
+      console.error('Error fetching mentor list:', error);
+    }
+  };
+
   // Fetch the role and student data
   useEffect(() => {
+
     const fetchRole = async () => {
       try {
         const response = await axios.get('http://localhost:5001/api/dashboard', { withCredentials: true });
@@ -32,6 +43,7 @@ const StudentEditProfile = () => {
           setStudentData(response.data);
 
           if (response.data.dept) {
+            console.log(response.data.dept);
             await fetchMentors(response.data.dept);
           }
         }
@@ -40,15 +52,6 @@ const StudentEditProfile = () => {
       }
     };
     fetchRole();
-
-    const fetchMentors = async (department) => {
-      try {
-        const response = await axios.get(`http://localhost:5001/api/mentors?department=${department}`);
-        setMentorList(response.data); // Update mentorList
-      } catch (error) {
-        console.error('Error fetching mentor list:', error);
-      }
-    };
   }, []);
 
   useEffect(() => {
@@ -169,8 +172,79 @@ const StudentEditProfile = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const checkMail = async (e) => {
+    const { value } = e.target;
+    setStudentData((prevData) => ({ ...prevData, email: value }));
+
+
+    if (value) {
+      try {
+        const response = await fetch('http://localhost:5001/api/check-user-student', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mail: value }),
+        });
+
+        const data = await response.json();
+        if (!data.success) {
+          setErrors((prevErrors) => ({ ...prevErrors, email: data.message }));
+          console.log(emailErr)
+        } else {
+          setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
+        }
+      } catch (error) {
+        console.error('Error checking mail:', error);
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const { sid, email } = studentData;
+
+    let idError = '';
+    let emailError = '';
+
+    const idPattern = /^20\d{2}t\d{5}$/;
+    const endmail = 'stu.cmb.ac.lk';
+    const mailPattern = new RegExp(`^${sid}@${endmail}$`);
+
+    if (!idPattern.test(sid)) {
+      idError = 'Please enter a valid ID.';
+    }
+
+    let userid = email.split("@")[0];
+
+    if (userid != sid) {
+      emailError = 'Email does not match with given ID';
+    }
+    else if (!mailPattern.test(email)) {
+      emailError = 'Please enter a valid email.';
+    }
+
+    if (idError || emailError) {
+        setErrors({ id: idError, email: emailError });
+        return;
+    }
+    setErrors({ id: '', email: '' });
+
+    try {
+      const response = await axios.put('http://localhost:5001/api/upload-profile', {
+       email: mail,
+       role: role,
+       data: studentData,
+      });
+
+      if(response.data.success){
+        toast.success('Profile Uploaded Successfully');
+      }
+      else{
+        toast.warn('Failed to Upload Profile');
+      }
+    }catch(error){
+      console.error('Error Profile uploading:', error);
+      toast.error("Error While Uploading Profile");
+    }
   };
 
   useEffect(() => {
@@ -203,6 +277,7 @@ const StudentEditProfile = () => {
                   <li className="add-pic-li" onClick={handleFileInputClick}>Add Picture</li>
                   <li onClick={handleRemove}>Remove Picture</li>
                 </ul>
+
                 <input
                 type="file"
                 accept="image/*"
@@ -212,10 +287,10 @@ const StudentEditProfile = () => {
               />
             </div>
             <label htmlFor="">Student Name</label>
-            <input type="text" name="name" value={studentData.name} onChange={handleChange} />
+            <input type="text" name="name"  value={studentData.name} onChange={handleChange} />
             <label htmlFor="">Student Id</label>
-            <input type="text" name="sid" value={studentData.sid} onChange={handleChange} />
-
+            <input type="text" name="sid" className={errors.id ? 'error-state' : ''} value={studentData.sid} onChange={handleChange} />
+            <span className="error" style={{ height: '1rem', marginTop: '-5px' }}>{errors.id}</span>
             <label htmlFor="">Department</label>
             <select name="dept" value={studentData.dept} onChange={handleChange}>
               <option value="ICT">ICT</option>
@@ -225,14 +300,16 @@ const StudentEditProfile = () => {
             </select>
 
             <label htmlFor="">Mentor name</label>
-            <select id="mentor" name="mentor" value={studentData.mentor} onChange={handleChange} required>
+            <select id="mentor" name="mentor" value={studentData.mentor} onChange={handleChange}>
+              <option value="" disabled>Select Mentor</option>
           {mentorList.map((mentor, index) => (
             <option key={index} value={mentor.name}>{mentor.name}</option>
           ))}
         </select>
-            {/* <input type="text" name="mentor" value={studentData.mentor} onChange={handleChange} /> */}
+            
             <label htmlFor="">Student Mail</label>
-            <input type="text" name="email" value={studentData.email} onChange={handleChange} />
+            <input type="text" name="email" className={errors.email ? 'error-state' : ''} value={studentData.email} onInput={checkMail} onChange={handleChange} />
+            <span className="error" style={{ height: '1rem', marginTop: '-5px' }}>{errors.email}</span>
             <label htmlFor="">Batch Year</label>
             <select name="batchyear" value={studentData.batchyear} onChange={handleChange}>
               <option value="19/20">19/20</option>
