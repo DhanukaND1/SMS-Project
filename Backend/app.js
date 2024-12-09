@@ -396,40 +396,6 @@ app.post('/api/reset-password', async (req, res) => {
   }
 });
 
-// // Get current logged-in user (either mentor or student)
-// app.get('/api/dashboard', async (req, res) => {
-//   if (req.session.user) {
-//     const { name, mail, role } = req.session.user;
-
-//     if (role === 'mentor') {
-//       // Return mentor-specific response
-//       return res.json({ name, mail, role: 'mentor' });
-//     } else if (role === 'student') {
-//       try {
-//         // Fetch student data including the mentor's name
-//         const student = await Student.findOne({ mail });
-//         if (student) {
-//           return res.json({
-//             name: student.sname,
-//             mail: student.mail,
-//             batchyear: student.year,
-//             role: 'student',
-//             mentor: student.mentor // Send the mentor's name in the response
-//           });
-//         } else {
-//           return res.status(404).json({ error: "Student not found" });
-//         }
-//       } catch (error) {
-//         return res.status(500).json({ error: "Internal server error" });
-//       }
-//     } else {
-//       return res.status(400).json({ error: "Invalid role" });
-//     }
-//   } else {
-//     return res.status(401).json({ error: "No user logged in" });
-//   }
-// });
-
 // Get Mentors to Student Sign up dashboard
 app.get('/api/mentors', async (req, res) => {
   const department = req.query.department;
@@ -632,11 +598,71 @@ app.delete('/api/delete-image', (req, res) => {
   }
 });
 
+app.put('/api/upload-profile', async (req,res) => {
+  const { role, mail, data} = req.body;
+
+  if (role === 'Student'){
+      try{
+        const student = await Student.findOne(mail);
+
+        if(!student){
+          return res.status(404).json({success: false, message: 'Student not found'});
+        }
+
+        const allowedUpdates = {name:'sname', sid:'sid', email:'mail', batchyear:'year', mentor:'mentor', dept:'dept'};
+        
+        Object.keys(allowedUpdates).forEach((key) => {
+          // Check if the frontend data contains a key from allowedUpdates
+          if (data[key]) {
+            const field = allowedUpdates[key];  // Get the corresponding backend field name
+            student[field] = data[key];  // Update the student document with the new data
+          }      
+    });
+
+          await student.save();
+          res.status(200).json({success: true, message: 'Profile Uploaded Successfully'});
+
+
+      }catch(error){
+        res.status(500).json({success: false, message: 'Error While Uploading Profile'});
+        console.error('Error updating student profile:', error);
+      }
+  }
+
+  if (role === 'Mentor'){
+    try{
+      const mentor = await Mentor.findOne(mail);
+
+      if(!mentor){
+        return res.status(404).json({success: false, message: 'Mentor not found'});
+      }
+
+      const allowedUpdates = {name:'name', email:'mail', dept:'dept', phone:'phone'};
+      
+      Object.keys(allowedUpdates).forEach((key) => {
+        // Check if the frontend data contains a key from allowedUpdates
+        if (data[key]) {
+          const field = allowedUpdates[key];  // Get the corresponding backend field name
+          mentor[field] = data[key];  // Update the student document with the new data
+        }      
+  });
+
+        await mentor.save();
+        res.status(200).json({success: true, message: 'Profile Uploaded Successfully'});
+
+
+    }catch(error){
+      res.status(500).json({success: false, message: 'Error While Uploading Profile'});
+      console.error('Error updating mentor profile:', error);
+    }
+}
+});
+
 // Route to get resources by batch year and file type
 app.get('/api/resourcesdash', async (req, res) => {
   const { batchyear, type } = req.query;
 
-  console.log('Received batch:', batchyear, 'and type:', type);
+  // console.log('Received batch:', batchyear, 'and type:', type);
 
   // Check if batchyear and type are arrays and get the first element if they are
   const actualBatchYear = Array.isArray(batchyear) ? batchyear[0] : batchyear;
