@@ -110,6 +110,11 @@ const StudentEditProfile = () => {
   const handleChange = async (e) => {
     const { name, value } = e.target;
 
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '', // Clear the error for the field being edited
+    }));
+
     setStudentData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -226,7 +231,6 @@ const StudentEditProfile = () => {
         setErrors({ id: idError, email: emailError });
         return;
     }
-    setErrors({ id: '', email: '' });
 
     try {
       const response = await axios.put('http://localhost:5001/api/upload-profile', {
