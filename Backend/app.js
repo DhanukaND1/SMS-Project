@@ -10,6 +10,7 @@ const fs = require('fs');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 require('dotenv').config();
+const Notification = require('./model/Notification');
 
 const app = express();
 
@@ -730,6 +731,27 @@ app.delete('/api/events/:id', async (req, res) => {
     res.status(500).json({ message: 'Error deleting event' });
   }
 });
+
+// notification system
+
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const notifications = await Notification.find({ user: req.session.user._id, isRead: false });
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch notifications' });
+  }
+});
+
+app.post('/api/notifications/read', async (req, res) => {
+  try {
+    await Notification.updateMany({ user: req.session.user._id, isRead: false }, { isRead: true });
+    res.json({ message: 'Notifications marked as read' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update notifications' });
+  }
+});
+
 
 // Start the server
 const port = process.env.PORT1 || 5001;
