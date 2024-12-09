@@ -81,10 +81,10 @@ const StudentSignup = () => {
     const idPattern = /^20\d{2}t\d{5}$/;
     const endmail = 'stu.cmb.ac.lk';
     const mailPattern = new RegExp(`^${sid}@${endmail}$`);
-    const hasUppercase = /[A-Z]/.test(pass);
-    const hasLowercase = /[a-z]/.test(pass);
-    const hasDigit = /[0-9]/.test(pass);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+    const hasUppercase = /^[A-Z]$/.test(pass);
+    const hasLowercase = /^[a-z]$/.test(pass);
+    const hasDigit = /^[0-9]$/.test(pass);
+    const hasSpecialChar = /^[!@#$%^&*(),.?":{}|<>]$/.test(pass);
 
     let idError = '';
     let emailError = '';
