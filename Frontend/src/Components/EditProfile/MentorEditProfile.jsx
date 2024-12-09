@@ -15,6 +15,7 @@ const MentorEditProfile = () => {
   const [mentorData, setMentorData] = useState({name: '',email: '',role: '',dept: '',phone: '' });
   const [role, setRole] = useState('');
   const [mail, setMail] = useState('');
+  const [errors, setErrors] = useState({ email: '', phone:'' });
   const [selectedImage, setSelectedImage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
@@ -94,6 +95,12 @@ const MentorEditProfile = () => {
   const handleChange = (e) => {
 
     const { name, value } = e.target;
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '', // Clear the error for the field being edited
+    }));
+
     setMentorData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -133,9 +140,48 @@ const MentorEditProfile = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  }
+    const { email, phone } = mentorData;
+
+    let emailError = '';
+    let phoneError = '';
+
+    const validphone = /^[0-9]{10}$/.test(phone);
+    const endmail = '.cmb.ac.lk';
+    const mailPattern = new RegExp(`^[a-zA-Z]+@(iat|ict|et|at)${endmail}$`);
+
+    if (!mailPattern.test(email)) {
+      emailError = "Please enter a valid email";
+    }
+    if (!validphone) {
+      phoneError = 'Please enter a valid phone number';
+    }
+
+    if(emailError || phoneError){
+      setErrors({ email: emailError, phone: phoneError });
+      return;
+    }
+
+    try {
+      const response = await axios.put('http://localhost:5001/api/upload-profile', {
+       email: mail,
+       role: role,
+       data: mentorData,
+      });
+
+      if(response.data.success){
+        toast.success('Profile Uploaded Successfully');
+      }
+      else{
+        toast.warn('Failed to Upload Profile');
+      }
+    }catch(error){
+      console.error('Error Profile uploading:', error);
+      toast.error("Error While Uploading Profile");
+    }
+  };
+
 
   useEffect(() => {
     checkSession(); // Trigger session check on component mount
@@ -187,11 +233,12 @@ const MentorEditProfile = () => {
       </select>
       
         <label htmlFor="">Mentor Mail</label>
-        <input type="text" name='email' value={mentorData.email} onChange={handleChange} />
-  
+        <input type="text" name='email' className={errors.email ? 'error-state':''} value={mentorData.email} onChange={handleChange} />
+        <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.email}</span>
+
         <label htmlFor="">Phone Number</label>
-        <input type="tel" name='phone' value={mentorData.phone} onChange={handleChange} />
-  
+        <input type="text" name='phone' className={errors.phone ? 'error-state':''} value={mentorData.phone} onChange={handleChange} />
+        <span className="error"style={{height:'1rem',marginTop:'-5px'}}>{errors.phone}</span>
         
 
         <div className='edit-prof'>

@@ -33,11 +33,11 @@ const MentorSignup = () => {
 
     const { mail, pass, pass1, phone } = formData;
 
-    const hasUppercase = /[A-Z]/.test(pass);
-    const hasLowercase = /[a-z]/.test(pass);
-    const hasDigit = /[0-9]/.test(pass);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
-    const validphone = /[0-9]{10}/.test(phone);
+    const hasUppercase = /^[A-Z]$/.test(pass);
+    const hasLowercase = /^[a-z]$/.test(pass);
+    const hasDigit = /^[0-9]$/.test(pass);
+    const hasSpecialChar = /^[!@#$%^&*(),.?":{}|<>]$/.test(pass);
+    const validphone = /^[0-9]{10}$/.test(phone);
 
     const endmail = '.cmb.ac.lk';
 
@@ -164,7 +164,7 @@ const MentorSignup = () => {
         <span className="error" style={{height:'1rem',marginTop:'-5px'}}>{errors.email}</span>
         
         <label htmlFor="phone">Contact Number</label>
-        <input type="tel" required name='phone' id='phone' className={errors.phone ? 'error-state':''} value={formData.phone} onChange={handleChange} />
+        <input type="text" required name='phone' id='phone' className={errors.phone ? 'error-state':''} value={formData.phone} onChange={handleChange} />
         <span className="error"style={{height:'1rem',marginTop:'-5px'}}>{errors.phone}</span>
 
         <label>Create Password</label>
