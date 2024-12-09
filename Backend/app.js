@@ -71,7 +71,7 @@ const Mentor = mongoose.model('Mentor', new mongoose.Schema({
   name: String,
   dept: String,
   mail: String,
-  phone: Number,
+  phone: String,
   user: String,
   pass1: String,
   image: String
