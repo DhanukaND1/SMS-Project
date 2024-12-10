@@ -131,14 +131,14 @@ const handleLogout = async () => {
 
           <li className="side-list">
           <Link to='/'  className="side-links">
-            <i class='bx bx-bell icn' ></i>
+            <i class='bx bxs-bell icn' ></i>
               <span className="side-link">Notification</span>
             </ Link>
           </li>
 
           <li className="side-list">
           <Link to='/'  className="side-links">
-            <i class='bx bx-message-rounded icn' ></i>
+            <i class='bx bxs-message-rounded icn' ></i>
               <span className="side-link">Messages</span>
             </ Link>
           </li>
@@ -169,7 +169,7 @@ const handleLogout = async () => {
 
           <li className="side-list">
           <Link to='/'  className="side-links">
-            <i class='bx bx-comment-detail icn' ></i>
+            <i class='bx bxs-comment-detail icn' ></i>
               <span className="side-link">Feedback</span>
             </Link>
           </li>
