@@ -10,7 +10,7 @@ const fs = require('fs');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 require('dotenv').config();
-const Notification = require('./model/Notification');
+// const Notification = require('./model/Notification');
 
 const app = express();
 
@@ -455,7 +455,7 @@ app.post('/api/uploadResource', upload.single('file'), async (req, res) => {
     });
 
     await newResource.save();
-    res.status(201).json({ message: 'Resource uploaded successfully', resource: newResource });
+    res.status(201).json({success: true ,message: 'Resource uploaded successfully', resource: newResource });
   } catch (error) {
     res.status(500).json({ error: 'Failed to upload resource' });
   }
@@ -686,7 +686,7 @@ app.get('/api/resourcesdash', async (req, res) => {
       });
 
       if (resources.length === 0) {
-          return res.status(404).json({ message: 'No resources found' });
+          return res.status(404).json({ message: 'No resources found', success:false });
       }
       res.status(200).json(resources);
   } catch (error) {
