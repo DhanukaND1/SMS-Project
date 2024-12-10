@@ -174,16 +174,20 @@ h4 {
 
 .recommendation-item {
     background-color: #f5f7fb;
-    padding: 20px;
-    width: 150px;
-    text-align: center;
+    width: 140px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 10px;
     cursor: pointer;
+    padding-top: 20px;
 }
 
 .recommendation-item:hover{
     background-color: #7c7c7c;
     transform: scale(1.05);
+    color:white ;
 }
 
 /* Resources Modal CSS */
@@ -221,14 +225,49 @@ h4 {
     margin-bottom: 10px;
 }
 
+.no-underline{
+    text-decoration: none;
+}
+
+.no-underline:hover{
+    text-decoration: underline;
+}
+
 .modal-content button {
-    margin-top: 20px;
+    margin:20px auto 10px auto;
     padding: 10px 20px;
     background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 50%;
+}
+
+.modal-content button:hover{
+    background-color: blue;
+    transform: scale(1.03);
+}
+
+.bxs-file-pdf{
+    color: red;
+    font-size: 20px;
+    margin: 2px;
+    transform: translateY(3px); 
+}
+
+.bxs-videos{
+    color: blue;
+    font-size: 20px;
+    margin: 2px;
+    transform: translateY(3px);
+}
+
+.bxs-music{
+    color: red;
+    font-size: 20px;
+    margin: 2px;
+    transform: translateY(3px);
 }
 
 /* session timeout */

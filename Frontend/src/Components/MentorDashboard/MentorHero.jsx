@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from './Modal.jsx';
 import './Mentor.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function MentorHero() {
   const [mentorName, setMentorName] = useState('');
@@ -12,7 +14,6 @@ function MentorHero() {
   const [uploadType, setUploadType] = useState('');
   const [allowedFileTypes, setAllowedFileTypes] = useState('');
   const [resourceForm, setResourceForm] = useState({ batchyear: '', file: null, description: '' });
-  const [isSuccessPopupVisible, setIsSuccessPopupVisible] = useState(false);
 
   useEffect(() => {
     const fetchMentorName = async () => {
@@ -42,12 +43,17 @@ function MentorHero() {
     }
   };
 
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
+    console.log(selectedFile.type);
+    console.log(allowedFileTypes);
     if (!allowedFileTypes.includes(selectedFile.type)) {
-      alert(`Invalid file type! Please upload ${uploadType} files only.`);
+      toast.warn(`Invalid file type! Please upload ${uploadType} files only.`);
+      e.target.value = ''; 
       return;
     }
     setResourceForm({
@@ -64,26 +70,41 @@ function MentorHero() {
   };
 
   const openResourceModal = (type) => {
+
     let fileTypes;
     switch (type) {
-      case 'PDFs':
+      case 'PDF':
         fileTypes = ['application/pdf', 'image/jpeg', 'image/png'];
         break;
-      case 'Videos':
+      case 'Video':
         fileTypes = ['video/mp4', 'video/mkv', 'video/webm'];
         break;
-      case 'Audios':
+      case 'Audio':
         fileTypes = ['audio/mp3', 'audio/wav', 'audio/mpeg'];
         break;
       default:
         fileTypes = [];
     }
+    console.log(type);
+    console.log('Setting Allowed File Types:', fileTypes);
     setUploadType(type);
     setAllowedFileTypes(fileTypes);
     setResourceModalOpen(true);
   };
 
-  const closeResourceModal = () => setResourceModalOpen(false);
+  let setFileType ;
+  if(uploadType === 'PDF'){
+    setFileType = 'application/pdf', 'image/jpeg', 'image/png';
+  }else if(uploadType === "Video"){
+    setFileType = 'video/mp4', 'video/mkv', 'video/webm';
+  }else if(uploadType === "Audio"){
+    setFileType = 'audio/mp3', 'audio/wav', 'audio/mpeg'
+  }
+
+  const closeResourceModal = () => {
+    setResourceModalOpen(false);
+    setResourceForm({batchyear: '', file: null, description: ''})
+  }
 
   const uploadResource = async (e) => {
     e.preventDefault();
@@ -98,14 +119,16 @@ function MentorHero() {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setIsSuccessPopupVisible(true);
-      closeResourceModal();
 
-      setTimeout(() => {
-        setIsSuccessPopupVisible(false);
-      }, 3000);
+      closeResourceModal();
+      setResourceForm({ batchyear: '', file: null, description: '' });
+      if(response.data.success){
+        toast.success(`${uploadType} uploaded successfully`);
+      }
+
     } catch (error) {
       console.log('Error uploading resource:', error);
+      toast.error('Error occured while uploading resource');
     }
   };
 
@@ -151,27 +174,22 @@ function MentorHero() {
         <section className='recommendations'>
           <h2>Your Recommendations</h2>
           <div className='recommendation-list'>
-            <div className='recommendation-item' onClick={() => openResourceModal('PDFs')}>
+            <div className='recommendation-item' onClick={() => openResourceModal('PDF')} >
               <p>PDFs</p>
             </div>
-            <div className="recommendation-item" onClick={() => openResourceModal('Videos')}>
+            <div className="recommendation-item" onClick={() => openResourceModal('Video')}>
               <p>Videos</p>
             </div>
-            <div className="recommendation-item" onClick={() => openResourceModal('Audios')}>
-              <p>Courses</p>
+            <div className="recommendation-item" onClick={() => openResourceModal('Audio')}>
+              <p>Audios</p>
             </div>
           </div>
         </section>
 
-        {isSuccessPopupVisible && (
-          <div className='success-popup'>
-            <p>Resource uploaded Successfully</p>
-          </div>
-        )}
-
         {resourceModalOpen && (
-          <Modal isOpen={resourceModalOpen} onClose={closeResourceModal}>
+          <div className='resource-open'>
             <form className="upload-form-container" onSubmit={uploadResource}>
+              <i className="fa-solid fa-xmark" onClick={closeResourceModal}></i>
               <h3>Upload {uploadType}</h3>
               <div>
                 <label>Select Batch Year:</label>
@@ -180,8 +198,9 @@ function MentorHero() {
                   name="batchyear"
                   value={resourceForm.batchyear}
                   onChange={handleInputChange}
+                  required
                 >
-                  <option value="">Select Batch</option>
+                  <option value="" disabled selected>Select Batch</option>
                   <option value="19/20">19/20</option>
                   <option value="20/21">20/21</option>
                   <option value="21/22">21/22</option>
@@ -195,6 +214,7 @@ function MentorHero() {
                   name="description"
                   value={resourceForm.description}
                   onChange={handleInputChange}
+                  required
                 />
               </div>
               <div>
@@ -202,14 +222,18 @@ function MentorHero() {
                 <input
                   type="file"
                   name="file"
+                  accept={setFileType}
                   onChange={handleFileChange}
+                  required
                 />
               </div>
               <button type="submit">Upload</button>
             </form>
-          </Modal>
+            </div>
+          
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 }

@@ -28,6 +28,16 @@ function StudentHero() {
         fetchStudentName();
     }, []);
 
+    let setIcon ;
+
+    if(resourceType === 'pdf'){
+        setIcon = 'bx bxs-file-pdf';
+    }else if(resourceType === 'video'){
+        setIcon = 'bx bxs-videos'
+    }else if(resourceType === 'audio'){
+        setIcon = 'bx bxs-music';
+    }
+
     // Fetch Resources
     const fetchResources = async (type, batchyear) => {
         try {
@@ -37,12 +47,16 @@ function StudentHero() {
                 withCredentials: true,
             });
             console.log('Resources fetched:', response.data);
-            setResources(response.data);
-            setResourceType(type);
-            setShowModal(true);
-        } catch (error) {
-            console.error('Error fetching resources:', error.response?.data || error.message);
-        }
+                    setResources(response.data);
+                    setResourceType(type);
+                    setShowModal(true);
+            }catch (error) {
+                console.error('Error fetching resources:', error.response.data, error.message);
+                setShowModal(true);
+                setResourceType(type);
+                setResources([]);
+
+            }
     };
 
     return (
@@ -109,14 +123,18 @@ function StudentHero() {
                                 <ul>
                                     {resources.map((resource) => (
                                         <li key={resource._id}>
-                                            <a href={`http://localhost:5001${resource.fileUrl}`} target='_blank' rel='nooper noreferrer'>
+                                            
+                                            <li className={setIcon}></li>
+                                            <a  className="no-underline" href={`http://localhost:5001${resource.fileUrl}`} target='_blank' rel='nooper noreferrer'>
                                                 {resource.description || resource.fileUrl}
                                             </a>
                                         </li>
                                     ))}
                                 </ul>
                             ) : (
-                                <p>No {resourceType} Resources found for batch {batchyear}.</p>
+                                <div>
+                                <p>No any {resourceType} Resources have been uploaded yet.</p>
+                                </div>
                             )}
                             <button onClick={() => setShowModal(false)}>Close</button>
                         </div>
