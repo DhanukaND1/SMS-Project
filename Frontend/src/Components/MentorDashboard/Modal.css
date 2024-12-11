@@ -18,22 +18,6 @@
   cursor: pointer;
 }
 
-.success-popup {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #4caf50;
-  color: white;
-  padding: 10px;
-  border-radius: 4px;
-  animation: fadeInOut 3s ease;
-}
-
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0; }
-  10%, 90% { opacity: 1; }
-}
-
 /* Modal CSS */
 .modal-overlay {
   position: fixed;
@@ -42,6 +26,7 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -53,7 +38,6 @@
   width: 90%;
   max-width: 500px;
   padding: 20px;
-  border-radius: 8px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
 }
@@ -63,25 +47,6 @@
   font-weight: bold;
   color: #333;
   margin-bottom: 15px;
-}
-
-.modal-close-button {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  font-size: 20px;
-  color: #666;
-  cursor: pointer;
-  border: none;
-  padding: 10px;
-  border-top-right-radius: 8px;
-  background-color:white;
-  transition: color 0.3s ease;
-}
-
-.modal-close-button:hover{
-  color: white;
-  background-color: red;
 }
 
 .modal-body {
