@@ -65,7 +65,7 @@ const ResetPassword = () => {
 
         const data = await response.json();
         if(data.success){
-          toast.success(data.message);
+          toast.success(data.message, {autoClose: 10000,});
           setFormData({pass:'', repass:''});
           setError({pass:'', repass:''})
         }
