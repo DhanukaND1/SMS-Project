@@ -40,6 +40,9 @@ function MentorHero() {
       setIsModalOpen(true);
     } catch (error) {
       console.log('Error fetching students:', error);
+      setStudents('');
+      setIsModalOpen(true);
+      setSelectedBatch(batchyear);
     }
   };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import './Modal.css';
 
-function Modal({ isOpen, onClose, title, children }) {
+function Modal({ isOpen, title, onClose, children }) {
   if (!isOpen) return null;
 
   return (
@@ -9,8 +9,9 @@ function Modal({ isOpen, onClose, title, children }) {
       <div className="modal-container">
         <div className="modal-header">
           {title}
-          <button className="modal-close-button" onClick={onClose}>&times;</button>
+            <i className="fa-solid fa-xmark" onClick={onClose}></i> 
         </div>
+        
         <div className="modal-body">{children}</div>
       </div>
     </div>
