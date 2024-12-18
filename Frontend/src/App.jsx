@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Snowfall from 'react-snowfall';
 import StudentSignup from './Components/StudentSignup/StudentSignup.jsx'
 import MentorSignup from './Components/MentorSignup/MentorSignup.jsx'
 import Login from './Components/Login/Login.jsx'
@@ -19,6 +20,9 @@ import MentorEditProfile from './Components/EditProfile/MentorEditProfile.jsx';
 
 
 const App = () => {
+
+  const showSnow = new Date().getMonth() === 11;
+
   return (
     <div>
      
@@ -43,6 +47,7 @@ const App = () => {
         
       </Routes>
     </Router>
+    {showSnow && <Snowfall />}
     </div>
   )
 }
