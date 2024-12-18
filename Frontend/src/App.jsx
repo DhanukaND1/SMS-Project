@@ -47,7 +47,7 @@ const App = () => {
         
       </Routes>
     </Router>
-    {showSnow && <Snowfall />}
+    {showSnow && <Snowfall snowflakeCount={250} style={{ zIndex:'2000' }} />}
     </div>
   )
 }
