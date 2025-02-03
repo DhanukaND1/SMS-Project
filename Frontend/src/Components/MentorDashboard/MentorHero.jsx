@@ -211,7 +211,7 @@ function MentorHero() {
                 </select>
               </div>
               <div>
-                <label>File Description:</label>
+                <label>File Name:</label>
                 <input
                   type="text"
                   name="description"
