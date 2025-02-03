@@ -33,11 +33,11 @@ const MentorSignup = () => {
 
     const { mail, pass, pass1, phone } = formData;
 
-    const hasUppercase = /^[A-Z]$/.test(pass);
-    const hasLowercase = /^[a-z]$/.test(pass);
-    const hasDigit = /^[0-9]$/.test(pass);
-    const hasSpecialChar = /^[!@#$%^&*(),.?":{}|<>]$/.test(pass);
-    const validphone = /^[0-9]{10}$/.test(phone);
+    const hasUppercase = /[A-Z]/.test(pass);
+    const hasLowercase = /[a-z]/.test(pass);
+    const hasDigit = /[0-9]/.test(pass);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+    const validphone = /[0-9]{10}/.test(phone);
 
     const endmail = '.cmb.ac.lk';
 
