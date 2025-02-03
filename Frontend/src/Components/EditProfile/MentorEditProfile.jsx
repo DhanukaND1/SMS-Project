@@ -226,10 +226,10 @@ const MentorEditProfile = () => {
 
         <label htmlFor="">Department</label>
         <select name="dept" value={mentorData.dept} onChange={handleChange}>
-        <option value="ict">ICT</option>
-        <option value="lat">IAT</option>
-        <option value="et">ET</option>
-        <option value="at">AT</option>
+        <option value="ICT">ICT</option>
+        <option value="IAT">IAT</option>
+        <option value="ET">ET</option>
+        <option value="AT">AT</option>
       </select>
       
         <label htmlFor="">Mentor Mail</label>

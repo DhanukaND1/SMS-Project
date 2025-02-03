@@ -599,11 +599,11 @@ app.delete('/api/delete-image', (req, res) => {
 });
 
 app.put('/api/upload-profile', async (req,res) => {
-  const { role, mail, data} = req.body;
+  const { role, email, data} = req.body;
 
   if (role === 'Student'){
       try{
-        const student = await Student.findOne(mail);
+        const student = await Student.findOne({mail:email});
 
         if(!student){
           return res.status(404).json({success: false, message: 'Student not found'});
@@ -631,7 +631,7 @@ app.put('/api/upload-profile', async (req,res) => {
 
   if (role === 'Mentor'){
     try{
-      const mentor = await Mentor.findOne(mail);
+      const mentor = await Mentor.findOne({mail:email});
 
       if(!mentor){
         return res.status(404).json({success: false, message: 'Mentor not found'});
