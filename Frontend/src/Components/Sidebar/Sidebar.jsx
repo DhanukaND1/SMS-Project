@@ -160,12 +160,14 @@ const handleLogout = async () => {
           </li>
           )}
 
+          {role === 'Mentor' && (
           <li className="side-list">
           <Link to='/session-page'  className="side-links">
             <i class='bx bxs-report icn' ></i>
               <span className="side-link">Session Info</span>
             </ Link>
           </li>
+          )}
 
           <li className="side-list">
           <Link to='/'  className="side-links">
@@ -192,11 +194,14 @@ const handleLogout = async () => {
       </div>
 
       <div className="sidecont">
+      <Link to="/profile">
         <ul>
           <li>{name}</li>
           <li><img src= {selectedImage || profilePic} alt="Placeholder" /></li>
         </ul>
+        </Link>
       </div>
+      
     </nav>
   )
 }
