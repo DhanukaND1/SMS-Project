@@ -104,6 +104,39 @@ const Event = mongoose.model('Event',new mongoose.Schema({
   role: String,
 }));
 
+// collection for SessionInfo
+
+const SessionInfo = mongoose.model('SessionInfo', new mongoose.Schema({
+  Department:{
+        type:String,
+        required:true
+    },
+    Mentor:{
+        type:String,
+        required:true
+    },
+    Year:{
+        type:String,
+        required:true
+    },
+    Index:{
+        type:String,
+        required:true
+    },
+    Date:{
+        type:Date,
+        required:true
+    },
+    SessionMode:{
+        type:String,
+        required:true
+    },
+    AdditionalNote:{
+        type:String,
+        required:false
+    }
+}));
+
 //endpoint for signup student
 app.post('/api/signupStudent', async (req, res) => {
   const { sid, sname, mail, year, dept, mentor, rePass } = req.body;
@@ -219,6 +252,36 @@ app.post('/api/login', async (req, res) => {
   
 });
 
+// SessionInfo Rout
+app.post('/api/SessionInfo', async (req, res) => {
+  try {
+      const { Department, Mentor, Year, Index, Date, SessionMode, AdditionalNote } = req.body;
+
+      // Validate required fields
+      if (!Department || !Mentor || !Year || !Index || !Date || !SessionMode) {
+          return res.status(400).json({ success: false, message: 'All required fields must be filled!' });
+      }
+
+      // Create new session entry
+      const newSession = new SessionInfo({
+          Department,
+          Mentor,
+          Year,
+          Index,
+          Date,
+          SessionMode,
+          AdditionalNote: AdditionalNote || '' // Default to empty string if not provided
+      });
+
+      // Save to database
+      await newSession.save();
+      return res.status(201).json({ success: true, message: 'Session information stored successfully!' });
+
+  } catch (error) {
+      console.error('Error storing session info:', error.message);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
 
 // Get current logged-in user (either mentor or student)
 app.get('/api/dashboard', async (req, res) => {
@@ -777,6 +840,54 @@ app.post('/api/notifications/read', async (req, res) => {
     res.status(500).json({ error: 'Failed to update notifications' });
   }
 });
+
+// Fetch mentors based on department
+app.get('/api/mentors/:dept', async (req, res) => {
+  const { dept } = req.params;
+  
+  try {
+    const mentors = await Mentor.find({ dept: dept }, 'name'); // Fetch mentors by department
+    if (!mentors.length) {
+      return res.status(404).json({ message: 'No mentors found' });
+    }
+    res.json(mentors.map(mentor => mentor.name)); // Return an array of mentor names
+  } catch (error) {
+    console.error('Error fetching mentors:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Fetch students based on batch year and mentor
+app.get('/api/students/:year/:mentor', async (req, res) => {
+  const { year, mentor } = req.params;
+
+  console.log(`Fetching students for Batch Year: ${year}, Mentor: ${mentor}`); // Debug log
+
+  try {
+      const [students] = await db.query(
+          'SELECT index_no FROM students WHERE batch_year = ? AND mentor = ?',
+          [year, mentor]
+      );
+
+      console.log("Query result:", students); // Log query result
+
+      if (!students || students.length === 0) {
+          console.log("No students found");
+          return res.status(200).json([]); // Return empty array instead of 404
+      }
+
+      const formattedStudents = students.map(row => ({
+        value: row.index_no,
+        label: row.index_no
+      }));
+  
+      res.json(formattedStudents);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  });
+      
 
 
 // Start the server
