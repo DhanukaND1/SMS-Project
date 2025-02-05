@@ -170,7 +170,7 @@ const handleLogout = async () => {
           )}
 
           <li className="side-list">
-          <Link to='/'  className="side-links">
+          <Link to='/feedback'  className="side-links">
             <i class='bx bxs-comment-detail icn' ></i>
               <span className="side-link">Feedback</span>
             </Link>
