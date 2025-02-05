@@ -287,7 +287,7 @@ app.post('/api/SessionInfo', async (req, res) => {
 app.get('/api/dashboard', async (req, res) => {
 
   if (req.session.user) {
-      const { name, email, role } = req.session.user;
+      const { email, role } = req.session.user;
       if (role === 'Mentor') {
 
           // Return mentor-specific response
@@ -889,6 +889,27 @@ app.get('/api/students/:year/:mentor', async (req, res) => {
   });
       
 
+// route for getting mentor data
+app.get('/api/mentor-data', async (req,res) => {
+
+  const {mentor} = req.query;
+  try{
+    const user = await Mentor.findOne({name: mentor});
+    console.log(user);
+    if(user){
+      res.status(200).json({
+        name: user.name,
+        email: user.mail,
+        dept: user.dept,
+        phone: user.phone,
+        image: user.image 
+      })
+    } 
+  }catch(err){
+    console.error('Error fetching mentor data', err.message );
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Start the server
 const port = process.env.PORT1 || 5001;

@@ -246,6 +246,36 @@ h4 {
     color: red;
 }
 
+.mentor-prof{
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.mentor-prof::after{
+    content: "View Profile";
+    position: absolute;
+    top: 100%;
+    left: 50%; 
+    transform: translateX(-50%);
+    background: white;
+    color: black;
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+.mentor-prof:hover::after{
+    opacity: 1;
+}
+
 @media(max-width:408px){
     .session-expired-message{
         border-radius: 0;
