@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './StudentDash.css';
 import img1 from '../../assets/1.webp';
@@ -67,7 +68,7 @@ function StudentHero() {
                         Welcome Back<br />
                         <span className="student-name">{studentName}</span>
                         <br />
-                        <h4>Mentor Name : <span className='yourmentor-name'>{mentorName}</span></h4>
+                        <h4>Mentor Name : <Link to= '/mentor-profile' className = 'mentor-prof'><span className='yourmentor-name'>{mentorName}</span></Link> </h4>
                         
                     </p>
                     <button className="messages-button">Check Messages</button>
