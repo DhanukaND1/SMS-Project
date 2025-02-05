@@ -17,8 +17,8 @@ import Profile from './Components/Profile/Profile.jsx';
 import StudentEditProfile from './Components/EditProfile/StudentEditProfile.jsx';
 import MentorEditProfile from './Components/EditProfile/MentorEditProfile.jsx';
 import MentorProfile from './Components/MentorProfile/MentorProfile.jsx';
-
-
+import ErrorPage from './Components/About/ErrorPage/ErrorPage.jsx';
+import Feedback from './Components/Feedback/Feedback.jsx';
 
 const App = () => {
 
@@ -46,7 +46,8 @@ const App = () => {
         <Route path='/edit-student-profile' element={<StudentEditProfile />} />
         <Route path='/edit-mentor-profile' element={<MentorEditProfile />} />
         <Route path='/mentor-profile' element={<MentorProfile />} />
-        
+        <Route path='/feedback' element={<Feedback />} />
+        <Route path='*' element={<ErrorPage />} />
       </Routes>
     </Router>
     {showSnow && <Snowfall snowflakeCount={250} style={{ zIndex:'2000' }} />}
