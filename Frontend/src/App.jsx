@@ -16,6 +16,7 @@ import Calendar from './Components/Calendar/Calendar.jsx';
 import Profile from './Components/Profile/Profile.jsx';
 import StudentEditProfile from './Components/EditProfile/StudentEditProfile.jsx';
 import MentorEditProfile from './Components/EditProfile/MentorEditProfile.jsx';
+import MentorProfile from './Components/MentorProfile/MentorProfile.jsx';
 
 
 
@@ -44,6 +45,7 @@ const App = () => {
         <Route path='/profile' element={<Profile />} />
         <Route path='/edit-student-profile' element={<StudentEditProfile />} />
         <Route path='/edit-mentor-profile' element={<MentorEditProfile />} />
+        <Route path='/mentor-profile' element={<MentorProfile />} />
         
       </Routes>
     </Router>
