@@ -864,10 +864,8 @@ app.get('/api/students/:year/:mentor', async (req, res) => {
   console.log(`Fetching students for Batch Year: ${year}, Mentor: ${mentor}`); // Debug log
 
   try {
-      const [students] = await db.query(
-          'SELECT index_no FROM students WHERE batch_year = ? AND mentor = ?',
-          [year, mentor]
-      );
+      // const students = await db.collection('Students').find({ year, mentor }).toArray();
+      const students = await Student.find({ year, mentor }, { sid: 1, _id: 0 });
 
       console.log("Query result:", students); // Log query result
 
@@ -876,10 +874,12 @@ app.get('/api/students/:year/:mentor', async (req, res) => {
           return res.status(200).json([]); // Return empty array instead of 404
       }
 
-      const formattedStudents = students.map(row => ({
-        value: row.index_no,
-        label: row.index_no
-      }));
+      const formattedStudents = students.map(student => ({
+        value: student.sid,
+        label: student.sid,
+        
+      }));
+      console.log(formattedStudents)
   
       res.json(formattedStudents);
     } catch (error) {

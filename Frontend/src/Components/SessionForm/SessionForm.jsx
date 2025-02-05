@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 
 
+
+
 function SessionForm() {
 
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ function SessionForm() {
     note:''
   });
 
+  
    // Function to fetch mentors from the backend
    const fetchMentors = async (dept) => {
     console.log("Fetching mentors for department:", dept); // Debugging
@@ -41,7 +44,7 @@ function SessionForm() {
       }
     };
   
-  // Function to fetch mentors from the backend
+  // Function to fetch students from the backend
   const fetchStudents = async (year, mentor) => {
     if (!year || !mentor){
       console.log("Batch year or mentor not selected yet.");
@@ -53,10 +56,10 @@ function SessionForm() {
         const data = await response.json();
 
         console.log("Students received:", data); // Debugging
+        console.log(response);
 
         if (Array.isArray(data) && data.length > 0) {
-          const formattedStudents = data.map(student => ({ value: student.index_no, label: student.index_no }));
-          setStudents(formattedStudents);
+          setStudents(data);
       } else {
           setStudents([]); // Ensure empty state if no students
       }
@@ -67,41 +70,43 @@ function SessionForm() {
 
 
   const handleStudentChange = (selectedStudents) => {
-    setSelectedStudents(selectedStudents);
+    setSelectedStudents(selectedStudents || []);
 
     setFormData((prevFormData) => ({
       ...prevFormData,
-      student: selectedStudents.map(option => option.value), // Store the values in formData
+      student: selectedStudents ? selectedStudents.map(option => option.value) : [], // Ensure values are stored
+    
     }));
   }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+    setFormData(prevFormData => {
+        const updatedFormData = { ...prevFormData, [name]: value };
 
-    if (name === 'dept') {
-      fetchMentors(value);
-      setFormData(prevFormData => ({ ...prevFormData, mentor: '', student: [] }));
-      setMentors([]);
-      setStudents([]);
-    } else if (name === 'mentor' || name === 'year') {
-      const newYear = name === 'year' ? value : formData.year;
-      const newMentor = name === 'mentor' ? value : formData.mentor;
-      fetchStudents(newYear, newMentor);
-    }
-  };
+        if (name === 'dept') {
+            fetchMentors(value);
+            return { ...updatedFormData, mentor: '', student: [] }; // Reset related fields
+        } else if (name === 'mentor' || name === 'year') {
+            fetchStudents(updatedFormData.year, updatedFormData.mentor);
+        }
+
+        return updatedFormData;
+    });
+};
+
 
   const handleMentorChange = (selectedMentor) => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      mentor: selectedMentor ? selectedMentor.value : '', // Store only the value
-    }));
-    fetchStudents(formData.year, selectedMentor ? selectedMentor.value : '');
-  };
+    const mentorValue = selectedMentor ? selectedMentor.value : '';
+
+    setFormData(prevFormData => {
+      const updatedFormData = { ...prevFormData, mentor: mentorValue };
+      fetchStudents(updatedFormData.year, mentorValue); // Fetch students immediately after update
+      return updatedFormData;
+    });
+};
+
   
 
   const clearForm =() => {
@@ -113,7 +118,7 @@ function SessionForm() {
       mode:'',
       note:''
     });
-    setSelectedStudents('');
+    setSelectedStudents([]);
     setStudents([]);
     setMentors([]);
   };
@@ -215,7 +220,7 @@ function SessionForm() {
           id='student'
           isMulti
           options={students}
-          value={selectedStudents}
+          value={students.filter(s => formData.student.includes(s.value))}
           onChange={handleStudentChange}
           placeholder="Select Students"
           isSearchable={true}
