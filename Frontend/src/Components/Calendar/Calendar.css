@@ -146,6 +146,36 @@
   width: 50%;
 }
 
+.event-point {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.stud-events,
+.mentor-events {
+  width: 10px;
+  height: 10px;
+  background-color: blue; 
+  opacity: 0.8;
+}
+
+.mentor-events {
+  background-color: orange;  
+}
+
+strong {
+  margin-left: 5px;
+  margin-right: 10px; 
+}
+
+
+.hover-effect:hover{
+  scale: 1.01;
+}
+
 @media (max-width: 768px) {
   .rbc-calendar {
     height: 100vh;

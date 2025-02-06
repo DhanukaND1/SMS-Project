@@ -16,7 +16,7 @@ const Calendar = () => {
   const localizer = momentLocalizer(moment);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([[], []]);
   const [addFormData, setAddFormData] = useState({ id:'', eventTitle: '', start: '', end: '' });
   const [editFormData, setEditFormData] = useState({id:'', eventTitle: '', start: '', end: '' });
   const [showAddForm, setShowAddForm] = useState(false);
@@ -48,12 +48,31 @@ const Calendar = () => {
           name,
         },
       });
-      setEvents(response.data.map(event => ({
-        ...event,
-        start:  moment.utc(event.start).local().toDate(),
-        end:  moment.utc(event.end).local().toDate(),
-        allDay: false,
-      })));
+      if(response.status === 200){
+        const {allEvents, mentorEvents} = response.data;
+        
+        const newAllEvents = allEvents.map(event => ({
+                                ...event,
+                                start: moment.utc(event.start).local().toDate(),
+                                end: moment.utc(event.end).local().toDate(),
+                                allDay: false,
+                                type: 'student'
+        })); 
+        
+
+        const newMentorEvents = mentorEvents.map(event => ({
+                                ...event,
+                                start: moment.utc(event.start).local().toDate(),
+                                end: moment.utc(event.end).local().toDate(),
+                                allDay: false,
+                                type: 'mentor'
+        })); 
+        
+
+      const combinedEvents = [...newAllEvents, ...newMentorEvents];
+      setEvents(combinedEvents);
+
+  }
     } catch (error) {
       console.error('Error fetching events:', error);
     }
@@ -239,6 +258,19 @@ const Calendar = () => {
             views={{ month: true, agenda: true }}
             onSelectEvent={handleSelectEvent}
             onNavigate={(date) => setCurrentViewDate(date)}
+            eventPropGetter={(event) => {
+              let style = {
+                backgroundColor: 'blue', // Default background color
+                opacity: 0.8
+              };
+          
+              if (event.type === 'mentor') {
+                style.backgroundColor = 'orange'; // Change color for mentor events
+              }return {
+                className: 'hover-effect',
+                style: style,
+              };
+            }} 
           />
         </div>
       </section>
@@ -267,7 +299,12 @@ const Calendar = () => {
       {showEditForm && (
         <div className="date-agenda">
           <div className="agenda-content">
-            <h3>Edit Event on {selectedEvent && new Date(selectedEvent.start).toLocaleDateString()}</h3>
+          <h3>
+            {selectedEvent?.type === 'student' 
+              ? `Edit Event on ${new Date(selectedEvent.start).toLocaleDateString()}` 
+              : `Event on ${new Date(selectedEvent.start).toLocaleDateString()}`
+            }
+          </h3>
             <i className="fa-solid fa-xmark" onClick={closeEditForm}></i>
             <form onSubmit={handleSubmitEdit}>
               <label>Event Title</label>
@@ -279,14 +316,27 @@ const Calendar = () => {
               <label>End Time</label>
               <input type="datetime-local" name='end' value={editFormData.end} onChange={handleEditChange} required />
 
+              {selectedEvent?.type === 'student' && (
                <div className="calc-btns">
-              <button type="submit" className='cal-btn'>Edit Event</button>
-              <button type="button" className='cal-btn' onClick={handleDeleteEvent}>Delete Event</button>
+                <button type="submit" className='cal-btn'>Edit Event</button>
+                <button type="button" className='cal-btn' onClick={handleDeleteEvent}>Delete Event</button> 
               </div>
+              )}
+
             </form>
           </div>
         </div>
       )}
+
+        {role === 'Student' && (
+          <div className='root event-point'>
+            <div className='stud-events'></div>
+            <strong>Your Events</strong>
+            <div className='mentor-events'></div>
+            <strong>Mentor Added Events</strong>
+          </div>
+        )}
+
 
       <Footer />
       <ToastContainer />
