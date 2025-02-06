@@ -1,21 +1,24 @@
 import React, {useEffect} from 'react'
 import './SessionContent1.css'
-import Navigation from '../SessionNavigation/Navigation'
-import Session from '../../assets/Session.jpg'
 import Footer from '../Footer/Footer'
 import ReadMore from '../ReadMore/ReadMore'
 import Sidebar from '../Sidebar/Sidebar'
 import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx'
-import  {Link} from 'react-router-dom'
+import  {useNavigate,Link} from 'react-router-dom';
+
 
 
 function SessionContent1() {
  
   const {sessionExpired, checkSession} = useSessionTimeout();
+  const navigate = useNavigate();
 
+  
   useEffect(() => {
     checkSession(); // Trigger session check on component mount
   }, []);
+
+  
 
   if (sessionExpired) {
     return (
@@ -28,22 +31,23 @@ function SessionContent1() {
       </div>
     );
   }
+
   
   return (
     <div className='app'>
 
-        {/* <Navigation/> */}
         <Sidebar/>
 
         <section id='home'>
-          <header className="main-content">
+          <header className="main-content" >
             <div className="overlay"></div>
             <div className="content">
               <h1>Empowering Students Through Personalized Mentorship</h1>
-              <button className="cta-btn">View Session Reports</button>
+              <button className="cta-btn" onClick={() => navigate('/date-time')} >View Session Reports</button>
             </div>
           </header>
         </section>
+
 
 
         <section>
