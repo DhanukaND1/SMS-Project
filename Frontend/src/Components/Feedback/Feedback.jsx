@@ -21,13 +21,18 @@ const Feedback = () => {
     setDescription("");
   };
 
-  return (
-    <div className="cont">
-      <button type="button" className="xbtn" onClick={() => navigate(-1)}>
-            <i className="fa-solid fa-xmark"></i>
-      </button>
-        <div className="feedback-container">
-        <form onSubmit={handleSubmit}>
+  const handleClose = () => {
+    navigate(-1);
+  };
+
+   return (
+    <div>
+      {/* <button type="button" className="xbtn" onClick={() => navigate(-1)}> */}
+            
+      
+        <div className="feedback-cont">
+        <form onSubmit={handleSubmit} className="feedback-form">
+        <i className="fa-solid fa-xmark xbutton" onClick={handleClose}></i>
           <h2>Feedback Form</h2>
 
           <label htmlFor="mentor">Mentor Name</label>
