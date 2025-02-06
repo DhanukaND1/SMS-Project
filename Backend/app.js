@@ -107,34 +107,13 @@ const Event = mongoose.model('Event',new mongoose.Schema({
 // collection for SessionInfo
 
 const SessionInfo = mongoose.model('SessionInfo', new mongoose.Schema({
-  Department:{
-        type:String,
-        required:true
-    },
-    Mentor:{
-        type:String,
-        required:true
-    },
-    Year:{
-        type:String,
-        required:true
-    },
-    Index:{
-        type:String,
-        required:true
-    },
-    Date:{
-        type:Date,
-        required:true
-    },
-    SessionMode:{
-        type:String,
-        required:true
-    },
-    AdditionalNote:{
-        type:String,
-        required:false
-    }
+    Department: {type:String, required:true},
+    Mentor: {type:String, required:true},
+    Year: {type:String, required:true},
+    Index: {type:String, required:true},
+    Date: {type:Date, required:true},
+    SessionMode: {type:String, required:true},
+    AdditionalNote: {type:String, required:false}
 }));
 
 //endpoint for signup student
@@ -771,11 +750,32 @@ app.post('/api/events', async (req, res) => {
   }
 });
 
-app.get('/api/get-events', async (req,res) => {
-  const {role, name} = req.query;
+app.get('/api/get-events', async (req, res) => {
+  const { role, name } = req.query;
+  let mentorEvents = [];
 
-  const allEvents = await Event.find({role, name});
-  res.status(201).json(allEvents);
+  try {
+    if (role === 'Student') {
+      const student = await Student.findOne({sname: name});
+    
+      if (!student) {
+        return res.status(404).json({ success: false, message: 'Student not found' });
+      }
+
+      const mentorName = student.mentor;
+      if (mentorName) {
+        mentorEvents = await Event.find({ name: mentorName, role: 'Mentor' });
+      }
+    }
+
+    const allEvents = await Event.find({ role, name });
+    res.status(200).json({ allEvents, mentorEvents });
+    console.log(allEvents,mentorEvents);
+  
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 
