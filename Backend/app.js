@@ -911,6 +911,33 @@ app.get('/api/mentor-data', async (req,res) => {
   }
 });
 
+// API Route to fetch session reports by year and month
+app.get('/api/sessions', async (req, res) => {
+  try {
+    const { year, month, mentor } = req.query;
+
+    if (!year || !month || !mentor  ) {
+      return res.status(400).json({ error: "Year, month and mentor are required." });
+    }
+
+    // Convert year and month to a date range
+    const startDate = new Date(year, month - 1, 1); // First day of the month
+    const endDate = new Date(year, month, 0, 23, 59, 59); // Last day of the month
+
+    const sessions = await SessionInfo.find({
+      Date: { $gte: startDate, $lte: endDate },
+      Mentor: mentor
+    });
+    console.log(sessions);
+
+    res.json(sessions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
 // Start the server
 const port = process.env.PORT1 || 5001;
 app.listen(port, () => console.log(`Server running on port ${port}`));
