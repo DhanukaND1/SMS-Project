@@ -1,16 +1,19 @@
 import Footer from '../Footer/Footer'
 import Sidebar from '../Sidebar/Sidebar'
 import React,{useState, useEffect} from 'react'
-// import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button'
 import axios from 'axios'
 import './SessionTable.css'
+import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx'
+import  {Link} from 'react-router-dom'
 
 
 export default function SessionTable() {
   const [mentorName, setMentorName] = useState("");
   const [selectedDate, setSelectedDate] = useState('');
   const [sessionReports, setSessionReports] = useState([]);
+  const {sessionExpired, checkSession} = useSessionTimeout();
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
 
   useEffect(() =>{
     const fetchmentorname = async() =>{
@@ -40,10 +43,28 @@ export default function SessionTable() {
     try {
       const response = await axios.get(`http://localhost:5001/api/sessions?year=${year}&month=${month}&mentor=${mentorName}`);
       setSessionReports(response.data);
+      setIsButtonClicked(true);
     } catch (error) {
       console.error("Error fetching session reports:", error);
     }
   };
+
+  
+    useEffect(() => {
+      checkSession(); // Trigger session check on component mount
+    }, []);
+  
+    if (sessionExpired) {
+      return (
+        <div className="session-expired-overlay">
+          <div className="session-expired-message">
+            <h2><i class='bx bxs-error warning'></i>Session Expired</h2>
+            <p>Your session has expired. Please log in again.</p>
+            <Link to="/login" className='link'>Login</Link>
+          </div>
+        </div>
+      );
+    }
 
 
   return (
@@ -51,59 +72,59 @@ export default function SessionTable() {
       <Sidebar/>
         
         <div className='session-table-content'>
-            <br /><br /><br />
-        <h2>Session Reports for {mentorName}</h2><br />
-
-        <form action="">
-          <label htmlFor="selectDate">Select a Date</label>
-          <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
-        </form><br />
+        <h2>Session Reports For {mentorName}</h2>
+          <form action="" className='session-report-form'>
+            <label htmlFor="selectDate">Select Year and Month</label>
+            <input type="month" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
+          </form>
         
-        <Button variant="primary" onClick={fetchSessionReports}>see reports</Button>
+        <Button variant="primary" onClick={fetchSessionReports} className='report-btn'>see reports</Button>
         
-        {/* <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>Report num</th>
-          <th>Date</th>
-          <th>Department</th>
-          <th>Mentor</th>
-          <th>Batch Year</th>
-          <th>Index numbers</th>
-          <th>Session Mode</th>
-          <th>Additional Note</th>
-        </tr>
-      </thead>
-      <tbody>
-      {sessionReports.map((report, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{new Date(report.Date).toLocaleDateString()}</td>
-                <td>{report.Department}</td>
-                <td>{report.Mentor}</td>
-                <td>{report.Year}</td>
-                <td>{report.Index}</td>
-                <td>{report.SessionMode}</td>
-                <td>{report.AdditionalNote}</td>
-              </tr>
-            ))}
-      
-      </tbody>
-    </Table> */}
+      <div className="reports-container">
+        {sessionReports.length > 0 ? (
+           sessionReports.map((report, index) => (
 
-<div className="reports-container">
-          {sessionReports.map((report, index) => (
             <div key={index} className="report-card">
-              <h3>Report #{index + 1}</h3>
-              <p><strong>Date:</strong> {new Date(report.Date).toLocaleDateString()}</p>
-              <p><strong>Department:</strong> {report.Department}</p>
-              <p><strong>Mentor:</strong> {report.Mentor}</p>
-              <p><strong>Batch Year:</strong> {report.Year}</p>
-              <p><strong>Index Numbers:</strong> {report.Index}</p>
-              <p><strong>Session Mode:</strong> {report.SessionMode}</p>
-              <p><strong>Additional Note:</strong> {report.AdditionalNote || "N/A"}</p>
+
+              <strong>Report #{index + 1}</strong>
+              <span></span>
+
+              <div className='report-modify-btn'>
+              <button className='report-edit-btn'>Edit</button>
+              <button className='report-delete-btn'>Delete</button>
+              </div>
+              
+            
+              <strong>Date:</strong> 
+              <span>{new Date(report.Date).toLocaleDateString()}</span>
+              
+              <strong>Department:</strong>
+              <span>{report.Department}</span>
+              
+              <strong>Mentor:</strong>
+              <span>{report.Mentor}</span>
+              
+              <strong>Batch Year:</strong>
+              <span>{report.Year}</span>
+
+              <strong>Index Numbers:</strong>
+              <span>{report.Index}</span>
+
+              <strong>Session Mode:</strong>
+              <span>{report.SessionMode}</span>
+
+              <strong>Additional Note:</strong>
+              <span>{report.AdditionalNote || "N/A"}</span>
+
             </div>
-          ))}
+          ))
+         
+          ) : isButtonClicked ? (
+            <div className="no-report-card">
+              <h3>No reports are available for this month.</h3>
+            </div>
+        ): null}
+      
         </div>
 
 
