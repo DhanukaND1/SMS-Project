@@ -42,41 +42,48 @@ const Calendar = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/get-events', {
-        params: {
-          role,
-          name,
-        },
-      });
-      if(response.status === 200){
-        const {allEvents, mentorEvents} = response.data;
-        
-        const newAllEvents = allEvents.map(event => ({
-                                ...event,
-                                start: moment.utc(event.start).local().toDate(),
-                                end: moment.utc(event.end).local().toDate(),
-                                allDay: false,
-                                type: 'student'
-        })); 
-        
+        const response = await axios.get('http://localhost:5001/api/get-events', {
+            params: {
+                role,
+                name,
+            },
+        });
 
-        const newMentorEvents = mentorEvents.map(event => ({
-                                ...event,
-                                start: moment.utc(event.start).local().toDate(),
-                                end: moment.utc(event.end).local().toDate(),
-                                allDay: false,
-                                type: 'mentor'
-        })); 
-        
+        if (response.status === 200) {
+            const { allEvents, mentorEvents, sessionEvents } = response.data;
 
-      const combinedEvents = [...newAllEvents, ...newMentorEvents];
-      setEvents(combinedEvents);
+            const newAllEvents = allEvents.map(event => ({
+                ...event,
+                start: moment.utc(event.start).local().toDate(),
+                end: moment.utc(event.end).local().toDate(),
+                allDay: false,
+                type: 'student'
+            }));
 
-  }
+            const newMentorEvents = mentorEvents.map(event => ({
+                ...event,
+                start: moment.utc(event.start).local().toDate(),
+                end: moment.utc(event.end).local().toDate(),
+                allDay: false,
+                type: 'mentor'
+            }));
+
+            const newSessionEvents = sessionEvents.map(event => ({
+                ...event,
+                start: moment(event.start).toDate(),
+                end: moment(event.end).toDate(),
+                allDay: true,
+                type: 'session'
+            }));
+
+            const combinedEvents = [...newAllEvents, ...newMentorEvents, ...newSessionEvents];
+            setEvents(combinedEvents);
+        }
     } catch (error) {
-      console.error('Error fetching events:', error);
+        console.error('Error fetching events:', error);
     }
-  };
+};
+
 
   useEffect(() => {
     fetchEvents();

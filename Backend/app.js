@@ -9,6 +9,8 @@ const path = require('path');
 const fs = require('fs');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const { start } = require('repl');
+const { type } = require('os');
 require('dotenv').config();
 // const Notification = require('./model/Notification');
 
@@ -754,28 +756,38 @@ app.get('/api/get-events', async (req, res) => {
   let mentorEvents = [];
 
   try {
-    if (role === 'Student') {
-      const student = await Student.findOne({sname: name});
-    
-      if (!student) {
-        return res.status(404).json({ success: false, message: 'Student not found' });
+      if (role === 'Student') {
+          const student = await Student.findOne({ sname: name });
+          if (!student) {
+              return res.status(404).json({ success: false, message: 'Student not found' });
+          }
+          const mentorName = student.mentor;
+          if (mentorName) {
+              mentorEvents = await Event.find({ name: mentorName, role: 'Mentor' });
+          }
       }
 
-      const mentorName = student.mentor;
-      if (mentorName) {
-        mentorEvents = await Event.find({ name: mentorName, role: 'Mentor' });
-      }
-    }
+      const allEvents = await Event.find({ role, name });
 
-    const allEvents = await Event.find({ role, name });
-    res.status(200).json({ allEvents, mentorEvents });
-    console.log(allEvents,mentorEvents);
-  
+      // Fetch session info and format it for the calendar
+      const sessions = await SessionInfo.find({});
+      const sessionEvents = sessions.map(session => ({
+          id: session._id,
+          title: `Session: ${session.Index} - ${session.Department}`,
+          start: new Date(session.Date),
+          end: new Date(session.Date),
+          allDay: true,
+          type: 'session',
+          mentor: session.Mentor
+      }));
+
+      res.status(200).json({ allEvents, mentorEvents, sessionEvents });
   } catch (error) {
-    console.error('Error fetching events:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+      console.error('Error fetching events:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
 
 
 // PUT route to update an event by ID
