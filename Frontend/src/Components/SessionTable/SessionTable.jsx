@@ -1,9 +1,10 @@
 import Footer from '../Footer/Footer'
 import Sidebar from '../Sidebar/Sidebar'
 import React,{useState, useEffect} from 'react'
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
-import axios from 'axios';
+// import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button'
+import axios from 'axios'
+import './SessionTable.css'
 
 
 export default function SessionTable() {
@@ -60,7 +61,7 @@ export default function SessionTable() {
         
         <Button variant="primary" onClick={fetchSessionReports}>see reports</Button>
         
-        <Table striped bordered hover>
+        {/* <Table striped bordered hover>
       <thead>
         <tr>
           <th>Report num</th>
@@ -88,7 +89,24 @@ export default function SessionTable() {
             ))}
       
       </tbody>
-    </Table>
+    </Table> */}
+
+<div className="reports-container">
+          {sessionReports.map((report, index) => (
+            <div key={index} className="report-card">
+              <h3>Report #{index + 1}</h3>
+              <p><strong>Date:</strong> {new Date(report.Date).toLocaleDateString()}</p>
+              <p><strong>Department:</strong> {report.Department}</p>
+              <p><strong>Mentor:</strong> {report.Mentor}</p>
+              <p><strong>Batch Year:</strong> {report.Year}</p>
+              <p><strong>Index Numbers:</strong> {report.Index}</p>
+              <p><strong>Session Mode:</strong> {report.SessionMode}</p>
+              <p><strong>Additional Note:</strong> {report.AdditionalNote || "N/A"}</p>
+            </div>
+          ))}
+        </div>
+
+
       </div>
     <Footer/>
 
