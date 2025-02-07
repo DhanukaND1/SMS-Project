@@ -19,6 +19,9 @@ import MentorEditProfile from './Components/EditProfile/MentorEditProfile.jsx';
 import MentorProfile from './Components/MentorProfile/MentorProfile.jsx';
 import ErrorPage from './Components/About/ErrorPage/ErrorPage.jsx';
 import Feedback from './Components/Feedback/Feedback.jsx';
+import SessionTable from './Components/SessionTable/SessionTable.jsx';
+
+
 
 const App = () => {
 
@@ -48,6 +51,9 @@ const App = () => {
         <Route path='/mentor-profile' element={<MentorProfile />} />
         <Route path='/feedback' element={<Feedback />} />
         <Route path='*' element={<ErrorPage />} />
+        <Route path="/session-table" element={<SessionTable />} />
+        
+        
       </Routes>
     </Router>
     {showSnow && <Snowfall snowflakeCount={250} style={{ zIndex:'2000' }} />}
