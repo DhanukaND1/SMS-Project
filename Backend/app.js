@@ -264,49 +264,48 @@ app.post('/api/SessionInfo', async (req, res) => {
 
 // Get current logged-in user (either mentor or student)
 app.get('/api/dashboard', async (req, res) => {
-
   if (req.session.user) {
-      const { email, role } = req.session.user;
+    const { email, role } = req.session.user;
+
+    try {
       if (role === 'Mentor') {
-
-          // Return mentor-specific response
-          const mentor = await Mentor.findOne({mail:email});
-          if(mentor){
-            return res.json({ 
-              name: mentor.name,
-              email: mentor.mail,
-              role: 'Mentor',
-              dept: mentor.dept,
-              phone: mentor.phone 
-            });
-          }
-          
-
+        // Return mentor-specific response
+        const mentor = await Mentor.findOne({ mail: email });
+        if (mentor) {
+          return res.json({
+            name: mentor.name,
+            email: mentor.mail,
+            role: 'Mentor',
+            dept: mentor.dept,
+            phone: mentor.phone
+          });
+        } else {
+          return res.status(404).json({ error: "Mentor not found" });
+        }
       } else if (role === 'Student') {
-          try {
-              // Fetch student data including the mentor's name
-              const student = await Student.findOne({ mail:email });
-              if (student) {
-                  return res.json({
-                      name: student.sname,
-                      sid: student.sid,
-                      email: student.mail,
-                      batchyear: student.year,
-                      role: 'Student',
-                      mentor: student.mentor, // Send the mentor's name in the response
-                      dept: student.dept
-                  });
-              } else {
-                  return res.status(404).json({ error: "Student not found" });
-              }
-          } catch (error) {
-              return res.status(500).json({ error: "Internal server error" });
-          }
+        // Fetch student data including the mentor's name
+        const student = await Student.findOne({ mail: email });
+        if (student) {
+          return res.json({
+            name: student.sname,
+            sid: student.sid,
+            email: student.mail,
+            batchyear: student.year,
+            role: 'Student',
+            mentor: student.mentor,
+            dept: student.dept
+          });
+        } else {
+          return res.status(404).json({ error: "Student not found" });
+        }
       } else {
-          return res.status(400).json({ error: "Invalid role" });
+        return res.status(400).json({ error: "Invalid role" });
       }
+    } catch (error) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
   } else {
-      return res.status(401).json({ error: "No user logged in" });
+    return res.status(401).json({ error: "No user logged in" });
   }
 });
 
