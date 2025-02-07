@@ -935,7 +935,23 @@ app.get('/api/sessions', async (req, res) => {
   }
 });
 
+//Provide session data into student dashboard
+app.get('/api/ongoing-sessions', async (req, res) => {
+  try {
+    const { batchyear } = req.query;
 
+    if (!batchyear) {
+      return res.status(400).json({ error: "Batch year is required."});
+    }
+
+    const sessions = await SessionInfo.find({ Year: batchyear});
+
+    res.json(sessions);
+  }catch (error) {
+    console.error("Error fetching ongoin sessions:", error);
+    res.status(500).json({ error: 'Internal server error'});
+  }
+});
 
 // Start the server
 const port = process.env.PORT1 || 5001;

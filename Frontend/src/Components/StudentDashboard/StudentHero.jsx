@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './StudentDash.css';
-import img1 from '../../assets/1.webp';
-
+import session from 'express-session';
 
 function StudentHero() {
     const [studentName, setStudentName] = useState('');
@@ -12,6 +11,7 @@ function StudentHero() {
     const [resources, setResources] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [resourceType, setResourceType] = useState('');
+    const [sessions, setSessions] = useState([]);
 
     // Fetch Student Name
     useEffect(() => {
@@ -29,13 +29,13 @@ function StudentHero() {
         fetchStudentName();
     }, []);
 
-    let setIcon ;
+    let setIcon;
 
-    if(resourceType === 'pdf'){
+    if (resourceType === 'pdf') {
         setIcon = 'bx bxs-file-pdf';
-    }else if(resourceType === 'video'){
+    } else if (resourceType === 'video') {
         setIcon = 'bx bxs-videos'
-    }else if(resourceType === 'audio'){
+    } else if (resourceType === 'audio') {
         setIcon = 'bx bxs-music';
     }
 
@@ -48,17 +48,44 @@ function StudentHero() {
                 withCredentials: true,
             });
             console.log('Resources fetched:', response.data);
-                    setResources(response.data);
-                    setResourceType(type);
-                    setShowModal(true);
-            }catch (error) {
-                console.error('Error fetching resources:', error.response.data, error.message);
-                setShowModal(true);
-                setResourceType(type);
-                setResources([]);
+            setResources(response.data);
+            setResourceType(type);
+            setShowModal(true);
+        } catch (error) {
+            console.error('Error fetching resources:', error.response.data, error.message);
+            setShowModal(true);
+            setResourceType(type);
+            setResources([]);
 
-            }
+        }
     };
+
+    //Fetch sessions
+    useEffect(() => {
+        const fetchSessions = async () => {
+            try {
+                const response = await axios.get('http://localhost:5001/api/ongoing-sessions', {
+                    params: { batchyear },
+                    withCredentials: true,
+                });
+
+                const updatedSessions = response.data.map(session => {
+                    const sessionDate = new Date(session.Date);
+                    const today = new Date();
+                    const timeDiff = sessionDate - today;
+                    const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+                    return { ...session, daysLeft };
+                });
+
+                setSessions(updatedSessions);
+            } catch (error) {
+                console.error('Error fetching sessions:', error);
+            }
+        };
+
+        if (batchyear) fetchSessions();
+    }, [batchyear]);
+
 
     return (
         <div className='dashboard-container'>
@@ -68,8 +95,8 @@ function StudentHero() {
                         Welcome Back<br />
                         <span className="student-name">{studentName}</span>
                         <br />
-                        <h4>Mentor Name : <Link to= '/mentor-profile' className = 'mentor-prof'><span className='yourmentor-name'>{mentorName}</span></Link> </h4>
-                        
+                        <h4>Mentor Name : <Link to='/mentor-profile' className='mentor-prof'><span className='yourmentor-name'>{mentorName}</span></Link> </h4>
+
                     </p>
                     <button className="messages-button">Check Messages</button>
                 </section>
@@ -80,23 +107,24 @@ function StudentHero() {
                 <section className='info-sessions'>
                     <h2>Ongoing Info Sessions</h2>
                     <div className='sessions'>
-                        <div className='session-card'>
-                            <p>Typing: How to Increase Your Typing Speed</p>
-                            <p className="date">1 Day Left</p>
-                            <button className="attend-button">Attend</button>
-                        </div>
-                        <div className='session-card'>
-                            <p>Typing: How to Increase Your Typing Speed</p>
-                            <p className="date">1 Day Left</p>
-                            <button className="attend-button">Attend</button>
-                        </div>
-                        <div className='session-card'>
-                            <p>Typing: How to Increase Your Typing Speed</p>
-                            <p className="date">1 Day Left</p>
-                            <button className="attend-button">Attend</button>
-                        </div>
+                        {sessions.length > 0 ? (
+                            sessions.map((session, index) => (
+                                <div className='session-card' key={index}>
+                                    <p>{session.Index}: {session.Department} Session</p>
+                                    <p className='date'>Date: {new Date(session.Date).toLocaleDateString()}</p>
+                                    <p className='countdown'>
+                                        {session.daysLeft > 0 ? `${session.daysLeft} Days Left` : "Session Today!"}
+                                    </p>
+                                    <button className='attend-button'>Attend</button>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No ongoing sessions available.</p>
+                        )}
                     </div>
                 </section>
+
+
                 <hr />
 
                 {/* Recommendations */}
@@ -124,9 +152,9 @@ function StudentHero() {
                                 <ul>
                                     {resources.map((resource) => (
                                         <li key={resource._id}>
-                                            
+
                                             <li className={setIcon}></li>
-                                            <a  className="no-underline" href={`http://localhost:5001${resource.fileUrl}`} target='_blank' rel='nooper noreferrer'>
+                                            <a className="no-underline" href={`http://localhost:5001${resource.fileUrl}`} target='_blank' rel='nooper noreferrer'>
                                                 {resource.description || resource.fileUrl}
                                             </a>
                                         </li>
@@ -134,7 +162,7 @@ function StudentHero() {
                                 </ul>
                             ) : (
                                 <div>
-                                <p>No any {resourceType} Resources have been uploaded yet.</p>
+                                    <p>No any {resourceType} Resources have been uploaded yet.</p>
                                 </div>
                             )}
                             <button onClick={() => setShowModal(false)}>Close</button>
