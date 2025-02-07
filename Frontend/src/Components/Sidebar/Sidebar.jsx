@@ -160,22 +160,22 @@ const handleLogout = async () => {
           </li>
           )}
 
-          {role === 'Mentor' && (
+          
           <li className="side-list">
           <Link to='/session-page'  className="side-links">
             <i class='bx bxs-report icn' ></i>
               <span className="side-link">Session Info</span>
             </ Link>
           </li>
-          )}
-
+          
+          { role === "Student" && (
           <li className="side-list">
           <Link to='/feedback'  className="side-links">
             <i class='bx bxs-comment-detail icn' ></i>
               <span className="side-link">Feedback</span>
             </Link>
           </li>
-          
+          )}
           </ul>
 
           <div className="bottom-content">
