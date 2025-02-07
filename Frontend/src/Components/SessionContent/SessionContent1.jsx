@@ -43,7 +43,7 @@ function SessionContent1() {
             <div className="overlay"></div>
             <div className="content">
               <h1>Empowering Students Through Personalized Mentorship</h1>
-              <button className="cta-btn" onClick={() => navigate('/date-time')} >View Session Reports</button>
+              <button className="cta-btn" onClick={() => navigate('/session-table')} >View Session Reports</button>
             </div>
           </header>
         </section>
