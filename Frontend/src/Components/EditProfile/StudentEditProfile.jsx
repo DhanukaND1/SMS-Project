@@ -266,9 +266,7 @@ const StudentEditProfile = () => {
       </div>
     );
   }
-  toast.success('hello');
-  toast.warn('bad')
-  toast.error('no response')
+
   return (
     <div>
       <Sidebar />
