@@ -159,3 +159,9 @@ nav .side-logo{
 .dropdown-item:hover {
     background: #f1f1f1;
 }
+
+@media(max-width:768px){
+  .user-name{
+    display: none;
+  }
+}

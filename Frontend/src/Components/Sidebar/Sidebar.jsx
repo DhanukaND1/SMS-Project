@@ -209,7 +209,7 @@ const Sidebar = () => {
 
       <div className="sidecont" onClick={() => setShowDropdown(!showDropdown)}>
         <ul>
-          <li><Link>{name}</Link></li>
+          <li className='user-name'><Link>{name}</Link></li>
           <li><img src={selectedImage || profilePic} alt="Profile" /></li>
           <i className={`bx ${showDropdown ? 'bx-chevron-up' : 'bx-chevron-down'}`}></i>
         </ul>
