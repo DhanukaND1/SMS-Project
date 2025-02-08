@@ -14,15 +14,16 @@ export default function SessionTable() {
   const [sessionReports, setSessionReports] = useState([]);
   const {sessionExpired, checkSession} = useSessionTimeout();
   const [isButtonClicked, setIsButtonClicked] = useState(false);
+  const [role ,setRole] = useState('');
 
   useEffect(() =>{
     const fetchmentorname = async() =>{
       try {
         const response = await axios.get ("http://localhost:5001/api/dashboard",{
           withCredentials: true, // Ensures cookies (session) are sent with the request
-
         });
-        if(response.data.role === 'Mentor'){
+        setRole(response.data.role);
+        if(role === 'Mentor'){
           setMentorName(response.data.name)
           }
       }
@@ -75,7 +76,7 @@ export default function SessionTable() {
         <h2>Session Reports For {mentorName}</h2>
           <form action="" className='session-report-form'>
             <label htmlFor="selectDate">Select Year and Month</label>
-            <input type="month" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
+            <input type="month" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} required />
           </form>
         
         <Button variant="primary" onClick={fetchSessionReports} className='report-btn'>see reports</Button>
@@ -89,10 +90,10 @@ export default function SessionTable() {
               <strong>Report #{index + 1}</strong>
               <span></span>
 
-              <div className='report-modify-btn'>
+             { role === 'Mentor' &&( <div>
               <button className='report-edit-btn'>Edit</button>
               <button className='report-delete-btn'>Delete</button>
-              </div>
+              </div>)}
               
             
               <strong>Date:</strong> 
