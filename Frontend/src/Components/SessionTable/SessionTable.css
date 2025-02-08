@@ -2,11 +2,19 @@
     margin-top: 80px;
   }
 
-  .session-table-content h2{
+  .session-table-content p{
     text-align: center;
+    font-size: 30px;
   }
 
   .session-report-form{
+    display: flex;
+    flex-direction: column;
+    
+    
+  }
+
+  .session-report-form div{
     display: flex;
     gap: 20px;
     font-weight: bold;
@@ -14,6 +22,7 @@
   }
 
   .report-btn{
+    width: 150px;
     margin-left: 15%;
   }
 
@@ -111,13 +120,13 @@
       flex-direction: column;
     }
   
-    .session-report-form {
+    .session-report-form div{
       gap: 0;
     }
   
-    .session-report-form label,
-    .session-report-form input {
-      width: 48%;
+    .session-report-form div label,
+    .session-report-form div input {
+      width: 50%;
     }
   }
 
@@ -137,13 +146,14 @@
       flex-direction: column;
     }
   
-    .session-report-form {
+    .session-report-form div {
       flex-direction: column;
       align-items: flex-start;
     }
   
-    .session-report-form label,
-    .session-report-form input {
+    .session-report-form div label,
+    .session-report-form div input {
       width: 100%;
+      margin-top: 10px;
     }
   }

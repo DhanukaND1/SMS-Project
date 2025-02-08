@@ -22,10 +22,16 @@ export default function SessionTable() {
         const response = await axios.get ("http://localhost:5001/api/dashboard",{
           withCredentials: true, // Ensures cookies (session) are sent with the request
         });
-        setRole(response.data.role);
-        if(role === 'Mentor'){
+        const userRole = response.data.role;
+        setRole(userRole);
+
+        if(userRole === 'Mentor'){
           setMentorName(response.data.name)
-          }
+        
+        }else if(userRole === 'Student'){
+          setMentorName(response.data.mentor);
+        }
+
       }
       catch(error){
         console.error("mentor name can't be fetched", error.message)
@@ -34,8 +40,12 @@ export default function SessionTable() {
     fetchmentorname();
   },[]);
 
-  const fetchSessionReports = async () => {
-    if (!selectedDate || !mentorName) return;
+  const fetchSessionReports = async (e) => {
+    e.preventDefault();
+
+    if (!selectedDate || !mentorName){
+      return;
+    }
 
     const dateObj = new Date(selectedDate);
     const year = dateObj.getFullYear();
@@ -73,13 +83,17 @@ export default function SessionTable() {
       <Sidebar/>
         
         <div className='session-table-content'>
-        <h2>Session Reports For {mentorName}</h2>
-          <form action="" className='session-report-form'>
-            <label htmlFor="selectDate">Select Year and Month</label>
-            <input type="month" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} required />
+        <p>Session Reports For <b style={{ fontFamily: 'Playfair Display, serif' }}>{mentorName}</b></p>
+
+          <form action="" className='session-report-form' onSubmit={fetchSessionReports}>
+            <div>
+              <label htmlFor="selectDate">Select Year and Month</label>
+              <input type="month" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} required />
+            </div>
+           <Button type='submit' variant="primary" className='report-btn'>see reports</Button>
           </form>
         
-        <Button variant="primary" onClick={fetchSessionReports} className='report-btn'>see reports</Button>
+       
         
       <div className="reports-container">
         {sessionReports.length > 0 ? (
