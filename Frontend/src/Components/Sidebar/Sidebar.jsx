@@ -190,6 +190,15 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
+
+            {mail === "jayani@at.cmb.ac.lk" && (
+              <li className="side-list">
+                <Link to='/view-feedback' className="side-links">
+                  <i class='bx bxs-comment-detail icn' ></i>
+                  <span className="side-link">View Feedbacks</span>
+                </Link>
+              </li>
+            )}
           </ul>
 
           <div className="bottom-content">
