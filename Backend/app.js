@@ -1006,6 +1006,43 @@ app.post('/api/feedback', async (req, res) =>{
   }
 });
 
+app.get('/api/get-feedbacks', async (req,res) => {
+  try{
+    const {year,month} = req.query;
+
+    const startDate = new Date(year, month - 1, 1); // First day of the month
+    const endDate = new Date(year, month, 0, 23, 59, 59); // Last day of the month
+
+    const feedbacks = await Feedback.find({Date: { $gte: startDate, $lte: endDate }});
+    res.status(200).json(feedbacks);
+  }catch(error){
+
+  }
+});
+
+app.delete('/api/delete-feedback', async (req,res) => {
+  try{
+    const { id } = req.body;
+
+    if(!Array.isArray(id)){
+    const deletedFeedback = await Feedback.findByIdAndDelete(id);
+    if(!deletedFeedback){
+      res.status(400).json({success: false, message: 'Feedback not found'});
+    }
+    res.status(200).json({success:true, message:'Feedback deleted successfully!'});
+
+    }else if(Array.isArray(id)){
+      const deletedFeedbacks = await Feedback.deleteMany({_id: { $in:id }});
+      if(!deletedFeedbacks){
+        res.status(400).json({success: false, message: 'Feedbacks not found'});
+      }
+      console.log(deletedFeedbacks);
+      res.status(200).json({success:true, message:'Feedbacks deleted successfully!'});
+    }
+  }catch(error){
+    res.status(500).json({success:false, message:'Error deleting feedbacks', error: error.message});
+  }
+});
 // Start the server
 const port = process.env.PORT1 || 5001;
 app.listen(port, () => console.log(`Server running on port ${port}`));
