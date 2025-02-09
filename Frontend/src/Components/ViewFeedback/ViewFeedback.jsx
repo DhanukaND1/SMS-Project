@@ -17,12 +17,13 @@ const ViewFeedback = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const {sessionExpired, checkSession} = useSessionTimeout();
 
-  const fetchFeedbacks = async (e) => {
-    e.preventDefault();
-
     const dateObj = new Date(selectedDate);
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth() + 1;
+    const monthAndYear = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+  const fetchFeedbacks = async (e) => {
+    e.preventDefault();
 
     try{
       const response = await axios.get('http://localhost:5001/api/get-feedbacks',{
@@ -68,7 +69,38 @@ const ViewFeedback = () => {
   };
   
   const handleDeleteAll = async () => {
+    if(feedbacks.length > 0){
+      const feedbackIds = feedbacks.map((feedback) => feedback._id);
+      
+      confirmAlert({
+        title: "Confirm Deletion",
+        message: `Are you sure you want to delete all feedbacks for ${monthAndYear}?`,
+        buttons: [
+          {
+            label: "Yes",
+            onClick: async () => {
+              try {
+                const response = await axios.delete('http://localhost:5001/api/delete-feedback', {
+                  data: { id: feedbackIds }
+                });
     
+                if (response.data.success) {
+                  toast.success("All feedbacks are deleted successfully!");
+                  setFeedbacks((prevFeedbacks) => prevFeedbacks.filter(f => !feedbackIds.includes(f._id)));
+                }
+              } catch (error) {
+                console.error("Error deleting feedbacks:", error);
+                toast.error("Failed to delete feedbacks!");
+              }
+            },
+          },
+          {
+            label: "No",
+            onClick: () => toast.info("Deletion canceled"),
+          },
+        ],
+      });
+    }
   };
   
   useEffect(() => {
@@ -102,7 +134,7 @@ const ViewFeedback = () => {
           <div>
             <button type='submit' className='view-feedback-btn'>See Feedbacks</button>
 
-            { isButtonClicked ? (
+            { isButtonClicked && feedbacks.length > 0 ? (
               <button type='submit' className='delete-all-feedbacks' onClick={handleDeleteAll}>Delete All</button>
             ) : null}
           </div>
