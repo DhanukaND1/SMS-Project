@@ -4,12 +4,13 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import profilePic from '../../assets/profilepic.png';
 
-const Sidebar = ({selectedImage}) => {
+const Sidebar = () => {
 
   const [toggleBar, setToggleBar] = useState(false);
   const [role, setRole] = useState('');
   const [name, setName] = useState('');
   const [mail, setMail] = useState('');
+  const [selectedImage, setSelectedImage] = useState('');
   const sidebarRef = useRef();
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -39,6 +40,37 @@ const Sidebar = ({selectedImage}) => {
         document.removeEventListener("click", handleClickOutside);
     };
 }, []);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      if (mail && role) {
+        try {
+          const response = await axios.get('http://localhost:5001/api/image', {
+            params: { email: mail, role: role }
+          });
+
+          if (response.data.success) {
+            const imagePath = response.data.image;
+            const imageCheckResponse = await axios.get('http://localhost:5001/api/check-image', {
+              params: { image: imagePath.replace('/uploads/', '') }
+            });
+
+            if (imageCheckResponse.data.success) {
+              setSelectedImage(`http://localhost:5001/api${imagePath}`);
+            } else {
+              setSelectedImage(null); // Fallback to default image
+            }
+          } else {
+            setSelectedImage(null); // Fallback to default image
+          }
+        } catch (error) {
+          console.error('Error fetching image:', error);
+          setSelectedImage(null); // Fallback to default image
+        }
+      }
+    };
+    fetchImage();
+  }, [mail, role]);
 
   const handleLogout = async () => {
     try {
