@@ -541,6 +541,7 @@ app.post('/api/update-student-image', upload.single('image'), async (req, res) =
     res.status(200).json({
       success: true,
       message: 'Profile image updated successfully!',
+      image: imageUrl,
     });
   } catch (error) {
     console.error('Error updating profile image:', error);
@@ -573,11 +574,14 @@ app.post('/api/update-mentor-image', upload.single('image'), async (req, res) =>
     // Update mentor's image URL
     mentor.image = imageUrl;  // Store the image URL in the database
     await mentor.save();
+   
 
     res.status(200).json({
       success: true,
       message: 'Profile image updated successfully!',
+      image: imageUrl,
     });
+    
   } catch (error) {
     console.error('Error updating profile image:', error);
     res.status(500).json({ success: false, message: 'Error updating profile image', error: error.message });
