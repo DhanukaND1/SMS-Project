@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './StudentDash.css';
-import session from 'express-session';
+// import session from 'express-session';
 
 function StudentHero() {
     const [studentName, setStudentName] = useState('');
