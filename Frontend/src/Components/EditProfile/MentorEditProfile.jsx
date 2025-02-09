@@ -114,7 +114,9 @@ const MentorEditProfile = () => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedImage(URL.createObjectURL(file)); // Preview the selected image
+      const previewURL = URL.createObjectURL(file); // Temporary preview
+      setSelectedImage(previewURL); // Set the preview first
+     
 
       const formData = new FormData();
       formData.append('image', file);
@@ -130,6 +132,8 @@ const MentorEditProfile = () => {
         });
   
         if (response.data.success) {
+          const imagePath = response.data.image; // Get the actual server image path
+          setSelectedImage(`http://localhost:5001/api${imagePath}`);
           toast.success('Image uploaded successfully');
         } else {
           toast.warn('Error uploading image');
@@ -139,6 +143,28 @@ const MentorEditProfile = () => {
       }
     }
   };
+
+  const handleRemove = async () => {
+    try {
+      console.log(selectedImage)
+      const imageName = selectedImage.split('/').pop();
+      
+      const response = await axios.delete('http://localhost:5001/api/delete-image', {
+        data: { image: imageName } // Pass the image path or ID that you want to delete
+      });
+
+      if (response.data.success) {
+        setSelectedImage(null); // Clear the image state if deletion is successful
+        toast.success('Image removed successfully');
+      } else {
+        toast.warn('Failed to remove the image');
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      toast.error('Error removing the image');
+    }
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -201,7 +227,7 @@ const MentorEditProfile = () => {
 
   return (
     <div onClick={handleClickOutside}>
-      <Sidebar />
+      <Sidebar selectedImage={selectedImage} />
       <div className='upload-prof root'>
         <section id="home">
         <form action="" className='form' onSubmit={handleSubmit}>
@@ -211,7 +237,7 @@ const MentorEditProfile = () => {
               
         <ul className={isOpen?'show':'hide'} ref={menuRef}>
           <li className='add-pic-li' onClick={handleFileInputClick} >Add Picture</li>
-          <li>Remove Picture</li>  
+          <li onClick={handleRemove} >Remove Picture</li>  
         </ul>
         <input
                 type="file"

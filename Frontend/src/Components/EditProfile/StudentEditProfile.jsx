@@ -132,7 +132,9 @@ const StudentEditProfile = () => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedImage(URL.createObjectURL(file)); // Preview the selected image
+      const previewURL = URL.createObjectURL(file); // Temporary preview
+      setSelectedImage(previewURL); // Set the preview first
+      
 
       const formData = new FormData();
       formData.append('image', file);
@@ -148,6 +150,8 @@ const StudentEditProfile = () => {
         });
   
         if (response.data.success) {
+          const imagePath = response.data.image; // Get the actual server image path
+          setSelectedImage(`http://localhost:5001/api${imagePath}`);
           toast.success('Image uploaded successfully');
         } else {
           toast.warn('Error uploading image');
@@ -160,7 +164,9 @@ const StudentEditProfile = () => {
 
   const handleRemove = async () => {
     try {
+      console.log(selectedImage)
       const imageName = selectedImage.split('/').pop();
+      
       const response = await axios.delete('http://localhost:5001/api/delete-image', {
         data: { image: imageName } // Pass the image path or ID that you want to delete
       });
@@ -269,7 +275,7 @@ const StudentEditProfile = () => {
 
   return (
     <div>
-      <Sidebar />
+      <Sidebar selectedImage={selectedImage} />
       <div className="upload-prof root">
         <section id="home">
           <form action="" className="form" onSubmit={handleSubmit}>
