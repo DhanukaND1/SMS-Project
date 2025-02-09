@@ -8,6 +8,8 @@ import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx'
 import  {Link} from 'react-router-dom'
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function SessionTable() {
@@ -98,14 +100,14 @@ export default function SessionTable() {
                     console.log("Server response:", response); // Debugging line
     
                     if (response.status === 200) {
-                      alert('Session report deleted successfully!');
+                      toast.success('Session report deleted successfully!');
                       setSessionReports(prevReports => prevReports.filter(report => report._id !== reportId));
                     } else {
-                      alert('Failed to delete session report.');
+                      toast.warn('Failed to delete session report.');
                     }
                   } catch (error) {
                     console.error("Error deleting session report:", error.response ? error.response.data : error.message);
-                    alert("Failed to delete session report.");
+                    toast.error("Failed to delete session report.");
                   }
                   onClose();
                 }}>
@@ -188,6 +190,7 @@ export default function SessionTable() {
 
       </div>
     <Footer/>
+    <ToastContainer />
 
       
     </div>
