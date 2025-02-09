@@ -20,6 +20,7 @@ import MentorProfile from './Components/MentorProfile/MentorProfile.jsx';
 import ErrorPage from './Components/About/ErrorPage/ErrorPage.jsx';
 import Feedback from './Components/Feedback/Feedback.jsx';
 import SessionTable from './Components/SessionTable/SessionTable.jsx';
+import ViewFeedback from './Components/ViewFeedback/ViewFeedback.jsx';
 
 
 
@@ -50,9 +51,9 @@ const App = () => {
         <Route path='/edit-mentor-profile' element={<MentorEditProfile />} />
         <Route path='/mentor-profile' element={<MentorProfile />} />
         <Route path='/feedback' element={<Feedback />} />
-        <Route path='*' element={<ErrorPage />} />
         <Route path="/session-table" element={<SessionTable />} />
-        
+        <Route path='/view-feedback' element={<ViewFeedback />} />
+        <Route path='*' element={<ErrorPage />} />
         
       </Routes>
     </Router>
