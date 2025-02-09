@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import profilePic from '../../assets/profilepic.png';
 
-const Sidebar = () => {
+const Sidebar = ({image}) => {
 
   const [toggleBar, setToggleBar] = useState(false);
   const [role, setRole] = useState('');
@@ -108,7 +108,7 @@ const Sidebar = () => {
   const handleClick = () => {
     setToggleBar(!toggleBar);
   }
-
+  
   return (
     <nav ref={sidebarRef}>
 
@@ -219,7 +219,7 @@ const Sidebar = () => {
       <div className="sidecont" onClick={() => setShowDropdown(!showDropdown)}>
         <ul>
           <li className='user-name'><Link>{name}</Link></li>
-          <li><img src={selectedImage || profilePic} alt="Profile" /></li>
+          <li><img src={image || selectedImage || profilePic} alt="Profile" /></li>
           <i className={`bx ${showDropdown ? 'bx-chevron-up' : 'bx-chevron-down'}`}></i>
         </ul>
 

@@ -10,6 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx';
 
+
 const StudentEditProfile = () => {
   const [studentData, setStudentData] = useState({ name: '', sid: '', email: '', batchyear: '', role: '', mentor: '', dept: '' });
   const [errors, setErrors] = useState({ id: '', email: ''});
@@ -172,7 +173,7 @@ const StudentEditProfile = () => {
       });
 
       if (response.data.success) {
-        setSelectedImage(null); // Clear the image state if deletion is successful
+        setSelectedImage(profilePic);
         toast.success('Image removed successfully');
       } else {
         toast.warn('Failed to remove the image');
@@ -275,7 +276,7 @@ const StudentEditProfile = () => {
 
   return (
     <div>
-      <Sidebar selectedImage={selectedImage} />
+      <Sidebar image ={selectedImage} />
       <div className="upload-prof root">
         <section id="home">
           <form action="" className="form" onSubmit={handleSubmit}>

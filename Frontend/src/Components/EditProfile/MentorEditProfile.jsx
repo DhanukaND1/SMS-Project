@@ -154,7 +154,7 @@ const MentorEditProfile = () => {
       });
 
       if (response.data.success) {
-        setSelectedImage(null); // Clear the image state if deletion is successful
+        setSelectedImage(profilePic); // Clear the image state if deletion is successful
         toast.success('Image removed successfully');
       } else {
         toast.warn('Failed to remove the image');
@@ -227,7 +227,7 @@ const MentorEditProfile = () => {
 
   return (
     <div onClick={handleClickOutside}>
-      <Sidebar selectedImage={selectedImage} />
+      <Sidebar image={selectedImage} />
       <div className='upload-prof root'>
         <section id="home">
         <form action="" className='form' onSubmit={handleSubmit}>
