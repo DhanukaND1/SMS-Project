@@ -6,6 +6,8 @@ import axios from 'axios'
 import './SessionTable.css'
 import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx'
 import  {Link} from 'react-router-dom'
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 
 export default function SessionTable() {
@@ -77,6 +79,47 @@ export default function SessionTable() {
       );
     }
 
+    // Function to delete a session report
+    const deleteSessionReport = async (reportId) => {
+      confirmAlert({
+        customUI: ({ onClose }) => (
+          <div className='custom-confirmation-modal'>
+            <h2 style={{ color: 'blue' }}>Confirm Deletion</h2>
+            <p>Are you sure you want to delete this feedback?</p>
+            <div>
+              <Button 
+                variant="success" 
+                onClick={async () => {
+                  try {
+                    const response = await axios.delete(`http://localhost:5001/api/sessions/${reportId}`, { 
+                      withCredentials: true 
+                    });
+    
+                    console.log("Server response:", response); // Debugging line
+    
+                    if (response.status === 200) {
+                      alert('Session report deleted successfully!');
+                      setSessionReports(prevReports => prevReports.filter(report => report._id !== reportId));
+                    } else {
+                      alert('Failed to delete session report.');
+                    }
+                  } catch (error) {
+                    console.error("Error deleting session report:", error.response ? error.response.data : error.message);
+                    alert("Failed to delete session report.");
+                  }
+                  onClose();
+                }}>
+                Yes
+              </Button>
+              <Button variant="danger" onClick={onClose} style={{ marginLeft: '10px' }}>
+                No
+              </Button>
+            </div>
+          </div>
+        )
+      });
+    };
+
 
   return (
     <div>
@@ -106,7 +149,7 @@ export default function SessionTable() {
 
              { role === 'Mentor' &&( <div>
               <button className='report-edit-btn'>Edit</button>
-              <button className='report-delete-btn'>Delete</button>
+              <button className='report-delete-btn' onClick={() => deleteSessionReport(report._id)}>Delete</button>
               </div>)}
               
             

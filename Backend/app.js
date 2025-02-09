@@ -965,6 +965,25 @@ app.get('/api/ongoing-sessions', async (req, res) => {
   }
 });
 
+// DELETE API to remove a session report
+app.delete('/api/sessions/:id', async (req, res) => {
+  try {
+      const { id } = req.params;
+      
+      // Find and delete the session
+      const deletedSession = await SessionInfo.findByIdAndDelete(id);
+
+      if (!deletedSession) {
+          return res.status(404).json({ message: "Session report not found" });
+      }
+
+      res.status(200).json({ message: "Session report deleted successfully" });
+  } catch (error) {
+      console.error("Error deleting session report:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 // Start the server
 const port = process.env.PORT1 || 5001;
 app.listen(port, () => console.log(`Server running on port ${port}`));
