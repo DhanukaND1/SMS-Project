@@ -190,6 +190,15 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
+
+            {mail === "jayani@at.cmb.ac.lk" && (
+              <li className="side-list">
+                <Link to='/view-feedback' className="side-links">
+                  <i class='bx bxs-comment-detail icn' ></i>
+                  <span className="side-link">View Feedbacks</span>
+                </Link>
+              </li>
+            )}
           </ul>
 
           <div className="bottom-content">
@@ -209,7 +218,7 @@ const Sidebar = () => {
 
       <div className="sidecont" onClick={() => setShowDropdown(!showDropdown)}>
         <ul>
-          <li><Link>{name}</Link></li>
+          <li className='user-name'><Link>{name}</Link></li>
           <li><img src={selectedImage || profilePic} alt="Profile" /></li>
           <i className={`bx ${showDropdown ? 'bx-chevron-up' : 'bx-chevron-down'}`}></i>
         </ul>

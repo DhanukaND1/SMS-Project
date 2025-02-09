@@ -11,6 +11,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const { start } = require('repl');
 const { type } = require('os');
+// const { default: Feedback } = require('../Frontend/src/Components/Feedback/Feedback');
 require('dotenv').config();
 // const Notification = require('./model/Notification');
 
@@ -116,6 +117,14 @@ const SessionInfo = mongoose.model('SessionInfo', new mongoose.Schema({
     Date: {type:Date, required:true},
     SessionMode: {type:String, required:true},
     AdditionalNote: {type:String, required:false}
+}));
+
+//collection for Feedbacks
+
+const Feedback = mongoose.model('Feedback', new mongoose.Schema({
+  Mentor: {type:String, required:true},
+  Description: {type:String, required:true},
+  Date: {type:Date, required:true}
 }));
 
 //endpoint for signup student
@@ -981,6 +990,19 @@ app.delete('/api/sessions/:id', async (req, res) => {
   } catch (error) {
       console.error("Error deleting session report:", error);
       res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.post('/api/feedback', async (req, res) =>{
+  try{
+    const {mentorName, description, date} = req.body;
+
+    const newFeedback = new Feedback({Mentor: mentorName, Description: description, Date: date});
+    await newFeedback.save();
+    res.status(200).json({success: true, message: 'Feedback submitted successfully!'});
+  }catch(error){
+    console.log('Error during feedback submitting:', error);
+    res.status(500).json({ success: false, message: 'Error submitting feedback.', error: error.message });
   }
 });
 
