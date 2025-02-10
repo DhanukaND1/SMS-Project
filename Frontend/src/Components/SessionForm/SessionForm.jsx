@@ -178,12 +178,9 @@ function SessionForm() {
         toast.warn(`Error: ${responseData.message}`);
         return;
       }
-  
+      
       toast.success(isEdit ? 'Session updated successfully!' : 'Session stored successfully!', { autoClose: 2000 });
-  
-      setTimeout(() => {
-        navigate('/calendar', { state: { successMessage: isEdit ? 'Session updated successfully!' : 'Session stored successfully!' } });
-      }, 2000);
+      clearForm();
     } catch (error) {
       console.error('Error submitting session:', error);
       toast.error('Failed to submit session.');
