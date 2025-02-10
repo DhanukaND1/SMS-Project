@@ -59,8 +59,6 @@ export default function UpdateForm() {
         }
     };
     
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
       
@@ -151,9 +149,7 @@ export default function UpdateForm() {
     } catch (error) {
         console.error('Error fetching students:', error);
     }
-};
-
-  
+}; 
 
 const handleStudentChange = (selectedOptions) => {
     setSelectedStudents(selectedOptions || []);
@@ -182,7 +178,6 @@ const handleStudentChange = (selectedOptions) => {
     });
 };
 
-
   const handleMentorChange = (selectedMentor) => {
     const mentorValue = selectedMentor ? selectedMentor.value : '';
 
@@ -194,36 +189,35 @@ const handleStudentChange = (selectedOptions) => {
     
 };
 
-
-
   return (
     <div className='session'>
+      
       <form onSubmit={handleSubmit}>
         <h2>Update Session Data</h2>
 
-        <i className="fa-solid fa-xmark" onClick={handleClose}></i>
-
+        <i className="fa-solid fa-xmark" onClick={handleClose} ></i>
+       
         <label htmlFor="dept">Department:</label>
-<select name="dept" id="dept" value={formData.dept} onChange={handleChange}  required>
-    <option value='' disabled>Select Department</option>
-    <option value="IAT">IAT</option>
-    <option value="ICT">ICT</option>
-    <option value="AT">AT</option>
-    <option value="ET">ET</option>
-</select>
+        <select name="dept" id="dept" value={formData.dept} onChange={handleChange}  required>
+          <option value='' disabled>Select Department</option>
+          <option value="IAT">IAT</option>
+          <option value="ICT">ICT</option>
+          <option value="AT">AT</option>
+          <option value="ET">ET</option>
+        </select>
 
-<label htmlFor="mentor">Mentor:</label>
-<Select
-  name="mentor"
-  id="mentor"
-  value={mentors.find(m => m.value === formData.mentor) || null}
-  onChange={handleMentorChange}
-  options={mentors}
-  placeholder="Select Mentor"
-  isSearchable
-  required
-/>
-        
+        <label htmlFor="mentor">Mentor:</label>
+        <Select
+          name="mentor"
+          id="mentor"
+          value={mentors.find(m => m.value === formData.mentor) || null}
+          onChange={handleMentorChange}
+          options={mentors}
+          placeholder="Select Mentor"
+          isSearchable
+          required
+        />
+            
         <label htmlFor="year">Batch year: </label>
         <select name="year" id="year" value={formData.year} onChange={handleChange} required>
             <option value='' disabled selected>Select Year</option>
@@ -263,8 +257,8 @@ const handleStudentChange = (selectedOptions) => {
         <label htmlFor="additionalnote">Additional Note:</label>
         <textarea name="note" id="note" rows={4} cols={30} value={formData.note} onChange={handleChange}></textarea>
 
-      <div className='session-update-btn'>
-        <button type='submit' className='sub-btn'>Update</button>
+        <div className='session-update-btn'>
+          <button type='submit' className='sub-btn'>Update</button>
         </div>
   
       </form>
