@@ -442,10 +442,12 @@ const handleDeleteSession = async (sessionId) => {
           <label>Additional Note:</label>
           <p>{editFormData.note || "No additional notes"}</p>
 
+          {role === 'Mentor' && (
           <div className="session-buttons">
             <button className="session-btn" onClick={toggleEditSession}>Edit</button>
             <button className="session-btn" onClick={() => handleDeleteSession(selectedEvent.id)}>Delete</button>
           </div>
+          )}
         </>
       ) : (
         <>
@@ -488,12 +490,17 @@ const handleDeleteSession = async (sessionId) => {
           <label>End Time</label>
           <p>{editFormData.end}</p>
 
+          {(role === 'Mentor' && selectedEvent?.type === 'mentor') ||
+            (role === 'Student' && selectedEvent?.type === 'student') ? (
           <div className="calc-btns">
             <button type="submit" className='cal-btn' onClick={toggleEditEvent}>Edit Event</button>
             <button type="button" className='cal-btn' onClick={handleDeleteEvent}>Delete Event</button>
           </div>
-        </>
         ):(
+          <p style={{ color: 'red', textAlign: 'center' }}>You cannot edit this event.</p>
+            )}
+          </>
+        ) : (
           <>
           <label>Event Title</label>
           <input type="text" name="eventTitle" value={editFormData.eventTitle} onChange={handleEditChange} required />
