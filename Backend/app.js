@@ -1075,6 +1075,41 @@ app.delete('/api/delete-feedback', async (req,res) => {
     res.status(500).json({success:false, message:'Error deleting feedbacks', error: error.message});
   }
 });
+
+// fetch session report details to update the form
+app.get('/api/sessions/:id', async (req, res) => {
+  try {
+      const session = await Session.findById(req.params.id);
+      if (!session) {
+          return res.status(404).json({ message: 'Session not found' });
+      }
+      res.json(session);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching session' });
+  }
+});
+
+// Update the session by id
+app.put('/api/sessions/:id', async (req, res) => {
+  try {
+    const sessionId = req.params.id;
+    const updatedData = req.body;
+
+    // Find the session by ID and update it with the new data
+    const updatedSession = await Session.findByIdAndUpdate(sessionId, updatedData, { new: true });
+
+    if (!updatedSession) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
+    res.status(200).json(updatedSession); // Return the updated session
+  } catch (error) {
+    console.error("Error updating session:", error);
+    res.status(500).json({ message: 'Error updating session' });
+  }
+});
+
+
 // Start the server
 const port = process.env.PORT1 || 5001;
 app.listen(port, () => console.log(`Server running on port ${port}`));

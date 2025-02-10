@@ -10,6 +10,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function SessionTable() {
@@ -19,6 +20,7 @@ export default function SessionTable() {
   const {sessionExpired, checkSession} = useSessionTimeout();
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [role ,setRole] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() =>{
     const fetchmentorname = async() =>{
@@ -80,6 +82,8 @@ export default function SessionTable() {
         </div>
       );
     }
+
+    
 
     // Function to delete a session report
     const deleteSessionReport = async (reportId) => {
@@ -150,7 +154,7 @@ export default function SessionTable() {
               <span></span>
 
              { role === 'Mentor' &&( <div>
-              <button className='report-edit-btn'>Edit</button>
+              <button className='report-edit-btn' onClick={() => navigate('/update-form', { state: { reportId: report._id } })}>Edit</button>
               <button className='report-delete-btn' onClick={() => deleteSessionReport(report._id)}>Delete</button>
               </div>)}
               
