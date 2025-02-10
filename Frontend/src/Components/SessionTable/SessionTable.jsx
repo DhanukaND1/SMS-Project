@@ -91,7 +91,7 @@ export default function SessionTable() {
         customUI: ({ onClose }) => (
           <div className='custom-confirmation-modal'>
             <h2 style={{ color: 'blue' }}>Confirm Deletion</h2>
-            <p>Are you sure you want to delete this feedback?</p>
+            <p>Are you sure you want to delete this session report?</p>
             <div>
               <Button 
                 variant="success" 
