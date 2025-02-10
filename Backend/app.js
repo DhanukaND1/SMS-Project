@@ -48,14 +48,16 @@ app.use(express.json());
 // Set the SendGrid API key from environment variables
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
-mongoose.connect('mongodb://localhost:27017/signupDB', {})
+// mongoose.connect('mongodb://localhost:27017/SMSDB', {})
+//   .then(() => console.log('Connected to MongoDB'))
+//   .catch((err) => console.error('MongoDB connection error:', err));
+
+  mongoose.connect(process.env.MONGO_URI, {})
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Session configuration
 
-
- 
 
 //collection for student
 const Student = mongoose.model('Student', new mongoose.Schema({
