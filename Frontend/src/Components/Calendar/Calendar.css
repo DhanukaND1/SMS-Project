@@ -182,3 +182,90 @@ strong {
     width: 100%;
   }
 }
+
+/* Session details popup */
+.session-details-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.session-details-content {
+  background: white;
+  padding: 25px;
+  width: 400px;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.session-details-content h3 {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 22px;
+  color: #1a237e;
+}
+
+.session-details-content form {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+}
+
+.session-details-content form label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.session-details-content form input,
+.session-details-content form textarea,
+.session-details-content form select {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.session-details-content form textarea {
+  resize: vertical;
+}
+
+.session-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.session-btn {
+  border: none;
+  background-color: #1a237e;
+  color: white;
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  flex: 1;
+  margin: 0 5px;
+  text-align: center;
+}
+
+.session-btn:hover {
+  background-color: #0d47a1;
+}
+
+.session-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  color: red;
+}

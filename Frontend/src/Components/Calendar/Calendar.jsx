@@ -24,8 +24,8 @@ const Calendar = () => {
   const [role, setRole] = useState('');
   const [name, setName] = useState('');
   const [currentViewDate, setCurrentViewDate] = useState(new Date());
-
   const {sessionExpired, checkSession} = useSessionTimeout();
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -106,15 +106,72 @@ const Calendar = () => {
   }
 };
 
-  const handleSelectEvent = (event) => {
-    setSelectedEvent(event);
+const handleSelectEvent = async (event) => {
+  setSelectedEvent(event);
+
+  if (event.type === 'session') {
+      try {
+          const response = await axios.get(`http://localhost:5001/api/sessions/${event.id}`);
+          if (response.status === 200) {
+              setEditFormData({
+                  department: response.data.Department,
+                  mentor: response.data.Mentor,
+                  year: response.data.Year,
+                  students: response.data.Index,
+                  date: moment(response.data.Date).format("YYYY-MM-DD"),
+                  mode: response.data.SessionMode,
+                  note: response.data.AdditionalNote
+              });
+              setShowEditForm(true);
+              setIsEditing(false); // Show details first
+          }
+      } catch (error) {
+          console.error('Error fetching session details:', error);
+      }
+  } else {
     setEditFormData({
-      eventTitle: event.title,
-      start: moment(event.start).format("YYYY-MM-DDTHH:mm"),
-      end: moment(event.end).format("YYYY-MM-DDTHH:mm"),
+        eventTitle: event.title,
+        start: moment(event.start).format("YYYY-MM-DDTHH:mm"),
+        end: moment(event.end).format("YYYY-MM-DDTHH:mm"),
     });
     setShowEditForm(true);
-  };
+    setIsEditing(false);
+}
+};
+
+// Toggle edit mode when clicking "Edit"
+const toggleEditSession = () => {
+  setIsEditing(true);
+};
+
+const toggleEditEvent = () => {
+  setIsEditing(true);
+}
+
+// Save and exit edit mode
+const handleSaveEditSession = async () => {
+  try {
+      const updatedSession = {
+          Department: editFormData.department,
+          Mentor: editFormData.mentor,
+          Year: editFormData.year,
+          Index: editFormData.students,
+          Date: editFormData.date,
+          SessionMode: editFormData.mode,
+          AdditionalNote: editFormData.note
+      };
+
+      const response = await axios.put(`http://localhost:5001/api/sessions/${selectedEvent.id}`, updatedSession);
+      if (response.status === 200) {
+          toast.success('Session updated successfully!');
+          fetchEvents(); // Refresh events
+          setIsEditing(false); // Switch back to details mode
+      }
+  } catch (error) {
+      console.error('Error updating session:', error);
+      toast.error('Failed to update session.');
+  }
+};
 
   const closeAddForm = () => {
     setShowAddForm(false);
@@ -250,6 +307,61 @@ const Calendar = () => {
     );
   }
 
+  const handleSubmitEditSession = async () => {
+    try {
+        const updatedSession = {
+            Department: editFormData.department,
+            Mentor: editFormData.mentor,
+            Year: editFormData.year,
+            Index: editFormData.students,
+            Date: editFormData.date,
+            SessionMode: editFormData.mode,
+            AdditionalNote: editFormData.note
+        };
+
+        const response = await axios.put(`http://localhost:5001/api/sessions/${selectedEvent.id}`, updatedSession);
+        if (response.status === 200) {
+            toast.success('Session updated successfully!');
+            fetchEvents();
+            closeEditForm();
+        }
+    } catch (error) {
+        console.error('Error updating session:', error);
+        toast.error('Failed to update session.');
+    }
+};
+
+/*
+const handleConfirmSession = async () => {
+  try {
+      const response = await axios.put(`http://localhost:5001/api/sessions/confirm/${selectedEvent.id}`);
+      if (response.status === 200) {
+          toast.success('Session confirmed!');
+          fetchEvents();
+          closeEditForm();
+      }
+  } catch (error) {
+      console.error('Error confirming session:', error);
+      toast.error('Failed to confirm session.');
+  }
+};
+*/
+
+const handleDeleteSession = async (sessionId) => {
+  if (!window.confirm("Are you sure you want to delete this session?")) return;
+
+  try {
+      const response = await axios.delete(`http://localhost:5001/api/sessions/${sessionId}`);
+      if (response.status === 200) {
+          toast.success('Session deleted successfully!');
+          fetchEvents();
+          setShowSessionDetails(false);
+      }
+  } catch (error) {
+      console.error('Error deleting session:', error);
+  }
+};
+
   return (
     <div>
       <Sidebar />
@@ -303,37 +415,105 @@ const Calendar = () => {
         </div>
       )}
 
-      {showEditForm && (
-        <div className="date-agenda">
-          <div className="agenda-content">
-          <h3>
-            {selectedEvent?.type === 'student' 
-              ? `Edit Event on ${new Date(selectedEvent.start).toLocaleDateString()}` 
-              : `Event on ${new Date(selectedEvent.start).toLocaleDateString()}`
-            }
-          </h3>
-            <i className="fa-solid fa-xmark" onClick={closeEditForm}></i>
-            <form onSubmit={handleSubmitEdit}>
-              <label>Event Title</label>
-              <input type="text" name="eventTitle" value={editFormData.eventTitle} onChange={handleEditChange} required />
+{showEditForm && (
+  <div className="session-details-modal">
+    <div className="session-details-content">
+      <h3>Session Details - {editFormData.department}</h3>
+      <i className="fa-solid fa-xmark session-close" onClick={closeEditForm}></i>
 
-              <label>Start Time</label>
-              <input type="datetime-local" name='start' value={editFormData.start} onChange={handleEditChange} required />
+{selectedEvent?.type === 'session' ? (
+      (!isEditing ? (
+        <>
+          <label>Mentor:</label>
+          <p>{editFormData.mentor}</p>
 
-              <label>End Time</label>
-              <input type="datetime-local" name='end' value={editFormData.end} onChange={handleEditChange} required />
+          <label>Year:</label>
+          <p>{editFormData.year}</p>
 
-              {selectedEvent?.type === 'student' && (
-               <div className="calc-btns">
-                <button type="submit" className='cal-btn'>Edit Event</button>
-                <button type="button" className='cal-btn' onClick={handleDeleteEvent}>Delete Event</button> 
-              </div>
-              )}
+          <label>Students:</label>
+          <p>{editFormData.students}</p>
 
-            </form>
+          <label>Date:</label>
+          <p>{editFormData.date}</p>
+
+          <label>Mode of Session:</label>
+          <p>{editFormData.mode}</p>
+
+          <label>Additional Note:</label>
+          <p>{editFormData.note || "No additional notes"}</p>
+
+          <div className="session-buttons">
+            <button className="session-btn" onClick={toggleEditSession}>Edit</button>
+            <button className="session-btn" onClick={() => handleDeleteSession(selectedEvent.id)}>Delete</button>
           </div>
-        </div>
-      )}
+        </>
+      ) : (
+        <>
+          <label>Mentor:</label>
+          <input type="text" name="mentor" value={editFormData.mentor} onChange={handleEditChange} />
+
+          <label>Year:</label>
+          <input type="text" name="year" value={editFormData.year} onChange={handleEditChange} />
+
+          <label>Students:</label>
+          <textarea name="students" value={editFormData.students} onChange={handleEditChange}></textarea>
+
+          <label>Date:</label>
+          <input type="date" name="date" value={editFormData.date} onChange={handleEditChange} />
+
+          <label>Mode of Session:</label>
+          <select name="mode" value={editFormData.mode} onChange={handleEditChange}>
+            <option value="Online">Online</option>
+            <option value="Physical">Physical</option>
+          </select>
+
+          <label>Additional Note:</label>
+          <textarea name="note" value={editFormData.note} onChange={handleEditChange}></textarea>
+
+          <div className="session-buttons">
+            <button className="session-btn" onClick={handleSaveEditSession}>Save</button>
+            <button className="session-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+          </div>
+        </>
+      ))
+    ):(
+      (!isEditing ? (
+      <>
+          <label>Event Title</label>
+          <p>{editFormData.eventTitle} </p>
+
+          <label>Start Time</label>
+          <p>{editFormData.start}</p>
+
+          <label>End Time</label>
+          <p>{editFormData.end}</p>
+
+          <div className="calc-btns">
+            <button type="submit" className='cal-btn' onClick={toggleEditEvent}>Edit Event</button>
+            <button type="button" className='cal-btn' onClick={handleDeleteEvent}>Delete Event</button>
+          </div>
+        </>
+        ):(
+          <>
+          <label>Event Title</label>
+          <input type="text" name="eventTitle" value={editFormData.eventTitle} onChange={handleEditChange} required />
+
+          <label>Start Time</label>
+          <input type="datetime-local" name="start" value={editFormData.start} onChange={handleEditChange} required />
+
+          <label>End Time</label>
+          <input type="datetime-local" name="end" value={editFormData.end} onChange={handleEditChange} required />
+
+          <div className="calc-btns">
+            <button type="submit" className='cal-btn' onClick={handleSubmitEdit}>Save</button>
+            <button type="button" className='cal-btn' onClick={() => setIsEditing(false)}>Cancel</button>
+          </div>
+        </>
+        ))
+    )}
+    </div>
+  </div>
+)}
 
         {role === 'Student' && (
           <div className='root event-point'>

@@ -2,7 +2,7 @@ import React from 'react'
 import './SessionForm.css'
 import Select, { components } from 'react-select';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 
@@ -10,19 +10,21 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 function SessionForm() {
-
+  const location = useLocation();
+  const sessionDetails = location.state?.sessionDetails || {};
+  const isEdit = location.state?.isEdit || false;
   const navigate = useNavigate();
   const [mentors, setMentors] = useState([]);
   const [students, setStudents] = useState([]);
   const [selectedStudents, setSelectedStudents] = useState([]);
-  const[formData, setFormData] = useState({
-    dept:'',
-    mentor:'',
-    year:'',
-    student:[],
-    date:'',
-    mode:'',
-    note:''
+  const [formData, setFormData] = useState({
+    dept: sessionDetails.Department || '',
+    mentor: sessionDetails.Mentor || '',
+    year: sessionDetails.Year || '',
+    student: sessionDetails.Index ? sessionDetails.Index.split(', ') : [],
+    date: sessionDetails.Date || '',
+    mode: sessionDetails.SessionMode || '',
+    note: sessionDetails.AdditionalNote || '',
   });
 
   
@@ -146,39 +148,47 @@ function SessionForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const sessionData = {
-      Department: formData.dept,
-      Mentor: formData.mentor,
-      Year: formData.year,
-      Index: formData.student.join(', '), // Convert array to string
+      Department: formData.dept.trim(),
+      Mentor: formData.mentor.trim(),
+      Year: formData.year.trim(),
+      Index: formData.student.length > 0 ? formData.student.join(', ') : "", 
       Date: formData.date,
-      SessionMode: formData.mode,
-      AdditionalNote: formData.note || ''
+      SessionMode: formData.mode.trim(),
+      AdditionalNote: formData.note ? formData.note.trim() : '',
     };
-
+  
     try {
-      const response = await fetch('http://localhost:5001/api/SessionInfo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const method = isEdit ? 'PUT' : 'POST';
+      const url = isEdit 
+        ? `http://localhost:5001/api/sessions/${sessionDetails._id}`
+        : 'http://localhost:5001/api/SessionInfo';
+  
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(sessionData),
       });
-
-      if (response.ok) {
-        toast.success('Session information stored successfully!');
-        clearForm();
-      } else {
-        const errorData = await response.json();
-        toast.warn(`Error: ${errorData.message}`);
+  
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        console.log("Server response:", responseData);
+        toast.warn(`Error: ${responseData.message}`);
+        return;
       }
+  
+      toast.success(isEdit ? 'Session updated successfully!' : 'Session stored successfully!', { autoClose: 2000 });
+  
+      setTimeout(() => {
+        navigate('/calendar', { state: { successMessage: isEdit ? 'Session updated successfully!' : 'Session stored successfully!' } });
+      }, 2000);
     } catch (error) {
-      console.error('Error submitting form:', error);
-      toast.error('Failed to submit form. Please try again.');
+      console.error('Error submitting session:', error);
+      toast.error('Failed to submit session.');
     }
-  };
-
+  };  
 
   return (
     <div className='session'>
@@ -188,24 +198,25 @@ function SessionForm() {
         <i className="fa-solid fa-xmark" onClick={handleClose}></i>
 
         <label htmlFor="dept">Department:</label>
-        <select name="dept" id="dept" value={formData.dept} onChange={handleChange} required>
-            <option value='' disabled selected>Select Department</option>
-            <option value="IAT">IAT</option>
-            <option value="ICT">ICT</option>
-            <option value="AT">AT</option>
-            <option value="ET">ET</option>
-        </select>
+<select name="dept" id="dept" value={formData.dept} onChange={handleChange} disabled={isEdit} required>
+    <option value='' disabled>Select Department</option>
+    <option value="IAT">IAT</option>
+    <option value="ICT">ICT</option>
+    <option value="AT">AT</option>
+    <option value="ET">ET</option>
+</select>
 
-        <label htmlFor="mentor">Mentor:</label>
-        <Select
-          name="mentor"
-          id="mentor"
-          options={mentors}
-          value={mentors.find(m => m.value === formData.mentor) || null}
-          onChange={handleMentorChange}
-          placeholder="Select Mentor"
-          isSearchable
-        />
+<label htmlFor="mentor">Mentor:</label>
+<Select
+  name="mentor"
+  id="mentor"
+  options={mentors}
+  value={mentors.find(m => m.value === formData.mentor) || null}
+  onChange={handleMentorChange}
+  placeholder="Select Mentor"
+  isSearchable
+  isDisabled={isEdit} // Prevent editing
+/>
         
         <label htmlFor="year">Batch year: </label>
         <select name="year" id="year" value={formData.year} onChange={handleChange} required>
