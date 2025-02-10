@@ -319,60 +319,21 @@ const Calendar = () => {
     );
   }
 
-  const handleSubmitEditSession = async () => {
-    try {
-      const updatedSession = {
-        Department: editFormData.department,
-        Mentor: editFormData.mentor,
-        Year: editFormData.year,
-        Index: editFormData.students,
-        Date: editFormData.date,
-        SessionMode: editFormData.mode,
-        AdditionalNote: editFormData.note
-      };
-
-      const response = await axios.put(`http://localhost:5001/api/sessions/${selectedEvent.id}`, updatedSession);
-      if (response.status === 200) {
-        toast.success('Session updated successfully!');
-        fetchEvents();
-        closeEditForm();
-      }
-    } catch (error) {
-      console.error('Error updating session:', error);
-      toast.error('Failed to update session.');
-    }
-  };
-
-  /*
-  const handleConfirmSession = async () => {
-    try {
-        const response = await axios.put(`http://localhost:5001/api/sessions/confirm/${selectedEvent.id}`);
-        if (response.status === 200) {
-            toast.success('Session confirmed!');
-            fetchEvents();
-            closeEditForm();
-        }
-    } catch (error) {
-        console.error('Error confirming session:', error);
-        toast.error('Failed to confirm session.');
-    }
-  };
-  */
-
   const handleDeleteSession = async (sessionId) => {
     if (!window.confirm("Are you sure you want to delete this session?")) return;
-
+  
     try {
       const response = await axios.delete(`http://localhost:5001/api/sessions/${sessionId}`);
       if (response.status === 200) {
         toast.success('Session deleted successfully!');
         fetchEvents();
-        setShowSessionDetails(false);
+        setShowEditForm(false); // Close session details form
+        setSelectedEvent(null); // Reset selected event
       }
     } catch (error) {
       console.error('Error deleting session:', error);
     }
-  };
+  };  
 
   return (
     <div>
@@ -464,25 +425,25 @@ const Calendar = () => {
               ) : (
                 <>
                   <label>Mentor:</label>
-                  <input type="text" name="mentor" value={editFormData.mentor} onChange={handleEditChange} />
+                  <input type="text" name="mentor" value={editFormData.mentor} onChange={handleEditChange} /><br />
 
                   <label>Year:</label>
-                  <input type="text" name="year" value={editFormData.year} onChange={handleEditChange} />
+                  <input type="text" name="year" value={editFormData.year} onChange={handleEditChange} /><br />
 
                   <label>Students:</label>
-                  <textarea name="students" value={editFormData.students} onChange={handleEditChange}></textarea>
+                  <textarea name="students" value={editFormData.students} onChange={handleEditChange}></textarea><br />
 
                   <label>Date:</label>
-                  <input type="date" name="date" value={editFormData.date} onChange={handleEditChange} />
+                  <input type="date" name="date" value={editFormData.date} onChange={handleEditChange} /><br />
 
                   <label>Mode of Session:</label>
-                  <select name="mode" value={editFormData.mode} onChange={handleEditChange}>
+                  <select name="mode" value={editFormData.mode} onChange={handleEditChange}><br />
                     <option value="Online">Online</option>
                     <option value="Physical">Physical</option>
                   </select>
-
+                  <br />
                   <label>Additional Note:</label>
-                  <textarea name="note" value={editFormData.note} onChange={handleEditChange}></textarea>
+                  <textarea name="note" value={editFormData.note} onChange={handleEditChange}></textarea><br />
 
                   <div className="session-buttons">
                     <button className="session-btn" onClick={handleSaveEditSession}>Save</button>
@@ -512,13 +473,13 @@ const Calendar = () => {
                   <p>You cannot edit mentor events.</p>
                 ) : (
                   <>
-                    <label>Event Title</label>
-                    <input type="text" name="eventTitle" value={editFormData.eventTitle} onChange={handleEditChange} required />
-                
-                    <label>Start Time</label>
-                    <input type="datetime-local" name="start" value={editFormData.start} onChange={handleEditChange} required />
-                
-                    <label>End Time</label>
+                    <label>Event Title : </label>
+                    <input type="text" name="eventTitle" value={editFormData.eventTitle} onChange={handleEditChange} required /><br />
+                    <br />
+                    <label>Start Time : </label>
+                    <input type="datetime-local" name="start" value={editFormData.start} onChange={handleEditChange} required /><br />
+                    <br />
+                    <label>End Time : </label>
                     <input type="datetime-local" name="end" value={editFormData.end} onChange={handleEditChange} required />
                 
                     <div className="calc-btns">
