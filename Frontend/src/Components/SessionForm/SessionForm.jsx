@@ -258,7 +258,7 @@ function SessionForm() {
         <label htmlFor="additionalnote">Additional Note:</label>
         <textarea name="note" id="note" value={formData.note} onChange={handleChange} rows={4} cols={30}></textarea>
 
-      <div className='session-btn'>
+      <div className='session-update-btn'>
         <button type='submit' className='sub-btn'>submit</button>
         <button type='clear' className='clear-btn' onClick={clearForm}>Clear</button>
         </div>
