@@ -143,8 +143,8 @@ export default function SessionTable() {
           </form>
         
        
-        
-      <div className="reports-container">
+        <section id="home">
+        <div className="reports-container">
         {sessionReports.length > 0 ? (
            sessionReports.map((report, index) => (
 
@@ -190,6 +190,8 @@ export default function SessionTable() {
         ): null}
       
         </div>
+        </section>
+     
 
 
       </div>
