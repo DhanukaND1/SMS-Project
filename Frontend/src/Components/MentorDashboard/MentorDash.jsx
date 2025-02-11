@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react'
-import MentorNav from './MentorNav'
 import MentorHero from './MentorHero'
 import Footer from '../Footer/Footer'
 import Sidebar from '../Sidebar/Sidebar.jsx'
@@ -30,7 +29,6 @@ function MentorDash() {
     return (
         <div>
             <Sidebar />
-            {/* <MentorNav /> */}
             <MentorHero />
             <Footer />
         </div>
