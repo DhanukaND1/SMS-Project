@@ -58,32 +58,60 @@ h4 {
     transform: scale(1.05);
 }
 
-.info-sessions {
-    margin-top: 30px;
-    margin-bottom: 30px;
+.info-sessions h2{
     text-align: center;
-    text-transform: uppercase;
 }
 
 .sessions {
     display: flex;
-    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center; 
+    gap: 80px;
     margin-top: 20px;
     padding-bottom: 10px;
-    margin-left: 30px;
+    margin-left: 30px;  
 }
 
 .session-card {
-    background-color: #f5f7fb;
+    display: flex;
+    flex-direction: column;
+    width: calc(40% - 40px);
     padding: 15px;
     border-radius: 10px;
-    width: 30%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.session-card strong {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 17px;
+    color: #333;
+    text-align: left;
+}
+
+.session-card span {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 15px;
+    color: #555;
+    margin-left: 10px;
+    text-align: justify;
+}
+
+.countdown {
+    font-size: 18px;
+    font-weight: bold;
+    color: #d9534f;
+    margin-top: 5px;
     text-align: center;
 }
 
-.date {
-    color: #888;
-    margin-bottom: 10px;
+.attend-btn-cont{
+    display: flex;
+    justify-content: center;
 }
 
 .attend-button {
@@ -93,6 +121,7 @@ h4 {
     padding: 10px 20px;
     border-radius: 9px;
     cursor: pointer;
+    margin: 10px 0;
 }
 
 .attend-button:hover {
@@ -276,32 +305,78 @@ h4 {
     opacity: 1;
 }
 
-@media(max-width:408px){
-    .session-expired-message{
-        border-radius: 0;
+@media (max-width: 768px) {
+    .session-card {
+        display: flex;
+        flex-direction: column;
+        width: calc(70%);
     }
-}
-
-.sessions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-start;
-}
-
-.session-card {
-    flex: 1;
-    min-width: 280px;
-    max-width: 320px;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: left;
+    
+    .session-card span{
+        text-align: left;
+        overflow-wrap: break-word;
+    }
 }
 
 @media (max-width: 600px) {
-    .sessions {
-        justify-content: center;
+    .student-welcome {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .session-card {
+        display: flex;
+        flex-direction: column;
+        width: calc(80%);
+        border-radius: 0;  
+    }
+
+    .sessions{
+        margin:0 10px;
+        gap: 40px;
+    }
+
+    .student-greeting {
+        font-size: 15px;
+    }
+
+    .student-name {
+        font-size: 16px;
+    }
+
+    .yourmentor-name {
+        font-size: 16px;
+    }
+
+    .student-greeting h4{
+        font-size: 15px;
     }
 }
+
+@media (max-width: 500px) {
+    .session-card {
+        display: flex;
+        flex-direction: column;
+        width: calc(100%);
+        border-radius: 0;
+        margin-top: 20px;  
+    }
+
+    .sessions{
+        margin:0 10px;
+        gap: 30px;
+    }
+}
+
+@media(max-width:375px){
+    .sessions {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0;
+    }
+    
+}
+
+
+
+

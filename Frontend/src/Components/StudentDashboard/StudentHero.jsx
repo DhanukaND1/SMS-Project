@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './StudentDash.css';
-// import session from 'express-session';
+import moment from 'moment';
+
 
 function StudentHero() {
     const [studentName, setStudentName] = useState('');
@@ -64,27 +65,47 @@ function StudentHero() {
     useEffect(() => {
         const fetchSessions = async () => {
             try {
-                const response = await axios.get('http://localhost:5001/api/ongoing-sessions', {
-                    params: { batchyear },
-                    withCredentials: true,
+                const response = await axios.get('http://localhost:5001/api/get-events', {
+                    params: { role: 'Mentor', name: mentorName }
                 });
+    
+                if (response.status === 200) {
+                    const { mentorEvents } = response.data;
+    
+                    const updatedSessions = mentorEvents
+                    .map(session => {
+                        const sessionDate = new Date(session.date);
+                        const today = new Date();
+                        
+                        const combinedDateTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm").toDate();
+                        console.log(combinedDateTime)
+                        console.log(today)
 
-                const updatedSessions = response.data.map(session => {
-                    const sessionDate = new Date(session.Date);
-                    const today = new Date();
-                    const timeDiff = sessionDate - today;
-                    const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
-                    return { ...session, daysLeft };
-                });
+                        // Only keep sessions that are either in the future or today, and their end time is not passed
+                        if (combinedDateTime <= today) {
+                            return null;
+                        }
 
-                setSessions(updatedSessions);
+                        // Calculate the days left until the session
+                        const timeDiff = sessionDate - today;
+                        const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+                        
+                        return { ...session, daysLeft };
+                        })
+                        
+                        .filter(session => session !== null); // Remove past and expired sessions
+                        console.log(updatedSessions)
+                    setSessions(updatedSessions);
+                }
             } catch (error) {
                 console.error('Error fetching sessions:', error);
             }
         };
-
-        if (batchyear) fetchSessions();
-    }, [batchyear]);
+    
+        fetchSessions();
+    }, [mentorName]);
+    
+    
 
 
     return (
@@ -98,28 +119,58 @@ function StudentHero() {
                         <h4>Mentor Name : <Link to='/mentor-profile' className='mentor-prof'><span className='yourmentor-name'>{mentorName}</span></Link> </h4>
 
                     </p>
-                    <button className="messages-button">Check Messages</button>
+                    <div>
+                        <button className="messages-button">Check Messages</button>
+                    </div>
+                    
                 </section>
 
                 <hr />
 
                 {/* Ongoing Info Sessions */}
                 <section className='info-sessions'>
-                    <h2>Ongoing Info Sessions</h2>
+                    <h2>Upcoming Info Sessions</h2>
                     <div className='sessions'>
                         {sessions.length > 0 ? (
                             sessions.map((session, index) => (
                                 <div className='session-card' key={index}>
-                                    <p>{session.Index}: {session.Department} Session</p>
-                                    <p className='date'>Date: {new Date(session.Date).toLocaleDateString()}</p>
+
+                                    <strong>Session Topic:</strong>
+                                    <span>{session.title}</span>
+
+                                    <strong>Date:</strong>
+                                    <span>{new Date(session.date).toLocaleDateString()}</span>
+
+                                    <strong>Start Time:</strong>
+                                    <span>{moment(session.start, "HH:mm").format("hh:mm A")}</span>
+
+                                    <strong>End Time:</strong>
+                                    <span>{moment(session.end, "HH:mm").format("hh:mm A")}</span>
+
+                                    <strong>Session Mode:</strong>
+                                    <span>{session.mode}</span>
+
+                                   {session.mode === 'Online' && (
+                                        <>
+                                            <strong>Session Link:</strong>
+                                            <span>{session.link}</span>
+                                        </>
+                                    )}
+
+                                    <strong>Description:</strong>
+                                    <span>{session.description}</span>
+
                                     <p className='countdown'>
-                                        {session.daysLeft > 0 ? `${session.daysLeft} Days Left` : "Session Today!"}
+                                        {session.daysLeft > 0 ? `${session.daysLeft} Days Left` : "Session will be held today!"}
                                     </p>
+                                    <div className='attend-btn-cont'>
                                     <button className='attend-button'>Attend</button>
+                                    </div>
+                                    
                                 </div>
                             ))
                         ) : (
-                            <p>No ongoing sessions available.</p>
+                            <p>No upcoming sessions available.</p>
                         )}
                     </div>
                 </section>
