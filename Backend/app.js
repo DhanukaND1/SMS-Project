@@ -109,6 +109,21 @@ const Event = mongoose.model('Event',new mongoose.Schema({
   role: String,
 }));
 
+//collection for calendar mentor events
+const MentorEvent = mongoose.model('MentorEvent', new mongoose.Schema({
+  id: String,
+  title: String,
+  date: Date,
+  start: String, 
+  end: String,
+  mode: String ,
+  link: String ,
+  description: String ,
+  allDay: { type: Boolean, default: false },
+  name: String,
+  role: String,
+}));
+
 // collection for SessionInfo
 
 const SessionInfo = mongoose.model('SessionInfo', new mongoose.Schema({
@@ -753,7 +768,7 @@ app.get('/api/resourcesdash', async (req, res) => {
   }
 });
 
-//calendar event route
+//calendar events route
 app.post('/api/events', async (req, res) => {
   const { id, title, start, end, role, name } = req.body;
   
@@ -766,9 +781,24 @@ app.post('/api/events', async (req, res) => {
   }
 });
 
+// mentor calendar events route
+app.post('/api/mentor-events', async (req, res) => {
+  const { id, title, date, start, end, mode, link, description, role, name } = req.body;
+  
+ try {
+    const event = new MentorEvent({  id, title, date, start, end, mode, link, description, role, name });
+    await event.save();
+    res.status(200).json({message: 'Session added successfully!'});
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding session' });
+  }
+});
+
+//route for get events
 app.get('/api/get-events', async (req, res) => {
   const { role, name } = req.query;
   let mentorEvents = [];
+  let studentEvents = [];
 
   try {
       if (role === 'Student') {
@@ -778,25 +808,16 @@ app.get('/api/get-events', async (req, res) => {
           }
           const mentorName = student.mentor;
           if (mentorName) {
-              mentorEvents = await Event.find({ name: mentorName, role: 'Mentor' });
+              mentorEvents = await MentorEvent.find({ name: mentorName, role: 'Mentor' });
           }
+           studentEvents = await Event.find({ role, name });
+      }else if(role === 'Mentor'){
+        mentorEvents = await MentorEvent.find({ name, role });
       }
 
-      const allEvents = await Event.find({ role, name });
-
-      // Fetch session info and format it for the calendar
-      const sessions = await SessionInfo.find({});
-      const sessionEvents = sessions.map(session => ({
-          id: session._id,
-          title: `Session: ${session.Index} - ${session.Department}`,
-          start: new Date(session.Date),
-          end: new Date(session.Date),
-          allDay: true,
-          type: 'session',
-          mentor: session.Mentor
-      }));
-
-      res.status(200).json({ allEvents, mentorEvents, sessionEvents });
+      console.log(studentEvents)
+      console.log(mentorEvents)
+      res.status(200).json({ studentEvents, mentorEvents });
   } catch (error) {
       console.error('Error fetching events:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
@@ -804,25 +825,31 @@ app.get('/api/get-events', async (req, res) => {
 });
 
 
-
 // PUT route to update an event by ID
-app.put('/api/events/:id', async (req, res) => {
+app.put('/api/events/:id/:role', async (req, res) => {
   
-  const { id } = req.params;
-  const { title, start, end } = req.body;
+  const { id, role } = req.params;
+  const updatedEvent = req.body;
 
   try {
-
-    const updatedEvent = await Event.findByIdAndUpdate(
-      id,
-      { title, start, end },
-      { new: true } 
-    );
-
-    if (!updatedEvent) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-    res.json({ message: 'Event updated successfully', event: updatedEvent });
+    let event;
+    if(role === "Student"){
+        event = await Event.findByIdAndUpdate(id,updatedEvent,{ new: true } );
+        
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      res.json({ message: 'Event updated successfully', event: event });
+    }else if(role === "Mentor"){
+      event = await MentorEvent.findByIdAndUpdate(id,updatedEvent,{ new: true } );
+      
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+  
+      res.json({ message: 'Event updated successfully', event });
+    };
+    
   } catch (error) {
     console.error('Error updating event:', error);
     res.status(500).json({ message: 'Error updating event' });
@@ -830,17 +857,28 @@ app.put('/api/events/:id', async (req, res) => {
 });
 
 // DELETE route to remove an event by ID
-app.delete('/api/events/:id', async (req, res) => {
-  const { id } = req.params;
+app.delete('/api/events/:id/:role', async (req, res) => {
+  const { id, role } = req.params;
   
   try {
-    const deletedEvent = await Event.findByIdAndDelete(id);
+    if(role === "Student"){
+      const deletedEvent = await Event.findByIdAndDelete(id);
 
-    if (!deletedEvent) {
-      return res.status(404).json({ message: 'Event not found' });
+      if (!deletedEvent) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+  
+      res.json({ message: 'Event deleted successfully', event: deletedEvent });
+    }else if(role === 'Mentor'){
+      const deletedEvent = await MentorEvent.findByIdAndDelete(id);
+
+      if (!deletedEvent) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+
+      res.json({ message: 'Event deleted successfully', event: deletedEvent });
     }
-
-    res.json({ message: 'Event deleted successfully', event: deletedEvent });
+   
   } catch (error) {
     console.error('Error deleting event:', error);
     res.status(500).json({ message: 'Error deleting event' });
@@ -963,22 +1001,22 @@ app.get('/api/sessions', async (req, res) => {
 });
 
 //Provide session data into student dashboard
-app.get('/api/ongoing-sessions', async (req, res) => {
-  try {
-    const { batchyear } = req.query;
+// app.get('/api/ongoing-sessions', async (req, res) => {
+//   try {
+//     const { batchyear } = req.query;
 
-    if (!batchyear) {
-      return res.status(400).json({ error: "Batch year is required."});
-    }
+//     if (!batchyear) {
+//       return res.status(400).json({ error: "Batch year is required."});
+//     }
 
-    const sessions = await SessionInfo.find({ Year: batchyear});
+//     const sessions = await SessionInfo.find({ Year: batchyear});
 
-    res.json(sessions);
-  }catch (error) {
-    console.error("Error fetching ongoin sessions:", error);
-    res.status(500).json({ error: 'Internal server error'});
-  }
-});
+//     res.json(sessions);
+//   }catch (error) {
+//     console.error("Error fetching ongoin sessions:", error);
+//     res.status(500).json({ error: 'Internal server error'});
+//   }
+// });
 
 // Update session details
 app.put('/api/sessions/:id', async (req, res) => {
@@ -1008,7 +1046,7 @@ app.get('/api/sessions/:id', async (req, res) => {
   }
 });
 
-// DELETE API to remove a session report
+//  remove a session report
 app.delete('/api/sessions/:id', async (req, res) => {
   try {
       const { id } = req.params;
