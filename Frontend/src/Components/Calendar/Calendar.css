@@ -74,7 +74,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to bottom left, #a8edea, #fed6e3);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -83,32 +83,68 @@
 
 .agenda-content {
   background: white;
-  padding: 25px;
+  padding:25px;
   width: 335px;
-  height: 410px;
+  height: auto;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.agenda-content1 {
+  background: white;
+  padding:0 25px 25px;
+  width: 340px;
+  height: auto;
   position: relative;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .agenda-content h3{
   text-align: center;
-  margin-top: 15px;
-  font-size: 23px;
-  color: blue;
+  margin-top: 10px;
+  font-size: 24px;
+  color: #1a237e;
+}
+
+.agenda-content1 h3{
+  text-align: center;
+  margin-top: 8px;
+  font-size: 22px;
+  color: #1a237e;
+  margin-bottom: 0;
 }
 
 .agenda-content form{
   display: flex;
   flex-direction: column;
-  font-size: 18px;
+  font-size: 17px;
 }
 
+.agenda-content1 form{
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+}
 .agenda-content form label{
   width: 100%;
   margin: 10px 0;
 }
 
+.agenda-content1 form label{
+  width: 100%;
+  margin-top: 7px;
+  font-size: 14px;
+  font-weight:bold;
+}
+
 .agenda-content form input{
+  border: none;
+  outline: none;
+  border-bottom: 2px solid silver;
+  border-radius: 2px; 
+}
+
+.agenda-content1 form input{
   border: none;
   outline: none;
   border-bottom: 2px solid silver;
@@ -119,13 +155,26 @@
   outline: none;
 }
 
+.agenda-content1 form textarea{
+  outline: none;
+}
+
 .save-btn{
-  margin: 30px 50px;
+  margin: 40px 50px;
   border: none;
   background-color:rgb(13, 13, 122) ;
   color: white;
   border-radius: 20px;
-  padding: 7px 35px;
+  padding: 5px 35px;
+}
+
+.save-btn1{
+  margin: 20px 50px;
+  border: none;
+  background-color:rgb(13, 13, 122) ;
+  color: white;
+  border-radius: 20px;
+  padding: 5px 35px;
 }
 
 .save-btn:hover , .cal-btn:hover{
@@ -134,8 +183,8 @@
 
 .calc-btns{
   display: flex;
-
 }
+
 .cal-btn{
   border: none;
   background-color:rgb(13, 13, 122) ;
@@ -158,12 +207,11 @@
 .mentor-events {
   width: 10px;
   height: 10px;
-  background-color: blue; 
-  opacity: 0.8;
+  background-color: #007bff; 
 }
 
 .mentor-events {
-  background-color: orange;  
+  background-color: #ffcc00;  
 }
 
 strong {
@@ -171,75 +219,11 @@ strong {
   margin-right: 10px; 
 }
 
-
 .hover-effect:hover{
   scale: 1.01;
 }
 
-@media (max-width: 768px) {
-  .rbc-calendar {
-    height: 100vh;
-    width: 100%;
-  }
-}
-
-/* Session details popup */
-.session-details-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.session-details-content {
-  background: white;
-  padding: 25px;
-  width: 400px;
-  border-radius: 10px;
-  position: relative;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.session-details-content h3 {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 22px;
-  color: #1a237e;
-}
-
-.session-details-content form {
-  display: flex;
-  flex-direction: column;
-  font-size: 16px;
-}
-
-.session-details-content form label {
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.session-details-content form input,
-.session-details-content form textarea,
-.session-details-content form select {
-  width: 100%;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-top: 5px;
-}
-
-.session-details-content form textarea {
-  resize: vertical;
-}
-
-.session-buttons {
+.session-btn-division {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
@@ -253,7 +237,7 @@ strong {
   padding: 8px 15px;
   cursor: pointer;
   flex: 1;
-  margin: 0 5px;
+  margin: 0 5px 20px;
   text-align: center;
 }
 
@@ -261,11 +245,23 @@ strong {
   background-color: #0d47a1;
 }
 
-.session-close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 20px;
-  cursor: pointer;
-  color: red;
+/* Apply styles only to events */
+.mentor-event {
+  background-color: #ffcc00 !important;
+  color: black !important;
+  border-radius: 5px;
+}
+
+.student-event {
+  background-color: #007bff !important; 
+  color: white !important;
+  border-radius: 5px;
+}
+
+
+@media (max-width: 768px) {
+  .rbc-calendar {
+    height: 100vh;
+    width: 100%;
+  }
 }
