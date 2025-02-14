@@ -13,6 +13,7 @@ const Sidebar = ({image}) => {
   const [selectedImage, setSelectedImage] = useState('');
   const sidebarRef = useRef();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -108,6 +109,11 @@ const Sidebar = ({image}) => {
   const handleClick = () => {
     setToggleBar(!toggleBar);
   }
+
+  const handleChatClick = (e) => {
+    e.preventDefault(); // Prevent default link behavior
+    setShowChat(true);
+  };
   
   return (
     <nav ref={sidebarRef}>
@@ -144,18 +150,20 @@ const Sidebar = ({image}) => {
             </li>
 
             <li className="side-list">
+              <Link to='/messages' className="side-links">
+                <i class='bx bxs-message-rounded icn' ></i>
+                <span className="side-link">Messages</span>
+              </ Link>
+            </li>
+
+            <li className="side-list">
               <Link to='/' className="side-links">
                 <i class='bx bxs-bell icn' ></i>
                 <span className="side-link">Notification</span>
               </ Link>
             </li>
 
-            <li className="side-list">
-              <Link to='/' className="side-links">
-                <i class='bx bxs-message-rounded icn' ></i>
-                <span className="side-link">Messages</span>
-              </ Link>
-            </li>
+            
 
             <li className="side-list">
               <Link to='/calendar' className="side-links">

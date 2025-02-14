@@ -22,8 +22,7 @@ import Feedback from './Components/Feedback/Feedback.jsx';
 import SessionTable from './Components/SessionTable/SessionTable.jsx';
 import ViewFeedback from './Components/ViewFeedback/ViewFeedback.jsx';
 import UpdateForm from './Components/UpdateForm/UpdateForm.jsx';
-
-
+import Message from './Components/Message/Message.jsx';
 
 const App = () => {
 
@@ -56,6 +55,7 @@ const App = () => {
         <Route path='/view-feedback' element={<ViewFeedback />} />
         <Route path='*' element={<ErrorPage />} />
         <Route path='/update-form' element={<UpdateForm />} />
+        <Route path="/messages" element={<Message />} />
         
       </Routes>
     </Router>
