@@ -81,53 +81,48 @@ const CheckPasswordPage = () => {
 
 
   return (
-    <div className='mt-5'>
-        <div className='bg-white w-full max-w-md  rounded overflow-hidden p-4 mx-auto'>
-
-          <div className='w-fit mx-auto mb-2 flex justify-center items-center flex-col'>
-            {/*<PiUserCircle
-               size={80}
-            />*/}
-            <Avatar
-              width={70}
-              height={70}
-              name={location?.state?.name}
-              imageUrl={location?.state?.profile_pic}
-            />
-            <h2 className='font-semibold text-lg mt-1'>{location?.state?.name}</h2>
-          </div>
-
-          <form className='grid gap-4 mt-5' onSubmit={handleSubmit}>
-              
-
-              <div className='flex flex-col gap-1'>
-                <label htmlFor='password'>password :</label>
-                <input
-                  type='password'
-                  id='password'
-                  name='password'
-                  placeholder='enter your password' 
-                  className='bg-slate-100 px-2 py-1 focus:outline-primary'
-                  value={data.password}
-                  onChange={handleOnChange}
-                  required
-                />
-              </div>
-
-
-              <button
-               className='bg-primary text-lg  px-4 py-1 hover:bg-secondary rounded mt-2 font-bold text-white leading-relaxed tracking-wide'
-              >
-                Login
-              </button>
-
-          </form>
-
-          <p className='my-3 text-center'> <Link to={"/forgot-password"} className='hover:text-primary font-semibold'>Forgot password ? </Link></p>
+    <div className="flex justify-center items-center h-screen">
+      <div className="bg-white w-full max-w-md rounded p-4 shadow-lg">
+        <div className="flex justify-center items-center flex-col mb-4">
+          <Avatar
+            width={70}
+            height={70}
+            name={location?.state?.name}
+            imageUrl={location?.state?.profile_pic}
+          />
+          <h2 className="font-semibold text-lg mt-1">{location?.state?.name}</h2>
         </div>
+  
+        <form className="grid gap-4 mt-2 p-2" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              className="bg-slate-100 px-2 py-1 focus:outline-primary"
+              value={data.password}
+              onChange={handleOnChange}
+              required
+            />
+          </div>
+  
+          <button className="bg-primary text-lg px-4 py-1 hover:bg-secondary rounded mt-2 font-bold text-white">
+            Login
+          </button>
+        </form>
+  
+        <p className="my-3 text-center">
+          <Link to="/forgot-password" className="hover:text-primary font-semibold">
+            Forgot password?
+          </Link>
+        </p>
+      </div>
     </div>
-  )
-}
+  );
+  
+}  
 
 export default CheckPasswordPage
 

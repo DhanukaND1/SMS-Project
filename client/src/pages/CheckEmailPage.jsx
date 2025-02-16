@@ -57,47 +57,41 @@ const CheckEmailPage = () => {
 
 
   return (
-    <div className='mt-5'>
-        <div className='bg-white w-full max-w-md  rounded overflow-hidden p-4 mx-auto'>
-
-          <div className='w-fit mx-auto mb-2'>
-            <PiUserCircle
-               size={80}
+    <div className="flex justify-center items-center h-screen">
+      <div className="bg-white w-full max-w-md rounded p-4 shadow-lg">
+        <div className="w-fit mx-auto mb-2">
+          <PiUserCircle size={80} />
+        </div>
+  
+        <h3 className="text-center">Welcome to Chat app!</h3>
+  
+        <form className="grid gap-4 mt-5 p-3" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your university email"
+              className="bg-slate-100 px-2 py-1 focus:outline-primary"
+              value={data.email}
+              onChange={handleOnChange}
+              required
             />
           </div>
-
-          <h3>Welcome to Chat app!</h3>
-
-          <form className='grid gap-4 mt-5' onSubmit={handleSubmit}>
-              
-
-              <div className='flex flex-col gap-1'>
-                <label htmlFor='email'>Email :</label>
-                <input
-                  type='email'
-                  id='email'
-                  name='email'
-                  placeholder='enter your email' 
-                  className='bg-slate-100 px-2 py-1 focus:outline-primary'
-                  value={data.email}
-                  onChange={handleOnChange}
-                  required
-                />
-              </div>
-
-
-              <button
-               className='bg-primary text-lg  px-4 py-1 hover:bg-secondary rounded mt-2 font-bold text-white leading-relaxed tracking-wide'
-              >
-                Let's Go
-              </button>
-
-          </form>
-
-          <p className='my-3 text-center'>New User ? <Link to={"/register"} className='hover:text-primary font-semibold'>register</Link></p>
-        </div>
+  
+          <button className="bg-primary text-lg px-4 py-1 hover:bg-secondary rounded mt-2 font-bold text-white">
+            Let's Go
+          </button>
+        </form>
+  
+        <p className="my-3 text-center">
+          New User? <Link to="/register" className="hover:text-primary font-semibold">Register</Link>
+        </p>
+      </div>
     </div>
-  )
+  );
+  
 }
 
 export default CheckEmailPage
