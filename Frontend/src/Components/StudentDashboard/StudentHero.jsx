@@ -73,28 +73,22 @@ function StudentHero() {
                     const { mentorEvents } = response.data;
     
                     const updatedSessions = mentorEvents
-                    .map(session => {
-                        const sessionDate = new Date(session.date);
-                        const today = new Date();
-                        
-                        const combinedDateTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm").toDate();
-                        console.log(combinedDateTime)
-                        console.log(today)
-
-                        // Only keep sessions that are either in the future or today, and their end time is not passed
-                        if (combinedDateTime <= today) {
-                            return null;
-                        }
-
-                        // Calculate the days left until the session
-                        const timeDiff = sessionDate - today;
-                        const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
-                        
-                        return { ...session, daysLeft };
+                        .map(session => {
+                            const sessionDate = moment(session.date, "YYYY-MM-DD");
+                            const today = moment();
+                            const sessionEndTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm");
+    
+                            if (sessionEndTime.isBefore(today)) {
+                                return null; // Exclude past sessions
+                            }
+    
+                            const daysLeft = sessionDate.diff(today, 'days');
+    
+                            return { ...session, daysLeft };
                         })
-                        
-                        .filter(session => session !== null); // Remove past and expired sessions
-                        console.log(updatedSessions)
+                        .filter(session => session !== null) // Remove past sessions
+                        .sort((a, b) => moment(a.date, "YYYY-MM-DD").valueOf() - moment(b.date, "YYYY-MM-DD").valueOf()); // Sort by date
+    
                     setSessions(updatedSessions);
                 }
             } catch (error) {
@@ -103,9 +97,9 @@ function StudentHero() {
         };
     
         fetchSessions();
-    }, [mentorName]);
-    
-    
+    }, [mentorName]);    
+
+
 
 
     return (
@@ -122,7 +116,7 @@ function StudentHero() {
                     <div>
                         <button className="messages-button">Check Messages</button>
                     </div>
-                    
+
                 </section>
 
                 <hr />
@@ -132,47 +126,64 @@ function StudentHero() {
                     <h2>Upcoming Info Sessions</h2>
                     <div className='sessions'>
                         {sessions.length > 0 ? (
-                            sessions.map((session, index) => (
-                                <div className='session-card' key={index}>
+                            sessions.map((session, index) => {
+                                const sessionDate = moment(session.date, "YYYY-MM-DD");
+                                const today = moment();
+                                const sessionStartTime = moment(`${session.date} ${session.start}`, "YYYY-MM-DD HH:mm");
+                                const sessionEndTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm");
 
-                                    <strong>Session Topic:</strong>
-                                    <span>{session.title}</span>
+                                // Calculate days left
+                                const daysLeft = sessionDate.diff(today, 'days');
 
-                                    <strong>Date:</strong>
-                                    <span>{new Date(session.date).toLocaleDateString()}</span>
+                                // Check if the current time is within the session time range
+                                const isSessionActive = today.isBetween(sessionStartTime, sessionEndTime);
 
-                                    <strong>Start Time:</strong>
-                                    <span>{moment(session.start, "HH:mm").format("hh:mm A")}</span>
+                                return (
+                                    <div className='session-card' key={index}>
+                                        <strong>Session Topic:</strong>
+                                        <span>{session.title}</span>
 
-                                    <strong>End Time:</strong>
-                                    <span>{moment(session.end, "HH:mm").format("hh:mm A")}</span>
+                                        <strong>Date:</strong>
+                                        <span>{sessionDate.format("YYYY-MM-DD")}</span>
 
-                                    <strong>Session Mode:</strong>
-                                    <span>{session.mode}</span>
+                                        <strong>Start Time:</strong>
+                                        <span>{sessionStartTime.format("hh:mm A")}</span>
 
-                                   {session.mode === 'Online' && (
-                                        <>
-                                            <strong>Session Link:</strong>
-                                            <span>{session.link}</span>
-                                        </>
-                                    )}
+                                        <strong>End Time:</strong>
+                                        <span>{sessionEndTime.format("hh:mm A")}</span>
 
-                                    <strong>Description:</strong>
-                                    <span>{session.description}</span>
+                                        <strong>Session Mode:</strong>
+                                        <span>{session.mode}</span>
 
-                                    <p className='countdown'>
-                                        {session.daysLeft > 0 ? `${session.daysLeft} Days Left` : "Session will be held today!"}
-                                    </p>
-                                    <div className='attend-btn-cont'>
-                                    <button className='attend-button'>Attend</button>
+                                        {session.mode === 'Online' && session.link && (
+                                            <>
+                                                <strong>Session Link:</strong>
+                                                <span><a href={session.link} target='_blank' rel='noopener noreferrer'>{session.link}</a></span>
+                                            </>
+                                        )}
+
+                                        <strong>Description:</strong>
+                                        <span>{session.description}</span>
+
+                                        <p className='countdown'>
+                                            {daysLeft > 0 ? `${daysLeft} Days Left` : (isSessionActive ? "Session is happening now!" : "Session has not started yet.")}
+                                        </p>
+
+                                        {isSessionActive && session.mode === 'Online' && session.link && (
+                                            <div className='attend-btn-cont'>
+                                                <button className='attend-button' onClick={() => window.open(session.link, '_blank')}>
+                                                    Attend
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                    
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
                             <p>No upcoming sessions available.</p>
                         )}
                     </div>
+
                 </section>
 
 
