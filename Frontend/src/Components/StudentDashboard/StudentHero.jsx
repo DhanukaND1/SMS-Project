@@ -131,70 +131,81 @@ function StudentHero() {
                     <div className='sessions-container'>
                         <h2>ONGOING SESSIONS</h2>
                         <div className='sessions'>
-                            {visibleSessions.length > 0 ? (
-                                visibleSessions.map((session, index) => {
-                                    const sessionDate = moment(session.date, "YYYY-MM-DD");
-                                    const today = moment();
-                                    const sessionStartTime = moment(session.start, "HH:mm").format("hh:mm A");
-                                    const sessionEndTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm");
-                                    const isSessionActive = today.isBetween(sessionDate, sessionEndTime);
-                                    const daysLeft = sessionDate.diff(today, 'days');
+                        {visibleSessions.length > 0 ? (
+    visibleSessions.map((session, index) => {
+        const sessionDate = moment(session.date, "YYYY-MM-DD");
+        const today = moment();
+        const sessionStartTime = moment(`${session.date} ${session.start}`, "YYYY-MM-DD HH:mm");
+        const sessionEndTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm");
+        
+        const isSessionActive = today.isBetween(sessionStartTime, sessionEndTime);
+        let timeLeft;
 
-                                    return (
-                                        <div
-                                            key={index}
-                                            className='session-card'
-                                            onClick={() => setSelectedSession(selectedSession === index ? null : index)}
-                                        >
-                                            {/* Session Info */}
-                                            <div>
-                                                <h3 style={{ textAlign: "center" }}>{session.title}</h3>
-                                                <strong>Date:</strong> <span>{sessionDate.format("YYYY-MM-DD")}</span>
-                                                <strong>Start Time:</strong> <span>{sessionStartTime}</span>
+        // Calculate remaining time
+        const diffDays = sessionDate.diff(today, 'days');
+        const diffHours = sessionStartTime.diff(today, 'hours');
 
-                                                {/* Show Extra Details When Clicked */}
-                                                {selectedSession === index && (
-                                                    <div className='session-details'>
-                                                        <strong>End Time:</strong>
-                                                        <span>{moment(session.end, "HH:mm").format("hh:mm A")}</span>
+        if (diffDays > 0) {
+            timeLeft = `${diffDays} Days Left`;
+        } else if (diffHours > 0) {
+            timeLeft = `${diffHours} Hours Left`;
+        } else {
+            timeLeft = "Starting Soon!";
+        }
 
-                                                        <strong>Session Mode:</strong>
-                                                        <span>{session.mode}</span>
+        return (
+            <div
+                key={index}
+                className='session-card'
+                onClick={() => setSelectedSession(selectedSession === index ? null : index)}
+            >
+                {/* Session Info */}
+                <div>
+                    <h3 style={{ textAlign: "center" }}>{session.title}</h3>
+                    <strong>Date:</strong> <span>{sessionDate.format("YYYY-MM-DD")}</span>
+                    <strong>Start Time:</strong> <span>{sessionStartTime.format("hh:mm A")}</span>
 
-                                                        {session.mode === 'Online' && session.link && (
-                                                            <>
-                                                                <strong>Session Link:</strong>
-                                                                <span><a href={session.link} target='_blank' rel='noopener noreferrer'>{session.link}</a></span>
-                                                            </>
-                                                        )}
+                    {/* Show Extra Details When Clicked */}
+                    {selectedSession === index && (
+                        <div className='session-details'>
+                            <strong>End Time:</strong>
+                            <span>{sessionEndTime.format("hh:mm A")}</span>
 
-                                                        <strong>Description:</strong>
-                                                        <span>{session.description}</span>
-                                                    </div>
-                                                )}
-                                            </div>
+                            <strong>Session Mode:</strong>
+                            <span>{session.mode}</span>
 
-                                            {/* Days Count & Attend Button at Bottom */}
-                                            <div className='session-bottom'>
-                                                <p className='countdown'>
-                                                    {daysLeft > 0 ? `${daysLeft} Days Left` : "Session is Today!"}
-                                                </p>
-
-                                                {isSessionActive && session.mode === 'Online' && session.link && (
-                                                    <div className='attend-btn-cont'>
-                                                        <button className='attend-button' onClick={() => window.open(session.link, '_blank')}>
-                                                            Attend
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <p>No upcoming sessions available.</p>
+                            {session.mode === 'Online' && session.link && (
+                                <>
+                                    <strong>Session Link:</strong>
+                                    <span><a href={session.link} target='_blank' rel='noopener noreferrer'>{session.link}</a></span>
+                                </>
                             )}
+
+                            <strong>Description:</strong>
+                            <span>{session.description}</span>
                         </div>
+                    )}
+                </div>
+
+                {/* Countdown & Attend Button */}
+                <div className='session-bottom'>
+                    <p className='countdown'>{timeLeft}</p>
+
+                    {isSessionActive && session.mode === 'Online' && session.link && (
+                        <div className='attend-btn-cont'>
+                            <button className='attend-button' onClick={() => window.open(session.link, '_blank')}>
+                                Attend
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    })
+) : (
+    <p>No upcoming sessions available.</p>
+)}
+           </div>
 
                         {/* Show More Button */}
                         {sessions.length > maxSessionsToShow && (
