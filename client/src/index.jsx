@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App.jsx';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider } from 'react-router-dom';
 import router from './routes/index.jsx';
@@ -14,7 +13,6 @@ root.render(
     <Provider store={store}>
       {/* RouterProvider should wrap the entire app */}
       <RouterProvider router={router}>
-        <App />
       </RouterProvider>
     </Provider>
   </React.StrictMode>
