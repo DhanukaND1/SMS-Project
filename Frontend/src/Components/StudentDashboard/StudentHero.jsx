@@ -13,6 +13,11 @@ function StudentHero() {
     const [showModal, setShowModal] = useState(false);
     const [resourceType, setResourceType] = useState('');
     const [sessions, setSessions] = useState([]);
+    const [selectedSession, setSelectedSession] = useState(null);
+    const [showAll, setShowAll] = useState(false);
+    const maxSessionsToShow = 3;
+    const visibleSessions = showAll ? sessions : sessions.slice(0, maxSessionsToShow);
+
 
     // Fetch Student Name
     useEffect(() => {
@@ -68,36 +73,36 @@ function StudentHero() {
                 const response = await axios.get('http://localhost:5001/api/get-events', {
                     params: { role: 'Mentor', name: mentorName }
                 });
-    
+
                 if (response.status === 200) {
                     const { mentorEvents } = response.data;
-    
+
                     const updatedSessions = mentorEvents
                         .map(session => {
                             const sessionDate = moment(session.date, "YYYY-MM-DD");
                             const today = moment();
                             const sessionEndTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm");
-    
+
                             if (sessionEndTime.isBefore(today)) {
                                 return null; // Exclude past sessions
                             }
-    
+
                             const daysLeft = sessionDate.diff(today, 'days');
-    
+
                             return { ...session, daysLeft };
                         })
                         .filter(session => session !== null) // Remove past sessions
                         .sort((a, b) => moment(a.date, "YYYY-MM-DD").valueOf() - moment(b.date, "YYYY-MM-DD").valueOf()); // Sort by date
-    
+
                     setSessions(updatedSessions);
                 }
             } catch (error) {
                 console.error('Error fetching sessions:', error);
             }
         };
-    
+
         fetchSessions();
-    }, [mentorName]);    
+    }, [mentorName]);
 
 
 
@@ -123,67 +128,83 @@ function StudentHero() {
 
                 {/* Ongoing Info Sessions */}
                 <section className='info-sessions'>
-                    <h2>Upcoming Info Sessions</h2>
-                    <div className='sessions'>
-                        {sessions.length > 0 ? (
-                            sessions.map((session, index) => {
-                                const sessionDate = moment(session.date, "YYYY-MM-DD");
-                                const today = moment();
-                                const sessionStartTime = moment(`${session.date} ${session.start}`, "YYYY-MM-DD HH:mm");
-                                const sessionEndTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm");
+                    <div className='sessions-container'>
+                        <h2>ONGOING SESSIONS</h2>
+                        <div className='sessions'>
+                            {visibleSessions.length > 0 ? (
+                                visibleSessions.map((session, index) => {
+                                    const sessionDate = moment(session.date, "YYYY-MM-DD");
+                                    const today = moment();
+                                    const sessionStartTime = moment(session.start, "HH:mm").format("hh:mm A");
+                                    const sessionEndTime = moment(`${session.date} ${session.end}`, "YYYY-MM-DD HH:mm");
+                                    const isSessionActive = today.isBetween(sessionDate, sessionEndTime);
+                                    const daysLeft = sessionDate.diff(today, 'days');
 
-                                // Calculate days left
-                                const daysLeft = sessionDate.diff(today, 'days');
+                                    return (
+                                        <div
+                                            key={index}
+                                            className='session-card'
+                                            onClick={() => setSelectedSession(selectedSession === index ? null : index)}
+                                        >
+                                            {/* Session Info */}
+                                            <div>
+                                                <h3 style={{ textAlign: "center" }}>{session.title}</h3>
+                                                <strong>Date:</strong> <span>{sessionDate.format("YYYY-MM-DD")}</span>
+                                                <strong>Start Time:</strong> <span>{sessionStartTime}</span>
 
-                                // Check if the current time is within the session time range
-                                const isSessionActive = today.isBetween(sessionStartTime, sessionEndTime);
+                                                {/* Show Extra Details When Clicked */}
+                                                {selectedSession === index && (
+                                                    <div className='session-details'>
+                                                        <strong>End Time:</strong>
+                                                        <span>{moment(session.end, "HH:mm").format("hh:mm A")}</span>
 
-                                return (
-                                    <div className='session-card' key={index}>
-                                        <strong>Session Topic:</strong>
-                                        <span>{session.title}</span>
+                                                        <strong>Session Mode:</strong>
+                                                        <span>{session.mode}</span>
 
-                                        <strong>Date:</strong>
-                                        <span>{sessionDate.format("YYYY-MM-DD")}</span>
+                                                        {session.mode === 'Online' && session.link && (
+                                                            <>
+                                                                <strong>Session Link:</strong>
+                                                                <span><a href={session.link} target='_blank' rel='noopener noreferrer'>{session.link}</a></span>
+                                                            </>
+                                                        )}
 
-                                        <strong>Start Time:</strong>
-                                        <span>{sessionStartTime.format("hh:mm A")}</span>
-
-                                        <strong>End Time:</strong>
-                                        <span>{sessionEndTime.format("hh:mm A")}</span>
-
-                                        <strong>Session Mode:</strong>
-                                        <span>{session.mode}</span>
-
-                                        {session.mode === 'Online' && session.link && (
-                                            <>
-                                                <strong>Session Link:</strong>
-                                                <span><a href={session.link} target='_blank' rel='noopener noreferrer'>{session.link}</a></span>
-                                            </>
-                                        )}
-
-                                        <strong>Description:</strong>
-                                        <span>{session.description}</span>
-
-                                        <p className='countdown'>
-                                            {daysLeft > 0 ? `${daysLeft} Days Left` : (isSessionActive ? "Session is happening now!" : "Session has not started yet.")}
-                                        </p>
-
-                                        {isSessionActive && session.mode === 'Online' && session.link && (
-                                            <div className='attend-btn-cont'>
-                                                <button className='attend-button' onClick={() => window.open(session.link, '_blank')}>
-                                                    Attend
-                                                </button>
+                                                        <strong>Description:</strong>
+                                                        <span>{session.description}</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <p>No upcoming sessions available.</p>
+
+                                            {/* Days Count & Attend Button at Bottom */}
+                                            <div className='session-bottom'>
+                                                <p className='countdown'>
+                                                    {daysLeft > 0 ? `${daysLeft} Days Left` : "Session is Today!"}
+                                                </p>
+
+                                                {isSessionActive && session.mode === 'Online' && session.link && (
+                                                    <div className='attend-btn-cont'>
+                                                        <button className='attend-button' onClick={() => window.open(session.link, '_blank')}>
+                                                            Attend
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p>No upcoming sessions available.</p>
+                            )}
+                        </div>
+
+                        {/* Show More Button */}
+                        {sessions.length > maxSessionsToShow && (
+                            <div className="show-more-container">
+                                <button className="show-more-button" onClick={() => setShowAll(!showAll)}>
+                                    {showAll ? "Show Less" : "Show More"}
+                                </button>
+                            </div>
                         )}
                     </div>
-
                 </section>
 
 
