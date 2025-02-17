@@ -85,6 +85,7 @@ const Mentor = mongoose.model('Mentor', new mongoose.Schema({
 
 // Collection for Resources
 const Resource = mongoose.model('Resource', new mongoose.Schema({
+  mentorname: { type: String, required: true},
   batchyear: { type: String, required: true },
   description: { type: String, required: true },
   fileUrl: { type: String, required: true },
@@ -513,11 +514,12 @@ app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Route to handle resource uploads
 app.post('/api/uploadResource', upload.single('file'), async (req, res) => {
-  const { batchyear, description } = req.body;
+  const { mentorname, batchyear, description } = req.body;
   const fileUrl = req.file ? `/api/uploads/${req.file.filename}` : null;
 
   try {
     const newResource = new Resource({
+      mentorname,
       batchyear,
       description,
       fileUrl
@@ -733,7 +735,7 @@ app.put('/api/upload-profile', async (req,res) => {
 
 // Route to get resources by batch year and file type
 app.get('/api/resourcesdash', async (req, res) => {
-  const { batchyear, type } = req.query;
+  const {mentorname, batchyear, type } = req.query;
 
   // console.log('Received batch:', batchyear, 'and type:', type);
 
@@ -754,6 +756,7 @@ app.get('/api/resourcesdash', async (req, res) => {
 
   try {
       const resources = await Resource.find({
+          mentorname: mentorname,
           batchyear: actualBatchYear,
           fileUrl: { $regex: typeFilter[actualType], $options: 'i' }
       });
