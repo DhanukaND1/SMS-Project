@@ -83,7 +83,10 @@ const MessagePage = () => {
   };
 
   useEffect(() => {
+    setAllMessage([]);
     if (socketConnection) {
+      console.log("Socket connection established", socketConnection);
+
       socketConnection.emit('message-page', params.userId);
       socketConnection.emit('seen', params.userId);
 
@@ -102,20 +105,25 @@ const MessagePage = () => {
     setMessage(prev => ({ ...prev, text: value }));
   };
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
 
     if (message.text || message.imageUrl || message.videoUrl) {
-      if (socketConnection) {
-        socketConnection.emit('new message', {
-          sender: user?._id,
-          receiver: params.userId,
-          text: message.text,
-          imageUrl: message.imageUrl,
-          videoUrl: message.videoUrl,
-          msgByUserId: user?._id
-        });
-        setMessage({ text: "", imageUrl: "", videoUrl: "" });
+      try {
+        if (socketConnection) {
+          socketConnection.emit('new message', {
+            sender: user?._id,
+            receiver: params.userId,
+            text: message.text,
+            imageUrl: message.imageUrl,
+            videoUrl: message.videoUrl,
+            msgByUserId: user?._id,
+          });
+          setMessage({ text: "", imageUrl: "", videoUrl: "" });
+        }
+      } catch (error) {
+        console.error("Message send failed:", error);
+        alert("Failed to send the message.");
       }
     }
   };
@@ -151,16 +159,21 @@ const MessagePage = () => {
 
       <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative bg-slate-200 bg-opacity-50'>
         <div className='flex flex-col gap-2 py-2 mx-2' ref={currentMessage}>
-          {allMessage.map((msg) => (
-            <div key={msg._id} className={`p-1 py-1 rounded w-fit max-w-[280px] md:max-w-sm lg:max-w-md ${user._id === msg?.msgByUserId ? "ml-auto bg-teal-100" : "bg-white"}`}>
-              <div className='w-full relative'>
-                {msg?.imageUrl && <img src={msg.imageUrl} className='w-full h-full object-scale-down' alt='uploaded' />}
-                {msg?.videoUrl && <video src={msg.videoUrl} className='w-full h-full object-scale-down' controls />}
-              </div>
-              <p className='px-2'>{msg.text}</p>
-              <p className='text-xs ml-auto w-fit'>{moment(msg.createdAt).format('hh:mm')}</p>
+          
+        {allMessage.map((msg, index) => (
+          <div
+            key={`${msg._id}-${index}`}  // Combine _id and index for uniqueness
+            className={`p-1 py-1 rounded w-fit max-w-[280px] md:max-w-sm lg:max-w-md ${user._id === msg?.msgByUserId ? "ml-auto bg-teal-100" : "bg-white"}`}
+          >
+            <div className='w-full relative'>
+              {msg?.imageUrl && <img src={msg.imageUrl} className='w-full h-full object-scale-down' alt='uploaded' />}
+              {msg?.videoUrl && <video src={msg.videoUrl} className='w-full h-full object-scale-down' controls />}
             </div>
-          ))}
+            <p className='px-2'>{msg.text}</p>
+            <p className='text-xs ml-auto w-fit'>{moment(msg.createdAt).format('hh:mm')}</p>
+          </div>
+        ))}
+
         </div>
 
         {message.imageUrl && (

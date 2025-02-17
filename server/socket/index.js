@@ -91,64 +91,64 @@ io.on('connection', async (socket) => {
         });
 
         // Handle new message
-        socket.on('new message', async (data) => {
-            try {
-                // Check if conversation exists between users
-                let conversation = await ConversationModel.findOne({
-                    $or: [
-                        { sender: data.sender, receiver: data.receiver },
-                        { sender: data.receiver, receiver: data.sender },
-                    ],
-                });
-
-                // If conversation doesn't exist, create one
-                if (!conversation) {
-                    const createConversation = new ConversationModel({
-                        sender: data.sender,
-                        receiver: data.receiver,
-                    });
-                    conversation = await createConversation.save();
-                }
-
-                // Save the new message
-                const message = new MessageModel({
-                    text: data.text,
-                    imageUrl: data.imageUrl,
-                    videoUrl: data.videoUrl,
-                    msgByUserId: data.msgByUserId,
-                });
-                const saveMessage = await message.save();
-
-                // Update conversation with the new message
-                await ConversationModel.updateOne(
-                    { _id: conversation._id },
-                    { $push: { messages: saveMessage._id } }
-                );
-
-                // Get updated conversation with messages
-                const getConversationMessage = await ConversationModel.findOne({
-                    $or: [
-                        { sender: data.sender, receiver: data.receiver },
-                        { sender: data.receiver, receiver: data.sender },
-                    ],
-                })
-                    .populate('messages')
-                    .sort({ updatedAt: -1 });
-
-                // Emit messages to both sender and receiver
-                io.to(data.sender).emit('message', getConversationMessage?.messages || []);
-                io.to(data.receiver).emit('message', getConversationMessage?.messages || []);
-
-                // Send updated conversation lists
-                const conversationSender = await getConversation(data.sender);
-                const conversationReceiver = await getConversation(data.receiver);
-
-                io.to(data.sender).emit('conversation', conversationSender);
-                io.to(data.receiver).emit('conversation', conversationReceiver);
-            } catch (error) {
-                console.error('Error in new message event:', error);
-            }
+socket.on('new message', async (data) => {
+    try {
+        let conversation = await ConversationModel.findOne({
+            $or: [
+                { sender: data.sender, receiver: data.receiver },
+                { sender: data.receiver, receiver: data.sender },
+            ],
         });
+
+        // If conversation doesn't exist, create one
+        if (!conversation) {
+            const createConversation = new ConversationModel({
+                sender: data.sender,
+                receiver: data.receiver,
+            });
+            conversation = await createConversation.save();
+        }
+
+        // Save the new message
+        const message = new MessageModel({
+            text: data.text,
+            imageUrl: data.imageUrl,
+            videoUrl: data.videoUrl,
+            msgByUserId: data.msgByUserId,
+        });
+        const saveMessage = await message.save();
+
+        // Update conversation with the new message
+        await ConversationModel.updateOne(
+            { _id: conversation._id },
+            { $push: { messages: saveMessage._id } }
+        );
+
+        // Get updated conversation with messages
+        const getConversationMessage = await ConversationModel.findOne({
+            $or: [
+                { sender: data.sender, receiver: data.receiver },
+                { sender: data.receiver, receiver: data.sender },
+            ],
+        })
+            .populate('messages')
+            .sort({ updatedAt: -1 });
+
+        // Emit messages to both sender and receiver
+        io.to(data.sender).emit('message', getConversationMessage?.messages || []);
+        io.to(data.receiver).emit('message', getConversationMessage?.messages || []);
+
+        // Send updated conversation lists
+        const conversationSender = await getConversation(data.sender);
+        const conversationReceiver = await getConversation(data.receiver);
+
+        io.to(data.sender).emit('conversation', conversationSender);
+        io.to(data.receiver).emit('conversation', conversationReceiver);
+    } catch (error) {
+        console.error('Error in new message event:', error);
+    }
+});
+
 
         // Handle sidebar request
         socket.on('sidebar', async (currentUserId) => {
