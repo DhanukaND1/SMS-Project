@@ -112,6 +112,7 @@ function MentorHero() {
   const uploadResource = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+    formData.append('mentorname', mentorName);
     formData.append('batchyear', resourceForm.batchyear);
     formData.append('description', resourceForm.description);
     formData.append('file', resourceForm.file);
