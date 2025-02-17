@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './Message.css'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import useSessionTimeout from '../../Hooks/useSessionTimeout.jsx'
 
