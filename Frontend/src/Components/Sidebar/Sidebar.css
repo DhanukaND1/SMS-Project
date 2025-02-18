@@ -160,6 +160,13 @@ nav .side-logo{
     background: #f1f1f1;
 }
 
+.check-notify{
+  text-decoration: none;
+  margin: 0 70px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
 @media(max-width:768px){
   .user-name{
     display: none;

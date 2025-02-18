@@ -136,7 +136,7 @@ const Sidebar = ({ image }) => {
   const markNotificationsAsRead = async () => {
     try {
       await axios.post('http://localhost:5001/api/notifications/read', {}, { withCredentials: true });
-      setNotifications([]); // Clear notifications from UI
+      // setNotifications([]); // Clear notifications from UI
     } catch (error) {
       console.error('Error marking notifications as read:', error);
     }
@@ -271,12 +271,16 @@ const Sidebar = ({ image }) => {
 
         {showNotifications && (
           <div className="notification-dropdown">
-            <h4>Notifications</h4>
+            <h5>Notifications</h5>
+            <p>You have {notifications.length} notifications</p>
+            <Link to='/notifications' className='check-notify'>Check </Link>
             {notifications.length > 0 ? (
               notifications.map((notif, index) => (
-                <div key={index} className="notification-item">
-                  <p>{notif.message}</p>
-                  <small>{new Date(notif.createdAt).toLocaleString()}</small>
+                <div>
+                {/* <div key={index} className="notification-item"> */}
+                  {/* <p>{notif.message}</p> */}
+                  {/* <small>{new Date(notif.createdAt).toLocaleString()}</small> */}
+                {/* </div> */}
                 </div>
               ))
             ) : (
