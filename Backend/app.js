@@ -82,6 +82,15 @@ const Mentor = mongoose.model('Mentor', new mongoose.Schema({
   pass1: String,
   image: String
 }));
+// Collection for admin
+const Admin = mongoose.model(
+  "Admin",
+  new mongoose.Schema({
+    sname: String,
+    mail: String,
+    pass: String,
+  })
+);
 
 // Collection for Resources
 const Resource = mongoose.model('Resource', new mongoose.Schema({
@@ -224,50 +233,100 @@ app.post('/api/signupMentor', async (req, res) => {
 });
 
 // Login Route
-app.post('/api/login', async (req, res) => {
+app.post("/api/login", async (req, res) => {
+  const { mail, password, role } = req.body;
+  console.log(req.body);
+  try {
+      if (role === "Student") {
+          const student = await Student.findOne({ mail });
+          if (!student) {
+              console.log("Email not found");
+              return res
+                  .status(404)
+                  .json({ success: false, message: "Email not found" });
+          }
+          const isMatch = await bcrypt.compare(password, student.rePass);
+          if (!isMatch) {
+              console.log("Password not matched");
+              return res
+                  .status(500)
+                  .json({ success: false, message: "Password not matched" });
+          }
 
-    const { mail, password, role } = req.body;
-    console.log(req.body);
-    try {
-      if (role === 'Student') {
-        const student = await Student.findOne({ mail });
-        if (!student) {
-          console.log('Email not found');
-          return res.status(404).json({ success: false, message: 'Email not found' });
-          
-        }
-        const isMatch = await bcrypt.compare(password, student.rePass);
-        if (!isMatch) {
-          console.log('Password not matched');
-          return res.status(500).json({ success: false, message: 'Password not matched' });
-        }
-
-        req.session.user = { name: student.sname, email: student.mail, role: 'Student' };
-        console.log('Session User:', req.session.user);
-        return res.status(200).json({ success: true, role: 'Student', message: 'Login successful!' });
+          req.session.user = {
+              name: student.sname,
+              email: student.mail,
+              role: "Student",
+          };
+          console.log("Session User:", req.session.user);
+          return res.status(200).json({
+              success: true,
+              role: "Student",
+              message: "Login successful!",
+          });
       }
 
-      if (role === 'Mentor') {
-        const mentor = await Mentor.findOne({ mail });
-        if (!mentor) {
-          console.log('Email not found');
-          return res.status(404).json({ success: false, message: 'Email not found' });
-        }
+      if (role === "Mentor") {
+          const mentor = await Mentor.findOne({ mail });
+          if (!mentor) {
+              console.log("Email not found");
+              return res
+                  .status(404)
+                  .json({ success: false, message: "Email not found" });
+          }
 
-        const isMatch = await bcrypt.compare(password, mentor.pass1);
-        if (!isMatch) {
-          console.log('Password not matched');
-          return res.status(500).json({ success: false, message: 'Password not matched' });
-        }
+          const isMatch = await bcrypt.compare(password, mentor.pass1);
+          if (!isMatch) {
+              console.log("Password not matched");
+              return res
+                  .status(500)
+                  .json({ success: false, message: "Password not matched" });
+          }
 
-        req.session.user = { name: mentor.name, email: mentor.mail, role: 'Mentor' };
-        return res.status(200).json({ success: true, message: 'Login successful!', role: 'Mentor' });
+          req.session.user = {
+              name: mentor.name,
+              email: mentor.mail,
+              role: "Mentor",
+          };
+          return res.status(200).json({
+              success: true,
+              message: "Login successful!",
+              role: "Mentor",
+          });
       }
-    } catch (error) {
-      console.error('Error in login:', error.response.data); // This will log the error to the console
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  
+
+      if (role === "Admin") {
+          const admin = await Admin.findOne({ mail });
+          if (!admin) {
+              console.log("Email not found");
+              return res
+                  .status(404)
+                  .json({ success: false, message: "Email not found" });
+          }
+
+          const isMatch = await bcrypt.compare(password, admin.pass);
+          if (!isMatch) {
+              console.log("Password not matched");
+              return res
+                  .status(500)
+                  .json({ success: false, message: "Password not matched" });
+          }
+
+          req.session.user = {
+              name: admin.sname,
+              email: admin.mail,
+              role: "Admin",
+          };
+          return res.status(200).json({
+              success: true,
+              message: "Login successful!",
+              role: "Admin",
+          });
+      }
+  } catch (error) {
+      console.error("Error in login:", error.message); // This will log the error to the console
+      res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // SessionInfo Rout
@@ -1241,3 +1300,174 @@ app.delete('/api/delete-notifications', async (req, res) => {
 // Start the server
 const port = process.env.PORT1 || 5001;
 app.listen(port, () => console.log(`Server running on port ${port}`));
+
+//Admin endpoints
+
+// get student by sid
+app.get("/api/student/:_id", async (req, res) => {
+  try {
+      const { _id } = req.params;
+      const student = await Student.findOne({ _id });
+
+      if (!student) {
+          return res.status(404).json({ message: "Student not found" });
+      }
+
+      res.status(200).json(student);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+// get mentor by id
+app.get("/api/mentor/:_id", async (req, res) => {
+  try {
+      const { _id } = req.params;
+      const student = await Mentor.findOne({ _id });
+
+      if (!student) {
+          return res.status(404).json({ message: "Mentor not found" });
+      }
+
+      res.status(200).json(student);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+// update students by id
+// Update student by sid
+app.put("/api/edit-student/:_id", async (req, res) => {
+  try {
+      const { _id } = req.params;
+      const updates = req.body;
+
+      const student = await Student.findOneAndUpdate(
+          { _id },
+          updates,
+          { new: true } // Returns updated document
+      );
+
+      if (!student) {
+          return res.status(404).json({ message: "Student not found" });
+      }
+
+      res.status(200).json({
+          success: true,
+          message: "Student updated successfully",
+          data: student,
+      });
+  } catch (error) {
+      res.status(500).json({
+          success: false,
+          message: "Error updating student",
+          error: error.message,
+      });
+  }
+});
+
+// update mentor by id
+app.put("/api/edit-mentor/:_id", async (req, res) => {
+  try {
+      const { _id } = req.params;
+      const updates = req.body;
+
+      const mentor = await Mentor.findOneAndUpdate(
+          { _id },
+          updates,
+          { new: true } // Returns updated document
+      );
+
+      if (!mentor) {
+          return res.status(404).json({ message: "Mentor not found" });
+      }
+
+      res.status(200).json({
+          success: true,
+          message: "Mentor updated successfully",
+          data: mentor,
+      });
+  } catch (error) {
+      res.status(500).json({
+          success: false,
+          message: "Error updating Mentor",
+          error: error.message,
+      });
+  }
+});
+
+// delete student by id
+// Delete student by sid
+
+app.delete("/api/delete-students/:_id", async (req, res) => {
+  try {
+      const { _id } = req.params;
+      const student = await Student.findByIdAndDelete(_id);
+
+      if (!student) {
+          return res.status(404).json({ message: "Student not found" });
+      }
+
+      res.status(200).json({
+          success: true,
+          message: "Student deleted successfully",
+      });
+  } catch (error) {
+      res.status(500).json({
+          success: false,
+          message: "Error deleting student",
+          error: error.message,
+      });
+  }
+});
+
+// delete mentor by id
+// Delete mentor by mid
+app.delete("/api/delete-mentor/:_id", async (req, res) => {
+  try {
+      const { _id } = req.params;
+      const mentor = await Mentor.findByIdAndDelete(_id);
+
+      if (!mentor) {
+          return res.status(404).json({ message: "Mentor not found" });
+      }
+
+      res.status(200).json({
+          success: true,
+          message: "Mentor deleted successfully",
+      });
+  } catch (error) {
+      res.status(500).json({
+          success: false,
+          message: "Error deleting Mentor",
+          error: error.message,
+      });
+  }
+});
+
+// get all students
+app.get("/api/allstudents", async (req, res) => {
+  // if (req.session.user) {
+  try {
+      const students = await Student.find(
+          {},
+          "sid sname mail year dept mentor"
+      );
+      res.status(200).json(students);
+  } catch {
+      res.status(500).json({ error: error.message });
+  }
+  // } else {
+  //     res.status(200).json({ isActive: false, message: "Session expired" });
+  // }
+});
+
+// get all mentors
+app.get("/api/allmentors", async (req, res) => {
+  try {
+      const mentors = await Mentor.find();
+      res.status(200).json(mentors);
+  } catch {
+      res.status(500).json({ error: error.message });
+  }
+});
