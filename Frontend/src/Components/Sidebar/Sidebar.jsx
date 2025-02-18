@@ -5,7 +5,6 @@ import axios from 'axios';
 import profilePic from '../../assets/profilepic.png';
 
 const Sidebar = ({ image }) => {
-
   const [toggleBar, setToggleBar] = useState(false);
   const [role, setRole] = useState('');
   const [name, setName] = useState('');
@@ -31,7 +30,7 @@ const Sidebar = ({ image }) => {
     fetchRole();
   }, []);
 
-  //Close dropdown on outside click
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".sidecont")) {
@@ -81,7 +80,6 @@ const Sidebar = ({ image }) => {
         method: 'POST',
         credentials: 'include', // Ensure cookies are sent with the request
       });
-
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -90,13 +88,12 @@ const Sidebar = ({ image }) => {
   let dashboardPath = '';
   console.log(role);
   if (role === 'Mentor') {
-    dashboardPath = '/mentor-dashboard'
+    dashboardPath = '/mentor-dashboard';
   } else if (role === 'Student') {
-    dashboardPath = '/student-dashboard'
+    dashboardPath = '/student-dashboard';
   } else {
-    dashboardPath = '/student-dashboard'
+    dashboardPath = '/student-dashboard';
   }
-
 
   useEffect(() => {
     document.addEventListener('click', handleSidebar);
@@ -110,7 +107,7 @@ const Sidebar = ({ image }) => {
 
   const handleClick = () => {
     setToggleBar(!toggleBar);
-  }
+  };
 
   const handleChatClick = (e) => {
     e.preventDefault(); // Prevent default link behavior
@@ -144,81 +141,74 @@ const Sidebar = ({ image }) => {
 
   return (
     <nav ref={sidebarRef}>
-
       <div className="side-logo">
-        <span onClick={handleClick}><i class='bx bx-menu side-menu' ></i></span>
+        <span onClick={handleClick}><i className='bx bx-menu side-menu'></i></span>
         <span className="logo-name">SMS</span>
       </div>
 
       <div className="side-bar" id={toggleBar ? "" : "hide-sidebar"}>
-
         <div className="side-logo">
-          <span onClick={handleClick}><i class='bx bx-menu side-menu' ></i></span>
+          <span onClick={handleClick}><i className='bx bx-menu side-menu'></i></span>
           <span className="logo-name">SMS</span>
         </div>
 
         <div className="sidebar-content">
-
           <ul className="side-lists">
-
             <li className="side-list">
-
               <Link to={dashboardPath} className="side-links">
-                <i class='bx bxs-dashboard icn' ></i>
+                <i className='bx bxs-dashboard icn'></i>
                 <span className="side-link">Dashboard</span>
-              </ Link>
+              </Link>
             </li>
 
             <li className="side-list">
               <Link to='/profile' className="side-links">
-                <i class='bx bxs-user icn' ></i>
+                <i className='bx bxs-user icn'></i>
                 <span className="side-link">Profile</span>
-              </ Link>
+              </Link>
             </li>
 
             <li className="side-list">
               <Link to='/messages' className="side-links">
-                <i class='bx bxs-message-rounded icn' ></i>
+                <i className='bx bxs-message-rounded icn'></i>
                 <span className="side-link">Messages</span>
-              </ Link>
+              </Link>
             </li>
 
             <li className="side-list">
-              <Link to="/notifications" className="side-links" >
-                <i class='bx bxs-bell icn'></i>
+              <Link to="/notifications" className="side-links">
+                <i className='bx bxs-bell icn'></i>
                 <span className="side-link">Notifications {notifications.length > 0 && `(${notifications.length})`}</span>
               </Link>
             </li>
 
             <li className="side-list">
               <Link to='/calendar' className="side-links">
-                <i class='bx bxs-calendar icn' ></i>
+                <i className='bx bxs-calendar icn'></i>
                 <span className="side-link">Calendar</span>
-              </ Link>
+              </Link>
             </li>
 
             {role === 'Mentor' && (
               <li className="side-list">
                 <Link to='/session-form' className="side-links">
-                  <i class='bx bxs-edit icn'></i>
+                  <i className='bx bxs-edit icn'></i>
                   <span className="side-link">Session Form</span>
-                </ Link>
+                </Link>
               </li>
             )}
 
-
             <li className="side-list">
               <Link to='/session-page' className="side-links">
-                <i class='bx bxs-report icn' ></i>
+                <i className='bx bxs-report icn'></i>
                 <span className="side-link">Session Info</span>
-              </ Link>
+              </Link>
             </li>
-
 
             {role === "Student" && (
               <li className="side-list">
                 <Link to='/feedback' className="side-links">
-                  <i class='bx bxs-comment-detail icn' ></i>
+                  <i className='bx bxs-comment-detail icn'></i>
                   <span className="side-link">Feedback</span>
                 </Link>
               </li>
@@ -227,7 +217,7 @@ const Sidebar = ({ image }) => {
             {mail === "jayani@at.cmb.ac.lk" && (
               <li className="side-list">
                 <Link to='/view-feedback' className="side-links">
-                  <i class='bx bxs-comment-detail icn' ></i>
+                  <i className='bx bxs-comment-detail icn'></i>
                   <span className="side-link">View Feedbacks</span>
                 </Link>
               </li>
@@ -235,16 +225,14 @@ const Sidebar = ({ image }) => {
           </ul>
 
           <div className="bottom-content">
-
             <ul className="side-lists">
               <li className="side-list">
                 <Link to='/' className="side-links" onClick={handleLogout}>
-                  <i class='bx bx-log-out icn' ></i>
+                  <i className='bx bx-log-out icn'></i>
                   <span className="side-link">Logout</span>
                 </Link>
               </li>
             </ul>
-
           </div>
         </div>
       </div>
@@ -259,40 +247,38 @@ const Sidebar = ({ image }) => {
         {showDropdown && (
           <div className='dropdown-menu'>
             <Link to="/profile" className='dropdown-item'>Profile</Link>
+            {/* Admin Section */}
+            {role === "Mentor" && mail === "admin@ict.cmb.ac.lk" && (
+              <Link to="/login" className='dropdown-item'>Login as Admin</Link>
+            )}
             <Link to="/" className='dropdown-item' onClick={handleLogout}>Logout</Link>
           </div>
         )}
       </div>
 
       <div className="notification-icon" onClick={() => setShowNotifications(!showNotifications)}>
-          <i className="bx bxs-bell"></i>
-          {notifications.length > 0 && <span className="notification-count">{notifications.length}</span>}
+        <i className="bx bxs-bell"></i>
+        {notifications.length > 0 && <span className="notification-count">{notifications.length}</span>}
+      </div>
+
+      {showNotifications && (
+        <div className="notification-dropdown">
+          <h5>Notifications</h5>
+          <p>You have {notifications.length} notifications</p>
+          <Link to='/notifications' className='check-notify'>Check </Link>
+          {notifications.length > 0 ? (
+            notifications.map((notif, index) => (
+              <div key={index}>
+                {/* Render notification details here */}
+              </div>
+            ))
+          ) : (
+            <p>No new notifications</p>
+          )}
         </div>
-
-        {showNotifications && (
-          <div className="notification-dropdown">
-            <h5>Notifications</h5>
-            <p>You have {notifications.length} notifications</p>
-            <Link to='/notifications' className='check-notify'>Check </Link>
-            {notifications.length > 0 ? (
-              notifications.map((notif, index) => (
-                <div>
-                {/* <div key={index} className="notification-item"> */}
-                  {/* <p>{notif.message}</p> */}
-                  {/* <small>{new Date(notif.createdAt).toLocaleString()}</small> */}
-                {/* </div> */}
-                </div>
-              ))
-            ) : (
-              <p>No new notifications</p>
-            )}
-            
-          </div>
-        )}
-      
-
+      )}
     </nav>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
