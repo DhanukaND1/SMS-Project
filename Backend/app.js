@@ -526,8 +526,25 @@ app.post('/api/uploadResource', upload.single('file'), async (req, res) => {
     });
 
     await newResource.save();
-    res.status(201).json({success: true ,message: 'Resource uploaded successfully', resource: newResource });
+
+    // Fetch students under this mentor and batch
+    const students = await Student.find({ mentor: mentorname, year: batchyear });
+
+    // Create notifications for students
+    const notifications = students.map(student => ({
+      studentEmail: student.mail,
+      message: `${mentorname} uploaded a new resource: ${description}`,
+      resourceId: newResource._id, // Store the resource ID for redirection
+      isRead: false,
+      createdAt: new Date()
+    }));
+    
+    await Notification.insertMany(notifications);
+
+    res.status(201).json({ success: true, message: 'Resource uploaded successfully, notifications sent.', resource: newResource });
+
   } catch (error) {
+    console.error('Error uploading resource:', error);
     res.status(500).json({ error: 'Failed to upload resource' });
   }
 });
@@ -1152,6 +1169,45 @@ app.put('/api/sessions/:id', async (req, res) => {
   }
 });
 
+const Notification = mongoose.model('Notification', new mongoose.Schema({
+  studentEmail: { type: String, required: true }, // Student who receives the notification
+  message: { type: String, required: true },
+  isRead: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+}));
+
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const { email } = req.query; // Get the student's email from request
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    console.log("Fetching notifications for:", email); // Debugging
+
+    const notifications = await Notification.find({ studentEmail: email }).sort({ createdAt: -1 });
+
+    console.log("Notifications found:", notifications); // Debugging
+
+    res.json(notifications);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ error: 'Failed to fetch notifications' });
+  }
+});
+
+app.post('/api/notifications/read', async (req, res) => {
+  try {
+    const { notificationId } = req.body;
+
+    await Notification.findByIdAndUpdate(notificationId, { isRead: true });
+
+    res.json({ message: "Notification marked as read" });
+  } catch (error) {
+    console.error("Error updating notification:", error);
+    res.status(500).json({ error: "Failed to update notification" });
+  }
+});
 
 // Start the server
 const port = process.env.PORT1 || 5001;

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import profilePic from '../../assets/profilepic.png';
 
-const Sidebar = ({image}) => {
+const Sidebar = ({ image }) => {
 
   const [toggleBar, setToggleBar] = useState(false);
   const [role, setRole] = useState('');
@@ -14,6 +14,8 @@ const Sidebar = ({image}) => {
   const sidebarRef = useRef();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -32,15 +34,15 @@ const Sidebar = ({image}) => {
   //Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
-        if (!event.target.closest(".sidecont")) {
-            setShowDropdown(false);
-        }
+      if (!event.target.closest(".sidecont")) {
+        setShowDropdown(false);
+      }
     };
     document.addEventListener("click", handleClickOutside);
     return () => {
-        document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
-}, []);
+  }, []);
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -114,7 +116,32 @@ const Sidebar = ({image}) => {
     e.preventDefault(); // Prevent default link behavior
     setShowChat(true);
   };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        if (!mail) return; // Ensure email is available
+        const response = await axios.get('http://localhost:5001/api/notifications', { 
+          params: { email: mail }, withCredentials: true 
+        });
+        setNotifications(response.data);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
   
+    fetchNotifications();
+  }, [mail]);    
+
+  const markNotificationsAsRead = async () => {
+    try {
+      await axios.post('http://localhost:5001/api/notifications/read', {}, { withCredentials: true });
+      setNotifications([]); // Clear notifications from UI
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
+  };  
+
   return (
     <nav ref={sidebarRef}>
 
@@ -157,13 +184,11 @@ const Sidebar = ({image}) => {
             </li>
 
             <li className="side-list">
-              <Link to='/' className="side-links">
-                <i class='bx bxs-bell icn' ></i>
-                <span className="side-link">Notification</span>
-              </ Link>
+              <Link to="/notifications" className="side-links" >
+                <i class='bx bxs-bell icn'></i>
+                <span className="side-link">Notifications {notifications.length > 0 && `(${notifications.length})`}</span>
+              </Link>
             </li>
-
-            
 
             <li className="side-list">
               <Link to='/calendar' className="side-links">
@@ -181,14 +206,14 @@ const Sidebar = ({image}) => {
               </li>
             )}
 
-            
-              <li className="side-list">
-                <Link to='/session-page' className="side-links">
-                  <i class='bx bxs-report icn' ></i>
-                  <span className="side-link">Session Info</span>
-                </ Link>
-              </li>
-            
+
+            <li className="side-list">
+              <Link to='/session-page' className="side-links">
+                <i class='bx bxs-report icn' ></i>
+                <span className="side-link">Session Info</span>
+              </ Link>
+            </li>
+
 
             {role === "Student" && (
               <li className="side-list">
@@ -238,6 +263,29 @@ const Sidebar = ({image}) => {
           </div>
         )}
       </div>
+
+      <div className="notification-icon" onClick={() => setShowNotifications(!showNotifications)}>
+          <i className="bx bxs-bell"></i>
+          {notifications.length > 0 && <span className="notification-count">{notifications.length}</span>}
+        </div>
+
+        {showNotifications && (
+          <div className="notification-dropdown">
+            <h4>Notifications</h4>
+            {notifications.length > 0 ? (
+              notifications.map((notif, index) => (
+                <div key={index} className="notification-item">
+                  <p>{notif.message}</p>
+                  <small>{new Date(notif.createdAt).toLocaleString()}</small>
+                </div>
+              ))
+            ) : (
+              <p>No new notifications</p>
+            )}
+            
+          </div>
+        )}
+      
 
     </nav>
   )
