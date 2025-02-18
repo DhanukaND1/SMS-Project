@@ -1,39 +1,101 @@
-.notifications-container{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 100px;
-  flex-direction: column;
-}
+/* Notification.css */
 
-.notification-list li{
-  margin: 15px 0;
-  padding:15px;
-  list-style: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.notify-btns{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-
-.unread{
-  font-weight: bold;
-  border: 1px solid red;
-}
-
-.notify-btns button{
-  border: none;
-  outline:none;
-  padding: 8px;
-  margin: 10px 20px;
-  border-radius: 10px;
-}
-
-.mark-notify-btn{
+.notifications-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
   
-
-}
+  .notifications-container h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .notifications-container p {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+  }
+  
+  .notification-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .notification-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .notification-item.unread {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    font-weight: bold;
+  }
+  
+  .notification-item.read {
+    background-color: #f5f5f5;
+    border-left: 4px solid #9e9e9e;
+  }
+  
+  .notification-item:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .notification-item .message {
+    font-size: 16px;
+    color: #333;
+    flex-grow: 1;
+  }
+  
+  .notification-item button {
+    background-color: #2196f3;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .notification-item button:hover {
+    background-color: #1976d2;
+  }
+  
+  .notification-item button:active {
+    background-color: #1565c0;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .notifications-container {
+      padding: 15px;
+    }
+  
+    .notification-item {
+      padding: 10px;
+    }
+  
+    .notification-item .message {
+      font-size: 14px;
+    }
+  
+    .notification-item button {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+  }
