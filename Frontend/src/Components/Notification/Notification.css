@@ -1,0 +1,39 @@
+.notifications-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+  flex-direction: column;
+}
+
+.notification-list li{
+  margin: 15px 0;
+  padding:15px;
+  list-style: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.notify-btns{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.unread{
+  font-weight: bold;
+  border: 1px solid red;
+}
+
+.notify-btns button{
+  border: none;
+  outline:none;
+  padding: 8px;
+  margin: 10px 20px;
+  border-radius: 10px;
+}
+
+.mark-notify-btn{
+  
+
+}

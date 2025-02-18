@@ -145,6 +145,16 @@ const Feedback = mongoose.model('Feedback', new mongoose.Schema({
   Date: {type:Date, required:true}
 }));
 
+//collection for notifications
+const Notification = mongoose.model('Notification', new mongoose.Schema({
+  mentor: { type: String, required: true },
+  year: {type: String, required: true},
+  url: { type: String, required: true },
+  message: { type: String, required: true },
+  isRead: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+}));
+
 //endpoint for signup student
 app.post('/api/signupStudent', async (req, res) => {
   const { sid, sname, mail, year, dept, mentor, rePass } = req.body;
@@ -528,18 +538,20 @@ app.post('/api/uploadResource', upload.single('file'), async (req, res) => {
     await newResource.save();
 
     // Fetch students under this mentor and batch
-    const students = await Student.find({ mentor: mentorname, year: batchyear });
+    // const students = await Student.find({ mentor: mentorname, year: batchyear });
 
     // Create notifications for students
-    const notifications = students.map(student => ({
-      studentEmail: student.mail,
+    const newNotification = new Notification({
+      mentor: mentorname,
+      year: batchyear,
+      url: fileUrl,
       message: `${mentorname} uploaded a new resource: ${description}`,
-      resourceId: newResource._id, // Store the resource ID for redirection
       isRead: false,
       createdAt: new Date()
-    }));
+    });
     
-    await Notification.insertMany(notifications);
+    await newNotification.save();
+    // await Notification.insertMany(notification);
 
     res.status(201).json({ success: true, message: 'Resource uploaded successfully, notifications sent.', resource: newResource });
 
@@ -1169,23 +1181,16 @@ app.put('/api/sessions/:id', async (req, res) => {
   }
 });
 
-const Notification = mongoose.model('Notification', new mongoose.Schema({
-  studentEmail: { type: String, required: true }, // Student who receives the notification
-  message: { type: String, required: true },
-  isRead: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
-}));
-
 app.get('/api/notifications', async (req, res) => {
   try {
-    const { email } = req.query; // Get the student's email from request
-    if (!email) {
-      return res.status(400).json({ error: "Email is required" });
+    const { mentor, year } = req.query; // Get the student's email from request
+    if (!mentor || !year) {
+      return res.status(400).json({ error: "Mentor name and batch year are required" });
     }
 
-    console.log("Fetching notifications for:", email); // Debugging
+    console.log("Fetching notifications for:", mentor, year); // Debugging
 
-    const notifications = await Notification.find({ studentEmail: email }).sort({ createdAt: -1 });
+    const notifications = await Notification.find({ mentor: mentor, year: year }).sort({ createdAt: -1 });
 
     console.log("Notifications found:", notifications); // Debugging
 
@@ -1200,12 +1205,28 @@ app.post('/api/notifications/read', async (req, res) => {
   try {
     const { notificationId } = req.body;
 
-    await Notification.findByIdAndUpdate(notificationId, { isRead: true });
+    await Notification.findByIdAndUpdate(
+      notificationId, 
+      { isRead: true }, 
+      { new: true }  
+    );
+    
 
-    res.json({ message: "Notification marked as read" });
+    res.json({ success: true, message: "Notification marked as read" });
   } catch (error) {
     console.error("Error updating notification:", error);
     res.status(500).json({ error: "Failed to update notification" });
+  }
+});
+
+app.delete('/api/delete-notifications', async (req, res) => {
+  const { id } = req.query;
+  try{
+    await Notification.findByIdAndDelete(id);
+    res.json({success: true, message: 'Notification Deleted Successfully!'})
+  }catch(error){
+    console.error("Error deleting notification:", error);
+    res.status(500).json({ error: "Failed to delete notification" });
   }
 });
 
