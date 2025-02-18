@@ -1183,17 +1183,16 @@ app.put('/api/sessions/:id', async (req, res) => {
 
 app.get('/api/notifications', async (req, res) => {
   try {
-    const { mentor, year } = req.query; // Get the student's email from request
+    const { mentor, year } = req.query;
     if (!mentor || !year) {
       return res.status(400).json({ error: "Mentor name and batch year are required" });
     }
 
-    console.log("Fetching notifications for:", mentor, year); // Debugging
+    console.log("Fetching notifications for:", mentor, year);
 
-    const notifications = await Notification.find({ mentor: mentor, year: year }).sort({ createdAt: -1 });
+    const notifications = await Notification.find({ mentor, year }).sort({ createdAt: -1 });
 
-    console.log("Notifications found:", notifications); // Debugging
-
+    console.log("Notifications found:", notifications);
     res.json(notifications);
   } catch (error) {
     console.error("Error fetching notifications:", error);
@@ -1201,16 +1200,19 @@ app.get('/api/notifications', async (req, res) => {
   }
 });
 
+
+
 app.post('/api/notifications/read', async (req, res) => {
   try {
     const { notificationId } = req.body;
 
-    await Notification.findByIdAndUpdate(
-      notificationId, 
-      { isRead: true }, 
-      { new: true }  
-    );
-    
+    const notification = await Notification.findById(notificationId);
+    if (!notification) {
+      return res.status(404).json({ error: "Notification not found" });
+    }
+
+    notification.isRead = true;
+    await notification.save(); // Save the updated notification
 
     res.json({ success: true, message: "Notification marked as read" });
   } catch (error) {
@@ -1219,16 +1221,22 @@ app.post('/api/notifications/read', async (req, res) => {
   }
 });
 
+
 app.delete('/api/delete-notifications', async (req, res) => {
   const { id } = req.query;
-  try{
-    await Notification.findByIdAndDelete(id);
-    res.json({success: true, message: 'Notification Deleted Successfully!'})
-  }catch(error){
+  try {
+    const notification = await Notification.findByIdAndDelete(id);
+    if (!notification) {
+      return res.status(404).json({ error: "Notification not found" });
+    }
+
+    res.json({ success: true, message: 'Notification Deleted Successfully!' });
+  } catch (error) {
     console.error("Error deleting notification:", error);
     res.status(500).json({ error: "Failed to delete notification" });
   }
 });
+
 
 // Start the server
 const port = process.env.PORT1 || 5001;
