@@ -1,9 +1,9 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
+import "./EditProfile.css";
 
 const AdminEditStudent = () => {
     const { id } = useParams();
@@ -19,9 +19,7 @@ const AdminEditStudent = () => {
     useEffect(() => {
         const fetchStudent = async () => {
             try {
-                const response = await axios.get(
-                    `http://localhost:5001/api/student/${id}`
-                );
+                const response = await axios.get(`http://localhost:5001/api/student/${id}`);
                 setStudent(response.data);
                 console.log(response.data);
             } catch (error) {
@@ -38,13 +36,11 @@ const AdminEditStudent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(
-                `http://localhost:5001/api/edit-student/${id}`,
-                student
-            );
+            await axios.put(`http://localhost:5001/api/edit-student/${id}`, student);
             toast.success("Student updated successfully!");
-            alert("Student updated successfully!");
-            navigate("/admin-dashboard");
+            setTimeout(() => {
+                navigate("/admin-dashboard");
+            }, 3000);
         } catch (error) {
             toast.error("Error updating student");
             console.error("Error updating student:", error);
@@ -54,77 +50,76 @@ const AdminEditStudent = () => {
     return (
         <>
             <ToastContainer />
-            <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                    Edit Student
-                </h2>
+            <div className="edit-student-container">
+                <h2 className="edit-student-title">Edit Student</h2>
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700">Name</label>
+                    <div className="form-group">
+                        <label className="form-label">Name</label>
                         <input
                             type="text"
                             name="sname"
                             value={student.sname}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded-lg"
+                            className="form-input"
                             required
                         />
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700">Email</label>
+                    <div className="form-group">
+                        <label className="form-label">Email</label>
                         <input
                             type="email"
                             name="mail"
                             value={student.mail}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded-lg"
+                            className="form-input"
                             required
                             readOnly
                             disabled
                         />
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700">Year</label>
+                    <div className="form-group">
+                        <label className="form-label">Year</label>
                         <input
                             type="text"
                             name="year"
                             value={student.year}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded-lg"
+                            className="form-input"
                             required
                         />
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700">
-                            Department
-                        </label>
+                    <div className="form-group">
+                        <label className="form-label">Department</label>
                         <input
                             type="text"
                             name="dept"
                             value={student.dept}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded-lg"
+                            className="form-input"
                             required
                         />
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700">Mentor</label>
+                    <div className="form-group">
+                        <label className="form-label">Mentor</label>
                         <input
                             type="text"
                             name="mentor"
                             value={student.mentor}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded-lg"
+                            className="form-input"
                             readOnly
                             disabled
                         />
                     </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg"
-                    >
-                        Update Student
-                    </button>
+
+                    <div className="button-group">
+                        <button type="submit" className="submit-button">
+                            Update Student
+                        </button>
+                        <button type="button" className="cancel-button" onClick={() => navigate("/admin-dashboard")}>
+                            Cancel
+                        </button>
+                    </div>
                 </form>
             </div>
         </>
