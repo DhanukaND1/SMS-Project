@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import useSessionTimeout from "../../Hooks/useSessionTimeout.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "./Admin.css";
 
 const Admin = () => {
@@ -77,6 +81,61 @@ const Admin = () => {
         setSliderPosition(tab === "students" ? "0%" : "50%");
     };
 
+    const handleStudentDelete = async (studentId) => {
+        confirmAlert({
+            title: "Confirm Deletion",
+            message: "Are you sure you want to delete this student?",
+            buttons: [
+                {
+                    label: "Yes",
+                    onClick: async () => {
+                        try {
+                            await axios.delete(`http://localhost:5001/api/delete-students/${studentId}`);
+                            toast.success('Student deleted successfully!');
+                            const response = await axios.get("http://localhost:5001/api/allstudents");
+                            setStudents(response.data);
+                        } catch (error) {
+                            console.error("Error deleting student:", error);
+                            toast.error('Error deleting student');
+                        }
+                    }
+                },
+                {
+                    label: "No",
+                    onClick: () => console.log("Deletion cancelled")
+                }
+            ]
+        });
+    };
+
+    const handleMentorDelete = async (mentorId) => {
+        confirmAlert({
+            title: "Confirm Deletion",
+            message: "Are you sure you want to delete this mentor?",
+            buttons: [
+                {
+                    label: "Yes",
+                    onClick: async () => {
+                        try {
+                            await axios.delete(`http://localhost:5001/api/delete-mentor/${mentorId}`);
+                            toast.success('Mentor deleted successfully!');
+                            // Refresh mentor list
+                            const response = await axios.get("http://localhost:5001/api/allmentors");
+                            setMentors(response.data);
+                        } catch (error) {
+                            toast.error('Error deleting mentor!')
+                            console.error("Error deleting mentor:", error);
+                        }
+                    }
+                },
+                {
+                    label: "No",
+                    onClick: () => console.log("Mentor deletion cancelled")
+                }
+            ]
+        });
+    };
+
     return (
         <div className="admin-container">
             <div className="admin-header">
@@ -142,39 +201,15 @@ const Admin = () => {
                                             <td className="actions-cell">
                                                 <Link
                                                     to={`/admin-edit-student/${student._id}`}
-                                                    className="text-blue-500 hover:underline"
+                                                    className="update-btn"
                                                 >
                                                     Update
                                                 </Link>{" "}
                                                 |
                                                 <Link
                                                     to={``}
-                                                    onClick={async () => {
-                                                        if (
-                                                            window.confirm(
-                                                                "Are you sure you want to delete this student?"
-                                                            )
-                                                        ) {
-                                                            try {
-                                                                await axios.delete(
-                                                                    `http://localhost:5001/api/delete-students/${student._id}`
-                                                                );
-                                                                const response =
-                                                                    await axios.get(
-                                                                        "http://localhost:5001/api/allstudents"
-                                                                    );
-                                                                setStudents(
-                                                                    response.data
-                                                                );
-                                                            } catch (error) {
-                                                                console.error(
-                                                                    "Error deleting student:",
-                                                                    error
-                                                                );
-                                                            }
-                                                        }
-                                                    }}
-                                                    className="text-red-500 hover:underline ml-2"
+                                                    onClick={() => handleStudentDelete(student._id)}
+                                                    className="delete-btn"
                                                 >
                                                     Delete
                                                 </Link>
@@ -212,39 +247,15 @@ const Admin = () => {
                                             <td className="actions-cell">
                                                 <Link
                                                     to={`/admin-edit-mentor/${mentor._id}`}
-                                                    className="text-blue-500 hover:underline"
+                                                    className="update-btn"
                                                 >
                                                     Update
                                                 </Link>{" "}
+                                                |
                                                 <Link
                                                     to={``}
-                                                    onClick={async () => {
-                                                        if (
-                                                            window.confirm(
-                                                                "Are you sure you want to delete this mentor?"
-                                                            )
-                                                        ) {
-                                                            try {
-                                                                await axios.delete(
-                                                                    `http://localhost:5001/api/delete-mentor/${mentor._id}`
-                                                                );
-                                                                // Refresh mentor list
-                                                                const response =
-                                                                    await axios.get(
-                                                                        "http://localhost:5001/api/allmentors"
-                                                                    );
-                                                                setMentors(
-                                                                    response.data
-                                                                );
-                                                            } catch (error) {
-                                                                console.error(
-                                                                    "Error deleting mentor:",
-                                                                    error
-                                                                );
-                                                            }
-                                                        }
-                                                    }}
-                                                    className="text-red-500 hover:underline ml-2"
+                                                    onClick={() => handleMentorDelete(mentor._id)}
+                                                    className="delete-btn"
                                                 >
                                                     Delete
                                                 </Link>
@@ -257,6 +268,7 @@ const Admin = () => {
                     </div>
                 )}
             </div>
+            <ToastContainer />
         </div>
     );
 };
